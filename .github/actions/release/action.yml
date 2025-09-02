@@ -1,0 +1,23 @@
+name: Releasing APK files
+runs:
+  using: "composite"
+  steps:
+    - name: Generate release info
+      shell: bash
+      run: |
+        echo "
+        **Change log** :point_down:
+        [Revanced](https://github.com/revanced/revanced-patches/releases)
+        [Revanced Extended](https://github.com/inotia00/revanced-patches/releases)
+        "> ${{ github.workspace }}-CHANGELOG.txt
+    - name: Release
+      uses: ncipollo/release-action@v1.14.0
+      with:
+        artifacts: |
+          ./release/*.apk
+        name: Revanced & Revanced Extended
+        repo: ${{ env.REPO_NAME }}
+        token: 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
+        tag: ${{ env.APP_VERSION }}-${{ env.patch_version }}
+        bodyFile: ${{ github.workspace }}-CHANGELOG.txt
+        allowUpdates: true

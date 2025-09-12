@@ -129,8 +129,8 @@ revanced_dl_beta(){
 11() {
 	echo "REPO_NAME=spotify-revanced" >> $GITHUB_ENV
 
-	# revanced_dl
-	revanced_dl_beta
+	revanced_dl
+	# revanced_dl_beta
 	get_patches_key "Spotjfy-revanced"
 
 	j="i"

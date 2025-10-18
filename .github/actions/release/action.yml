@@ -17,7 +17,7 @@ runs:
           ./release/*.apk
         name: Revanced & Revanced Extended
         repo: ${{ env.REPO_NAME }}
-        token: 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
+        token: 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
         tag: ${{ env.APP_VERSION }}-${{ env.patch_version }}
         bodyFile: ${{ github.workspace }}-CHANGELOG.txt
         allowUpdates: true

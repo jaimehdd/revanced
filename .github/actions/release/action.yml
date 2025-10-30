@@ -18,6 +18,7 @@ runs:
         name: Revanced & Revanced Extended
         repo: ${{ env.REPO_NAME }}
         token: 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
-        tag: ${{ env.APP_VERSION }}-${{ env.patch_version }}
+        # tag: ${{ env.APP_VERSION }}-${{ env.patch_version }}
+        tag: ${{ env.APP_VERSION }}
         bodyFile: ${{ github.workspace }}-CHANGELOG.txt
         allowUpdates: true

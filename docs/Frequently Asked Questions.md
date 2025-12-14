@@ -10,6 +10,8 @@ The issue might be that your Android OS is preventing MicroG (GMS Core) from run
 
 [https://dontkillmyapp.com/](https://dontkillmyapp.com/)
 
+---
+
 ### Q: How do I use this repository for patching my own app?
 
 You should [fork](https://github.com/FiorenMas/Revanced-And-Revanced-Extended-Non-Root/fork) the repository, and then go to the `Action` tab
@@ -37,9 +39,9 @@ You should open the folder `Revanced-And-Revanced-Extended-Non-Root/src/patches/
 
 ### Q: I want to use a custom file options.json. How can I do it?
 
-You should open the folder [Revanced-And-Revanced-Extended-Non-Root/src/options/](../src/options). It contains files revanced.json, ReX.json... edit those file the same as you would options.json
+You should open the folder [Revanced-And-Revanced-Extended-Non-Root/src/options/](../src/options). It contains files revanced-extended.json, anddea.json... edit those file the same as you would options.json
 
-Revanced CLI version 5 no longer use options.json anymore use directly `Revanced-And-Revanced-Extended-Non-Root/src/patches/` instead.
+Revanced alias no longer use options.json anymore use directly `Revanced-And-Revanced-Extended-Non-Root/src/patches/` instead.
 
 The options separate with patches name with `|`
 

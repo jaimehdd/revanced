@@ -49,20 +49,8 @@ revanced_dl_beta(){
 	revanced_dl
 	# Patch Instagram:
 	get_patches_key "instagram"
-	# version="378.0.0.52.68"
-	# get_apk "com.instagram.android" "instagram-arm64-v8a" "instagram-instagram" "instagram/instagram-instagram/instagram" "arm64-v8a" "nodpi"
 	get_apkpure "com.instagram.android" "instagram-arm64-v8a" "instagram-android/com.instagram.android" "Bundle"
 	patch "instagram-arm64-v8a" "revanced"
-
-	# # ReVancedExperiments
-	# dl_gh "ReVancedExperiments" "Aunali321" "latest"
-	# dl_gh "revanced-cli" "revanced" "latest"
-	# # Patch Instagram:
-	# get_patches_key "instagram-revanced-experiments"
-	# # version="362.0.0.33.241"
-	# # get_apk "com.instagram.android" "instagram-arm64-v8a" "instagram-instagram" "instagram/instagram-instagram/instagram" "arm64-v8a" "nodpi"
-	# get_apkpure "com.instagram.android" "instagram-arm64-v8a" "instagram-android/com.instagram.android" "Bundle"
-	# patch "instagram-arm64-v8a" "revanced-experiments"
 }
 5() {
 	revanced_dl
@@ -77,23 +65,34 @@ revanced_dl_beta(){
 	revanced_dl
 	# Patch Tumblr:
 	get_patches_key "tumblr"
-	get_apk "com.tumblr" "tumblr" "tumblr" "tumblr-inc/tumblr/tumblr" "Bundle"
+	get_apk "com.tumblr" "tumblr" "tumblr" "tumblr-inc/tumblr/tumblr-social-media-art" "Bundle_extract"
+	split_editor "tumblr" "tumblr"
 	patch "tumblr" "revanced"
+	# Patch Tumblr Arm64-v8a:
+	get_patches_key "tumblr"
+	split_editor "tumblr" "tumblr-arm64-v8a" "exclude" "split_config.armeabi_v7a split_config.x86 split_config.x86_64"
+	patch "tumblr-arm64-v8a" "revanced"
 	# Patch SoundCloud:
 	get_patches_key "soundcloud"
-	get_apk "com.soundcloud.android" "soundcloud" "soundcloud-soundcloud" "soundcloud/soundcloud-soundcloud/soundcloud-soundcloud" "Bundle"
+	get_apk "com.soundcloud.android" "soundcloud" "soundcloud-soundcloud" "soundcloud/soundcloud-soundcloud/soundcloud-play-music-songs" "Bundle_extract"
+	split_editor "soundcloud" "soundcloud"
 	patch "soundcloud" "revanced"
+	# Patch SoundCloud Arm64-v8a:
+	get_patches_key "soundcloud"
+	split_editor "soundcloud" "soundcloud-arm64-v8a" "exclude" "split_config.armeabi_v7a split_config.x86 split_config.x86_64"
+	patch "soundcloud-arm64-v8a" "revanced"
 }
 7() {
 	revanced_dl
 	# Patch RAR:
 	get_patches_key "rar"
-	get_apk "com.rarlab.rar" "rar" "rar" "rarlab-published-by-win-rar-gmbh/rar/rar" "arm64-v8a"
+	get_apk "com.rarlab.rar" "rar" "rar" "rarlab-published-by-win-rar-gmbh/rar/rar" "Bundle"
 	patch "rar" "revanced"
 	# Patch Lightroom:
 	get_patches_key "lightroom"
-	version="9.2.0"
-	get_apk "com.adobe.lrmobile" "lightroom" "lightroom" "adobe/lightroom/lightroom"
+ 	url="https://adobe-lightroom-mobile.en.uptodown.com/android/download/1033600808" #Use uptodown because apkmirror always ask pass Cloudflare on this app
+	url="https://dw.uptodown.com/dwn/$(req "$url" - | $pup -p --charset utf-8 'button#detail-download-button attr{data-url}')"
+	req "$url" "lightroom.apk"
 	patch "lightroom" "revanced"
 }
 8() {
@@ -129,11 +128,9 @@ revanced_dl_beta(){
 	echo "REPO_NAME=spotify-revanced" >> $GITHUB_ENV
 
 	revanced_dl
-	# revanced_dl_beta
-	get_patches_key "Spotjfy-revanced"
-
+	# Patch Spotjfy Arm64-v8a
 	j="i"
-	version="9.0.72.949"
+	get_patches_key "Spotjfy-revanced"
 	get_apkpure "com.spot"$j"fy.music" "spotjfy-arm64-v8a" "spot"$j"fy-music-and-podcasts-for-android/com.spot"$j"fy.music"
 	patch "spotjfy-arm64-v8a" "revanced"
 }

@@ -58,7 +58,7 @@ jobs:
         if: steps.check-gh-rv.outputs.internet_error == '0'
         uses: ./.github/actions/release
         with:
-          token: ${{ secrets.GH_TOKEN }}
+          github_token: ${{ secrets.GH_TOKEN }}
   patch_rve:
     name: Patch Revanced Extended Stable
     if: ${{ github.event.inputs.org == 'Revanced Extended' || inputs.org == 'Revanced Extended' }}
@@ -85,4 +85,4 @@ jobs:
         if: steps.check-gh-rve.outputs.internet_error == '0'
         uses: ./.github/actions/release
         with:
-          token: ${{ secrets.GH_TOKEN }}
+          github_token: ${{ secrets.GH_TOKEN }}

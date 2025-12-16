@@ -1,6 +1,6 @@
 name: Releasing APK files
 inputs:
-  token:
+  github_token:
     description: "GitHub Token"
     required: true
 runs:
@@ -21,7 +21,7 @@ runs:
           ./release/*.apk
         name: Revanced & Revanced Extended
         repo: ${{ env.REPO_NAME }}
-        token: ${{ inputs.token }}
+        token: ${{ inputs.github_token }}
         tag: ${{ env.APP_VERSION }}-${{ env.patch_version }}
         # tag: ${{ env.APP_VERSION }}
         bodyFile: ${{ github.workspace }}-CHANGELOG.txt

@@ -14,17 +14,7 @@ runs:
         [Revanced](https://github.com/revanced/revanced-patches/releases)
         [Revanced Extended](https://github.com/inotia00/revanced-patches/releases)
         "> ${{ github.workspace }}-CHANGELOG.txt
-    - name: Debug Token
-      shell: bash
-      run: |
-        if [ -z "${{ inputs.github_token }}" ]; then
-          echo "::error::INPUT TOKEN IS EMPTY!"
-        else
-          echo "Token received (length: ${{ inputs.github_token }})"
-          # We can't actually print length of secret easily without standard shell expansion,
-          # but checking if it's empty is the most important part.
-          echo "Token is NOT empty."
-        fi
+
     - name: Release
       uses: ncipollo/release-action@v1.14.0
       with:

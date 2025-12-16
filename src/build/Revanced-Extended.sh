@@ -3,8 +3,18 @@
 source src/build/utils.sh
 
 # Download requirements
+use_beta="${use_beta:-false}"
+
+revanced_dl_beta(){
+	dl_gh "revanced-patches revanced-cli" "inotia00" "prerelease"
+}
+
 revanced_dl(){
-	dl_gh "revanced-patches revanced-cli" "inotia00" "latest"
+	if [ "$use_beta" = true ]; then
+		revanced_dl_beta
+	else
+		dl_gh "revanced-patches revanced-cli" "inotia00" "latest"
+	fi
 }
 
 1() {

@@ -16,11 +16,21 @@ on:
         options:
           - 'Revanced'
           - 'Revanced Extended'
+      use_beta:
+        description: 'Use beta versions'
+        required: false
+        default: false
+        type: boolean
   workflow_call:
     inputs:
       org:
         required: true
         type: string
+      use_beta:
+        description: 'Use beta versions'
+        required: false
+        type: boolean
+        default: false
 jobs:
   patch_rv:
     name: Patch Revanced Stable
@@ -40,11 +50,15 @@ jobs:
       - name: Patch apk
         id: patch-rv
         if: steps.check-gh-rv.outputs.internet_error == '0'
+        env:
+          use_beta: ${{ inputs.use_beta }}
         run: bash src/build/Revanced.sh ${{ matrix.run }}
       - name: Releasing APK files
         id: release-rv
         if: steps.check-gh-rv.outputs.internet_error == '0'
         uses: ./.github/actions/release
+        with:
+          token: ${{ secrets.GH_TOKEN }}
   patch_rve:
     name: Patch Revanced Extended Stable
     if: ${{ github.event.inputs.org == 'Revanced Extended' || inputs.org == 'Revanced Extended' }}
@@ -63,8 +77,12 @@ jobs:
       - name: Patch apk
         id: patch-rve
         if: steps.check-gh-rve.outputs.internet_error == '0'
+        env:
+          use_beta: ${{ inputs.use_beta }}
         run: bash src/build/Revanced-Extended.sh ${{ matrix.run }}
       - name: Releasing APK files
         id: release-rve
         if: steps.check-gh-rve.outputs.internet_error == '0'
         uses: ./.github/actions/release
+        with:
+          token: ${{ secrets.GH_TOKEN }}

@@ -66,6 +66,7 @@ jobs:
     needs: check
     if: ${{ needs.check.outputs.check_rv == 1 }}
     uses: ./.github/workflows/manual-patch.yml
+    secrets: inherit
     with:
       org: "Revanced"
   Patch-Revanced-Extended:
@@ -73,5 +74,6 @@ jobs:
     needs: check
     if: ${{ needs.check.outputs.check_rve == 1 }}
     uses: ./.github/workflows/manual-patch.yml
+    secrets: inherit
     with:
       org: "Revanced Extended"

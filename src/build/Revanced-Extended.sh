@@ -57,6 +57,7 @@ revanced_dl(){
 	# Patch Reddit:
 	echo "REPO_NAME=reddit-rv" >> $GITHUB_ENV
 	get_patches_key "reddit-rve"
+	version="2025.51.0"
 	get_apk "com.reddit.frontpage" "reddit" "reddit" "redditinc/reddit/reddit" "Bundle_extract"
 	split_editor "reddit" "reddit"
 	patch "reddit" "revanced-extended" "inotia"

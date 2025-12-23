@@ -19,7 +19,7 @@ on:
       use_beta:
         description: 'Use beta versions'
         required: false
-        default: true
+        default: false
         type: boolean
   workflow_call:
     inputs:
@@ -30,7 +30,7 @@ on:
         description: 'Use beta versions'
         required: false
         type: boolean
-        default: true
+        default: false
 jobs:
   patch_rv:
     name: Patch Revanced Stable

@@ -38,7 +38,20 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        run: [2, 3, 4, 5, 10, 11]
+        app:
+          - revanced-messenger
+          - revanced-google-photos
+          - revanced-instagram
+          - revanced-facebook
+          - revanced-strava
+          - revanced-spotify
+          # - revanced-youtube
+          # - revanced-youtube-music
+          # - revanced-youtube-lite
+          # - revanced-tumblr
+          # - revanced-soundcloud
+          # - revanced-rar
+          # - revanced-lightroom
     steps:
       - name: Checkout
         uses: actions/checkout@v4.2.2
@@ -52,7 +65,7 @@ jobs:
         if: steps.check-gh-rv.outputs.internet_error == '0'
         env:
           use_beta: ${{ inputs.use_beta }}
-        run: bash src/build/Revanced.sh ${{ matrix.run }}
+        run: bash src/build/apps/${{ matrix.app }}.sh
       - name: Releasing APK files
         id: release-rv
         if: steps.check-gh-rv.outputs.internet_error == '0'
@@ -65,7 +78,11 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        run: [2, 3, 4]
+        app:
+          - extended-youtube-split
+          - extended-youtube-music
+          - extended-reddit
+          # - extended-youtube
     steps:
       - name: Checkout
         uses: actions/checkout@v4.2.2
@@ -79,7 +96,7 @@ jobs:
         if: steps.check-gh-rve.outputs.internet_error == '0'
         env:
           use_beta: ${{ inputs.use_beta }}
-        run: bash src/build/Revanced-Extended.sh ${{ matrix.run }}
+        run: bash src/build/apps/${{ matrix.app }}.sh
       - name: Releasing APK files
         id: release-rve
         if: steps.check-gh-rve.outputs.internet_error == '0'

@@ -21,7 +21,7 @@ revanced_dl
 # Patch YouTube:
 echo "REPO_NAME=yt-rve" >> $GITHUB_ENV
 get_patches_key "youtube-revanced-extended"
-get_apk "com.google.android.youtube" "youtube" "youtube" "google-inc/youtube/youtube"
+get_apk "com.google.android.youtube" "youtube" "youtube" "google-inc/youtube/youtube" "Bundle_extract"
 patch "youtube" "revanced-extended" "inotia"
 # Split architecture Youtube:
 get_patches_key "youtube-revanced-extended"

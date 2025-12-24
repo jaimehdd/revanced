@@ -79,10 +79,10 @@ jobs:
     strategy:
       matrix:
         app:
-          - extended-youtube-split
+          - extended-youtube
           - extended-youtube-music
           - extended-reddit
-          # - extended-youtube
+          # - extended-youtube-split
     steps:
       - name: Checkout
         uses: actions/checkout@v4.2.2

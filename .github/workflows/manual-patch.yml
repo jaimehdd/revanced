@@ -19,8 +19,12 @@ on:
       use_beta:
         description: 'Use beta versions'
         required: false
-        default: true
-        type: boolean
+        default: 'auto'
+        type: choice
+        options:
+          - 'auto'
+          - 'true'
+          - 'false'
   workflow_call:
     inputs:
       org:
@@ -29,8 +33,8 @@ on:
       use_beta:
         description: 'Use beta versions'
         required: false
-        type: boolean
-        default: true
+        type: string
+        default: 'auto'
 jobs:
   patch_rv:
     name: Patch Revanced Stable
@@ -64,7 +68,7 @@ jobs:
         id: patch-rv
         if: steps.check-gh-rv.outputs.internet_error == '0'
         env:
-          use_beta: ${{ inputs.use_beta }}
+          use_beta: ${{ inputs.use_beta == 'auto' && 'false' || inputs.use_beta }}
         run: bash src/build/apps/${{ matrix.app }}.sh
       - name: Releasing APK files
         id: release-rv
@@ -95,7 +99,7 @@ jobs:
         id: patch-rve
         if: steps.check-gh-rve.outputs.internet_error == '0'
         env:
-          use_beta: ${{ inputs.use_beta }}
+          use_beta: ${{ inputs.use_beta == 'auto' && 'true' || inputs.use_beta }}
         run: bash src/build/apps/${{ matrix.app }}.sh
       - name: Releasing APK files
         id: release-rve

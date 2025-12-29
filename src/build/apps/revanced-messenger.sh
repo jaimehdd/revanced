@@ -23,5 +23,7 @@ revanced_dl
 echo "REPO_NAME=messenger-revanced" >> $GITHUB_ENV
 # Arm64-v8a
 get_patches_key "messenger"
-get_apkpure "com.facebook.orca" "messenger-arm64-v8a" "facebook-messenger/com.facebook.orca"
+url="https://facebook-messenger.en.uptodown.com/android/download"
+url="https://dw.uptodown.com/dwn/$(req "$url" - | $pup -p --charset utf-8 'button#detail-download-button attr{data-url}')"
+req "$url" "messenger-arm64-v8a.apk"
 patch "messenger-arm64-v8a" "revanced"

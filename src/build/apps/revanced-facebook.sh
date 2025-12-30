@@ -22,7 +22,7 @@ revanced_dl
 # Patch Facebook:
 echo "REPO_NAME=fb-rv" >> $GITHUB_ENV
 # Arm64-v8a
-export version="439.0.0.44.117"
+export version="478.0.0.41.86"
 get_patches_key "facebook"
-get_apkpure "com.facebook.katana" "facebook-arm64-v8a" "facebook/com.facebook.katana"
+get_apk "com.facebook.katana" "facebook-arm64-v8a" "facebook" "facebook-2/facebook/facebook" "arm64-v8a"
 patch "facebook-arm64-v8a" "revanced"

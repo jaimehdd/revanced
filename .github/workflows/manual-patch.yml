@@ -76,6 +76,12 @@ jobs:
         uses: ./.github/actions/release
         with:
           github_token: ${{ secrets.GH_TOKEN }}
+      - name: Upload Metadata
+        if: steps.check-gh-rv.outputs.internet_error == '0'
+        uses: actions/upload-artifact@v4
+        with:
+          name: metadata-${{ matrix.app }}
+          path: release_metadata.jsonl
   patch_rve:
     name: Patch Revanced Extended Stable
     if: ${{ github.event.inputs.org == 'Revanced Extended' || inputs.org == 'Revanced Extended' }}
@@ -101,9 +107,52 @@ jobs:
         env:
           use_beta: ${{ inputs.use_beta == 'auto' && 'true' || inputs.use_beta }}
         run: bash src/build/apps/${{ matrix.app }}.sh
-      - name: Releasing APK files
-        id: release-rve
-        if: steps.check-gh-rve.outputs.internet_error == '0'
-        uses: ./.github/actions/release
-        with:
           github_token: ${{ secrets.GH_TOKEN }}
+      - name: Upload Metadata
+        if: steps.check-gh-rve.outputs.internet_error == '0'
+        uses: actions/upload-artifact@v4
+        with:
+          name: metadata-${{ matrix.app }}
+          path: release_metadata.jsonl
+
+  update_releases_json:
+    name: Update releases.json
+    needs: [patch_rv, patch_rve]
+    if: always()
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download all metadata
+        uses: actions/download-artifact@v4
+        with:
+          pattern: metadata-*
+          merge-multiple: true
+          path: temp_metadata
+
+      - name: Merge Metadata
+        run: |
+          # Combine all downloaded jsonl files into one
+          cat temp_metadata/*.jsonl > release_metadata.jsonl || true
+
+          # Run generation script
+          python3 scripts/generate_json.py
+
+      - name: Upload releases.json to Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: latest
+          files: releases.json
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Commit releases.json to repo (Optional)
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add releases.json
+          git commit -m "Update releases.json" || exit 0
+          git push origin HEAD:main || exit 0

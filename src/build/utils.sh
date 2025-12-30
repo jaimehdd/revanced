@@ -63,11 +63,13 @@ dl_gh() {
 								patch_version=${patch_version%.rvp}
 								green_log "Patch version: $patch_version"
 								echo "patch_version=$patch_version" >> $GITHUB_ENV
+                                export patch_version=$patch_version
 							elif [[ $name == *"revanced-patches"* ]]; then
 								patch_version=${name#"revanced-patches-"}
 								patch_version=${patch_version%.jar}
 								green_log "Patch version: $patch_version"
 								echo "patch_version=$patch_version" >> $GITHUB_ENV
+                                export patch_version=$patch_version
 							fi
 						fi
 					fi
@@ -92,11 +94,13 @@ dl_gh() {
 						patch_version=${names#"patches-"}
 						patch_version=${patch_version%.rvp}
 						echo "patch_version=$patch_version" >> $GITHUB_ENV
+                        export patch_version=$patch_version
 						green_log "Patch version: $patch_version"
 					elif [[ $names == *"revanced-patches"* ]]; then
 						patch_version=${names#"revanced-patches-"}
 						patch_version=${patch_version%.jar}
 						echo "patch_version=$patch_version" >> $GITHUB_ENV
+                        export patch_version=$patch_version
 						green_log "Patch version: $patch_version"
 					fi
 					wget -q -O "$names" $url
@@ -358,6 +362,14 @@ patch() {
 			unset CI GITHUB_ACTION GITHUB_ACTIONS GITHUB_ACTOR GITHUB_EVENT_NAME GITHUB_EVENT_PATH GITHUB_HEAD_REF GITHUB_JOB GITHUB_REF GITHUB_REPOSITORY GITHUB_RUN_ID GITHUB_RUN_NUMBER GITHUB_SHA GITHUB_WORKFLOW GITHUB_WORKSPACE RUN_ID RUN_NUMBER
 		fi
 		eval java -jar *cli*.jar $p$b $m$opt --out=./release/$1-$2.apk$excludePatches$includePatches --keystore=./src/$ks.keystore $pu$force $a./download/$1.apk
+
+        # Log metadata for Obtainium
+        if [ -f "./release/$1-$2.apk" ]; then
+            local download_url="https://github.com/${GITHUB_REPOSITORY}/releases/download/latest/$1-$2.apk"
+            # Create a JSON object
+            echo "{\"name\": \"$1-$2\", \"version\": \"$version\", \"patch_version\": \"$patch_version\", \"apk_name\": \"$1-$2.apk\", \"download_url\": \"$download_url\"}" >> release_metadata.jsonl
+        fi
+
 		unset version
 		unset lock_version
 		unset excludePatches

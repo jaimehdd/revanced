@@ -65,7 +65,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        run: [2, 3, 4]
+        run: [1, 2, 3]
     steps:
       - name: Checkout
         uses: actions/checkout@v4.2.2

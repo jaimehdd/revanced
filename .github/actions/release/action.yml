@@ -20,10 +20,8 @@ runs:
       with:
         artifacts: |
           ./release/*.apk
-        name: Revanced & Revanced Extended
-        repo: ${{ env.REPO_NAME }}
+        name: ${{ env.APP_NAME }} ${{ env.VARIANT }} ${{ env.APP_VERSION }}
         token: ${{ inputs.github_token }}
-        tag: ${{ env.APP_VERSION }}-${{ env.patch_version }}
-        # tag: ${{ env.APP_VERSION }}
+        tag: ${{ env.APP_NAME }}-${{ env.VARIANT }}-${{ env.APP_VERSION }}-${{ env.patch_version }}
         bodyFile: ${{ github.workspace }}-CHANGELOG.txt
         allowUpdates: true

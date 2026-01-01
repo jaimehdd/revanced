@@ -20,36 +20,44 @@ revanced_dl(){
 1() {
 	revanced_dl
 	# Patch YouTube:
-	echo "REPO_NAME=yt-rv" >> $GITHUB_ENV
+	echo "APP_NAME=youtube" >> $GITHUB_ENV
+	echo "VARIANT=rv" >> $GITHUB_ENV
 	get_patches_key "youtube-revanced"
 	get_apk "com.google.android.youtube" "youtube" "youtube" "google-inc/youtube/youtube" "Bundle_extract"
-	split_editor "youtube" "youtube"
-	patch "youtube" "revanced"
 	# Patch Youtube Arm64-v8a
-	get_patches_key "youtube-revanced"
 	split_editor "youtube" "youtube-arm64-v8a" "exclude" "split_config.armeabi_v7a split_config.x86 split_config.x86_64"
 	patch "youtube-arm64-v8a" "revanced"
 }
 2() {
 	revanced_dl
 	# Patch Messenger:
-	echo "REPO_NAME=messenger-revanced" >> $GITHUB_ENV
+	echo "APP_NAME=messenger" >> $GITHUB_ENV
+	echo "VARIANT=rv" >> $GITHUB_ENV
 	# Arm64-v8a
 	get_patches_key "messenger"
-	get_apkpure "com.facebook.orca" "messenger-arm64-v8a" "facebook-messenger/com.facebook.orca"
+	# Download from Uptodown and extract version
+	uptodown_page="https://facebook-messenger.en.uptodown.com/android/download"
+	page_content=$(req "$uptodown_page" -)
+	version=$(echo "$page_content" | $pup -p --charset utf-8 'span.version text{}' | head -1 | tr -d ' ')
+	echo "APP_VERSION=$version" >> $GITHUB_ENV
+	green_log "[+] Downloading messenger version: $version"
+	url="https://dw.uptodown.com/dwn/$(echo "$page_content" | $pup -p --charset utf-8 'button#detail-download-button attr{data-url}')"
+	req "$url" "messenger-arm64-v8a.apk"
 	patch "messenger-arm64-v8a" "revanced"
 }
 3() {
 	revanced_dl
 	# Patch Google photos:
-	echo "REPO_NAME=ggphotos" >> $GITHUB_ENV
+	echo "APP_NAME=google-photos" >> $GITHUB_ENV
+	echo "VARIANT=rv" >> $GITHUB_ENV
 	# Arm64-v8a
 	get_patches_key "gg-photos"
 	get_apk "com.google.android.apps.photos" "gg-photos-arm64-v8a" "photos" "google-inc/photos/google-photos" "arm64-v8a" "nodpi"
 	patch "gg-photos-arm64-v8a" "revanced"
 }
 4() {
-	echo "REPO_NAME=instagram-revanced" >> $GITHUB_ENV
+	echo "APP_NAME=instagram" >> $GITHUB_ENV
+	echo "VARIANT=rv" >> $GITHUB_ENV
 
 	# official ReVanced
 	revanced_dl
@@ -61,10 +69,17 @@ revanced_dl(){
 5() {
 	revanced_dl
 	# Patch Facebook:
-	echo "REPO_NAME=fb-rv" >> $GITHUB_ENV
+	echo "APP_NAME=facebook" >> $GITHUB_ENV
+	echo "VARIANT=rv" >> $GITHUB_ENV
 	# Arm64-v8a
 	get_patches_key "facebook"
-	get_apkpure "com.facebook.katana" "facebook-arm64-v8a" "facebook/com.facebook.katana"
+	# Download from APKPure with specific version code
+	# versionCode 457020009 = 490.0.0.63.82
+	version="490.0.0.63.82"
+	echo "APP_VERSION=$version" >> $GITHUB_ENV
+	green_log "[+] Downloading facebook version: $version"
+	url="https://d.apkpure.com/b/APK/com.facebook.katana?versionCode=457020009"
+	req "$url" "facebook-arm64-v8a.apk"
 	patch "facebook-arm64-v8a" "revanced"
 }
 6() {
@@ -108,15 +123,12 @@ revanced_dl(){
 	get_patches_key "youtube-revanced"
 	split_editor "youtube-lite" "youtube-lite-arm64-v8a" "include" "split_config.arm64_v8a split_config.en split_config.xxxhdpi"
 	patch "youtube-lite-arm64-v8a" "revanced"
-	# Patch YouTube Lite Armeabi-v7a:
-	get_patches_key "youtube-revanced"
-	split_editor "youtube-lite" "youtube-lite-armeabi-v7a" "include" "split_config.armeabi_v7a split_config.en split_config.xxxhdpi"
-	patch "youtube-lite-armeabi-v7a" "revanced"
 }
 9() {
 	revanced_dl
 	# Patch YouTube Music:
-	echo "REPO_NAME=ytm-rv" >> $GITHUB_ENV
+	echo "APP_NAME=youtube-music" >> $GITHUB_ENV
+	echo "VARIANT=rv" >> $GITHUB_ENV
 	# Arm64-v8a
 	get_patches_key "youtube-music-revanced"
 	get_apk "com.google.android.apps.youtube.music" "youtube-music-arm64-v8a" "youtube-music" "google-inc/youtube-music/youtube-music" "arm64-v8a"
@@ -125,13 +137,15 @@ revanced_dl(){
 10() {
 	revanced_dl
 	# Patch Strava:
-	echo "REPO_NAME=strava-rv" >> $GITHUB_ENV
+	echo "APP_NAME=strava" >> $GITHUB_ENV
+	echo "VARIANT=rv" >> $GITHUB_ENV
 	get_patches_key "strava"
 	get_apkpure "com.strava" "strava-arm64-v8a" "strava-run-hike-2025-health/com.strava" "Bundle"
 	patch "strava-arm64-v8a" "revanced"
 }
 11() {
-	echo "REPO_NAME=spotify-revanced" >> $GITHUB_ENV
+	echo "APP_NAME=spotify" >> $GITHUB_ENV
+	echo "VARIANT=rv" >> $GITHUB_ENV
 
 	revanced_dl
 	# Patch Spotjfy Arm64-v8a

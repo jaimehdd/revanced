@@ -3,7 +3,7 @@
 source src/build/utils.sh
 
 # Download requirements
-use_beta="${use_beta:-false}"
+use_beta="${use_beta:-true}"
 
 revanced_dl_beta(){
 	dl_gh "revanced-patches revanced-cli" "inotia00" "prerelease"
@@ -20,20 +20,19 @@ revanced_dl(){
 1() {
 	revanced_dl
 	# Patch YouTube:
-	echo "REPO_NAME=yt-rve" >> $GITHUB_ENV
+	echo "APP_NAME=youtube" >> $GITHUB_ENV
+	echo "VARIANT=rve" >> $GITHUB_ENV
 	get_patches_key "youtube-revanced-extended"
 	get_apk "com.google.android.youtube" "youtube" "youtube" "google-inc/youtube/youtube" "Bundle_extract"
-	split_editor "youtube" "youtube"
-	patch "youtube" "revanced-extended" "inotia"
 	# Patch Youtube Arm64-v8a
-	get_patches_key "youtube-revanced-extended"
 	split_editor "youtube" "youtube-arm64-v8a" "exclude" "split_config.armeabi_v7a split_config.x86 split_config.x86_64"
 	patch "youtube-arm64-v8a" "revanced-extended" "inotia"
 }
 4() {
 	revanced_dl
 	# Patch YouTube:
-	echo "REPO_NAME=yt-rve" >> $GITHUB_ENV
+	echo "APP_NAME=youtube" >> $GITHUB_ENV
+	echo "VARIANT=rve" >> $GITHUB_ENV
 	get_patches_key "youtube-revanced-extended"
 	get_apk "com.google.android.youtube" "youtube" "youtube" "google-inc/youtube/youtube"
 	patch "youtube" "revanced-extended" "inotia"
@@ -46,7 +45,8 @@ revanced_dl(){
 2() {
 	revanced_dl
 	# Patch YouTube Music Extended:
-	echo "REPO_NAME=ytm-rve" >> $GITHUB_ENV
+	echo "APP_NAME=youtube-music" >> $GITHUB_ENV
+	echo "VARIANT=rve" >> $GITHUB_ENV
 	# Arm64-v8a
 	get_patches_key "youtube-music-revanced-extended"
 	get_apk "com.google.android.apps.youtube.music" "youtube-music-arm64-v8a" "youtube-music" "google-inc/youtube-music/youtube-music" "arm64-v8a"
@@ -55,16 +55,11 @@ revanced_dl(){
 3() {
 	dl_gh "revanced-patches-arsclib revanced-integrations revanced-cli-arsclib" "inotia00" "latest"
 	# Patch Reddit:
-	echo "REPO_NAME=reddit-rv" >> $GITHUB_ENV
+	echo "APP_NAME=reddit" >> $GITHUB_ENV
+	echo "VARIANT=rve" >> $GITHUB_ENV
 	get_patches_key "reddit-rve-arsclib"
 	get_apk "com.reddit.frontpage" "reddit" "reddit" "redditinc/reddit/reddit" "Bundle_extract"
-	split_editor "reddit" "reddit"
-	patch "reddit" "revanced-extended"
-	mv ./release/reddit-revanced-extended.apk/base.apk ./reddit-revanced-extended.apk
-	rm -f -d ./release/reddit-revanced-extended.apk
-	mv ./reddit-revanced-extended.apk ./release/reddit-revanced-extended-arsclib.apk
 	# Patch Arm64-v8a:
-	get_patches_key "reddit-rve-arsclib"
 	split_editor "reddit" "reddit-arm64-v8a" "exclude" "split_config.armeabi_v7a split_config.x86_64 split_config.mdpi split_config.ldpi split_config.hdpi split_config.xxhdpi split_config.tvdpi"
 	patch "reddit-arm64-v8a" "revanced-extended"
 	mv ./release/reddit-arm64-v8a-revanced-extended.apk/base.apk ./reddit-arm64-v8a-revanced-extended.apk

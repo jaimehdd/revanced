@@ -25,3 +25,29 @@ runs:
         tag: ${{ env.APP_NAME }}-${{ env.VARIANT }}-${{ env.APP_VERSION }}-${{ env.patch_version }}
         bodyFile: ${{ github.workspace }}-CHANGELOG.txt
         allowUpdates: true
+
+    - name: Cleanup old releases
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github_token }}
+      run: |
+        APP_PREFIX="${APP_NAME}-${VARIANT}-"
+        KEEP_COUNT=2
+
+        echo "Cleaning up old releases for: $APP_PREFIX (keeping $KEEP_COUNT)"
+
+        # Get all releases matching this app prefix, sorted by created_at desc
+        releases=$(gh release list --repo ${{ github.repository }} --limit 100 --json tagName,name,createdAt \
+          | jq -r --arg prefix "$APP_PREFIX" '[.[] | select(.name | startswith($prefix))] | sort_by(.createdAt) | reverse | .[].tagName')
+
+        # Count and delete old releases
+        count=0
+        for tag in $releases; do
+          count=$((count + 1))
+          if [ $count -gt $KEEP_COUNT ]; then
+            echo "Deleting old release: $tag"
+            gh release delete "$tag" --repo ${{ github.repository }} --yes --cleanup-tag || true
+          fi
+        done
+
+        echo "Cleanup complete. Kept $KEEP_COUNT most recent releases for $APP_PREFIX"

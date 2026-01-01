@@ -58,14 +58,20 @@ dl_gh() {
 							name=$(basename "$url")
 							wget -q -O "$name" "$url"
 							green_log "[+] Downloading $name from $owner"
-							if [[ $name == *"patches-"* ]]; then
-								patch_version=${name#"patches-"}
-								patch_version=${patch_version%.rvp}
-								green_log "Patch version: $patch_version"
-								echo "patch_version=$patch_version" >> $GITHUB_ENV
-							elif [[ $name == *"revanced-patches"* ]]; then
+							if [[ $name == *.jar ]] && [[ $name == *"revanced-patches"* ]]; then
+								# arsclib jar files: revanced-patches-X.Y.Z.jar
 								patch_version=${name#"revanced-patches-"}
 								patch_version=${patch_version%.jar}
+								green_log "Patch version: $patch_version"
+								echo "patch_version=$patch_version" >> $GITHUB_ENV
+							elif [[ $name == *.rvp ]] && [[ $name == *"patches-"* ]]; then
+								# rvp files: patches-X.Y.Z.rvp or revanced-patches-X.Y.Z.rvp
+								if [[ $name == *"revanced-patches-"* ]]; then
+									patch_version=${name#"revanced-patches-"}
+								else
+									patch_version=${name#"patches-"}
+								fi
+								patch_version=${patch_version%.rvp}
 								green_log "Patch version: $patch_version"
 								echo "patch_version=$patch_version" >> $GITHUB_ENV
 							fi
@@ -88,14 +94,20 @@ dl_gh() {
 			| while read -r url names; do
    				if [[ $url != *.asc ]]; then
 					green_log "[+] Downloading $names from $2"
-					if [[ $names == *"patches-"* ]]; then
-						patch_version=${names#"patches-"}
-						patch_version=${patch_version%.rvp}
-						echo "patch_version=$patch_version" >> $GITHUB_ENV
-						green_log "Patch version: $patch_version"
-					elif [[ $names == *"revanced-patches"* ]]; then
+					if [[ $names == *.jar ]] && [[ $names == *"revanced-patches"* ]]; then
+						# arsclib jar files: revanced-patches-X.Y.Z.jar
 						patch_version=${names#"revanced-patches-"}
 						patch_version=${patch_version%.jar}
+						echo "patch_version=$patch_version" >> $GITHUB_ENV
+						green_log "Patch version: $patch_version"
+					elif [[ $names == *.rvp ]] && [[ $names == *"patches-"* ]]; then
+						# rvp files: patches-X.Y.Z.rvp or revanced-patches-X.Y.Z.rvp
+						if [[ $names == *"revanced-patches-"* ]]; then
+							patch_version=${names#"revanced-patches-"}
+						else
+							patch_version=${names#"patches-"}
+						fi
+						patch_version=${patch_version%.rvp}
 						echo "patch_version=$patch_version" >> $GITHUB_ENV
 						green_log "Patch version: $patch_version"
 					fi

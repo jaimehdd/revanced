@@ -1,0 +1,7 @@
+[{
+  "patchName": "Change package name",
+  "options": [{
+    "key": "packageName",
+    "value": "com.reddit.frontpage.rve"
+  }]
+}]

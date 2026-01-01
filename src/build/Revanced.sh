@@ -43,7 +43,7 @@ revanced_dl(){
 	green_log "[+] Downloading messenger version: $version"
 	url="https://dw.uptodown.com/dwn/$(echo "$page_content" | $pup -p --charset utf-8 'button#detail-download-button attr{data-url}')"
 	req "$url" "messenger-arm64-v8a.apk"
-	patch "messenger-arm64-v8a" "messenger-revanced"
+	patch "messenger-arm64-v8a" "revanced"
 }
 3() {
 	revanced_dl
@@ -64,7 +64,7 @@ revanced_dl(){
 	# Patch Instagram:
 	get_patches_key "instagram"
 	get_apkpure "com.instagram.android" "instagram-arm64-v8a" "instagram-android/com.instagram.android" "Bundle"
-	patch "instagram-arm64-v8a" "instagram-revanced"
+	patch "instagram-arm64-v8a" "revanced"
 }
 5() {
 	revanced_dl
@@ -80,7 +80,7 @@ revanced_dl(){
 	green_log "[+] Downloading facebook version: $version"
 	url="https://d.apkpure.com/b/APK/com.facebook.katana?versionCode=457020009"
 	req "$url" "facebook-arm64-v8a.apk"
-	patch "facebook-arm64-v8a" "facebook-revanced"
+	patch "facebook-arm64-v8a" "revanced"
 }
 6() {
 	revanced_dl
@@ -141,7 +141,7 @@ revanced_dl(){
 	echo "VARIANT=rv" >> $GITHUB_ENV
 	get_patches_key "strava"
 	get_apkpure "com.strava" "strava-arm64-v8a" "strava-run-hike-2025-health/com.strava" "Bundle"
-	patch "strava-arm64-v8a" "strava-revanced"
+	patch "strava-arm64-v8a" "revanced"
 }
 11() {
 	echo "APP_NAME=spotify" >> $GITHUB_ENV
@@ -152,7 +152,7 @@ revanced_dl(){
 	j="i"
 	get_patches_key "Spotjfy-revanced"
 	get_apkpure "com.spot"$j"fy.music" "spotjfy-arm64-v8a" "spot"$j"fy-music-and-podcasts-for-android/com.spot"$j"fy.music"
-	patch "spotjfy-arm64-v8a" "spotify-revanced"
+	patch "spotjfy-arm64-v8a" "revanced"
 }
 case "$1" in
     1)

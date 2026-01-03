@@ -74,6 +74,12 @@ dl_gh() {
 								patch_version=${patch_version%.rvp}
 								green_log "Patch version: $patch_version"
 								echo "patch_version=$patch_version" >> $GITHUB_ENV
+							elif [[ $name == *.mpp ]] && [[ $name == *"patches-"* ]]; then
+								# mpp files: patches-X.Y.Z.mpp (Morphe)
+								patch_version=${name#"patches-"}
+								patch_version=${patch_version%.mpp}
+								green_log "Patch version: $patch_version"
+								echo "patch_version=$patch_version" >> $GITHUB_ENV
 							fi
 						fi
 					fi
@@ -108,6 +114,12 @@ dl_gh() {
 							patch_version=${names#"patches-"}
 						fi
 						patch_version=${patch_version%.rvp}
+						echo "patch_version=$patch_version" >> $GITHUB_ENV
+						green_log "Patch version: $patch_version"
+					elif [[ $names == *.mpp ]] && [[ $names == *"patches-"* ]]; then
+						# mpp files: patches-X.Y.Z.mpp (Morphe)
+						patch_version=${names#"patches-"}
+						patch_version=${patch_version%.mpp}
 						echo "patch_version=$patch_version" >> $GITHUB_ENV
 						green_log "Patch version: $patch_version"
 					fi
@@ -211,13 +223,16 @@ get_apk() {
 		esac
 	fi
 	if [ -z "$version" ] && [ "$lock_version" != "1" ]; then
-		if [[ $(ls revanced-cli-*.jar) =~ revanced-cli-([0-9]+) ]]; then
+		if [[ $(ls revanced-cli-*.jar 2>/dev/null) =~ revanced-cli-([0-9]+) ]]; then
 			num=${BASH_REMATCH[1]}
 			if [ $num -ge 5 ]; then
 				version=$(java -jar *cli*.jar list-patches --with-packages --with-versions *.rvp | awk -v pkg="$1" 'BEGIN { found = 0 } /^Index:/ { found = 0 } /Package name: / { if ($3 == pkg) { found = 1 } } /Compatible versions:/ { if (found) { getline; latest_version = $1; while (getline && $1 ~ /^[0-9]+\./) { latest_version = $1 } print latest_version; exit } }')
 			else
 				version=$(jq -r '[.. | objects | select(.name == "'$1'" and .versions != null) | .versions[]] | reverse | .[0] // ""' *.json | uniq)
 			fi
+		elif [[ $(ls morphe-cli-*.jar 2>/dev/null) =~ morphe-cli-([0-9]+) ]]; then
+			num=${BASH_REMATCH[1]}
+			version=$(java -jar *cli*.jar list-patches --with-packages --with-versions *.mpp | awk -v pkg="$1" 'BEGIN { found = 0 } /^Index:/ { found = 0 } /Package name: / { if ($3 == pkg) { found = 1 } } /Compatible versions:/ { if (found) { getline; latest_version = $1; while (getline && $1 ~ /^[0-9]+\./) { latest_version = $1 } print latest_version; exit } }')
 		fi
 	fi
 	export version="$version"
@@ -296,13 +311,16 @@ get_apk() {
 
 get_apkpure() {
 	if [ -z "$version" ] && [ "$lock_version" != "1" ]; then
-		if [[ $(ls revanced-cli-*.jar) =~ revanced-cli-([0-9]+) ]]; then
+		if [[ $(ls revanced-cli-*.jar 2>/dev/null) =~ revanced-cli-([0-9]+) ]]; then
 			num=${BASH_REMATCH[1]}
 			if [ $num -ge 5 ]; then
 				version=$(java -jar *cli*.jar list-patches --with-packages --with-versions *.rvp | awk -v pkg="$1" 'BEGIN { found = 0 } /^Index:/ { found = 0 } /Package name: / { if ($3 == pkg) { found = 1 } } /Compatible versions:/ { if (found) { getline; latest_version = $1; while (getline && $1 ~ /^[0-9]+\./) { latest_version = $1 } print latest_version; exit } }')
 			else
 				version=$(jq -r '[.. | objects | select(.name == "'$1'" and .versions != null) | .versions[]] | reverse | .[0] // ""' *.json | uniq)
 			fi
+		elif [[ $(ls morphe-cli-*.jar 2>/dev/null) =~ morphe-cli-([0-9]+) ]]; then
+			num=${BASH_REMATCH[1]}
+			version=$(java -jar *cli*.jar list-patches --with-packages --with-versions *.mpp | awk -v pkg="$1" 'BEGIN { found = 0 } /^Index:/ { found = 0 } /Package name: / { if ($3 == pkg) { found = 1 } } /Compatible versions:/ { if (found) { getline; latest_version = $1; while (getline && $1 ~ /^[0-9]+\./) { latest_version = $1 } print latest_version; exit } }')
 		fi
 	fi
 	export version="$version"
@@ -348,6 +366,9 @@ patch() {
 		elif [ "$3" = liso ]; then
 			p="patch " b="-p *.rvp" m="" a="" ks="ks" pu="--purge=true" opt="" force=" --force"
 			echo "Patching with Revanced-cli LisoUseInAIKyrios"
+		elif [ "$3" = morphe ]; then
+			p="patch " b="-p *.mpp" m="" a="" ks="ks" pu="--purge=true" opt="" force=" --force"
+			echo "Patching with Morphe"
 		else
 			if [[ $(ls revanced-cli-*.jar) =~ revanced-cli-([0-9]+) ]]; then
 				num=${BASH_REMATCH[1]}

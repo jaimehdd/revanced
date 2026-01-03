@@ -17,6 +17,11 @@ revanced_dl(){
 	fi
 }
 
+morphe_dl(){
+	dl_gh "morphe-patches" "MorpheApp" "latest"
+	dl_gh "morphe-cli" "MorpheApp" "latest"
+}
+
 1() {
 	revanced_dl
 	# Patch YouTube:
@@ -66,6 +71,23 @@ revanced_dl(){
 	rm -f -d ./release/reddit-arm64-v8a-revanced-extended.apk
 	mv ./reddit-arm64-v8a-revanced-extended.apk ./release/reddit-arm64-v8a-revanced-extended-arsclib.apk
 }
+5() {
+	morphe_dl
+	# Patch YouTube:
+	echo "APP_NAME=youtube" >> $GITHUB_ENV
+	echo "VARIANT=morphe" >> $GITHUB_ENV
+	get_patches_key "youtube-morphe"
+	get_apk "com.google.android.youtube" "youtube" "youtube" "google-inc/youtube/youtube"
+	patch "youtube" "morphe" "morphe"
+	#get_patches_key "youtube-morphe"
+	#get_apk "com.google.android.youtube" "youtube" "youtube" "google-inc/youtube/youtube" "Bundle_extract"
+	#split_editor "youtube" "youtube"
+	#patch "youtube" "morphe" "morphe"
+	# Patch Youtube Arm64-v8a
+	#get_patches_key "youtube-morphe"
+	#split_editor "youtube" "youtube-arm64-v8a" "exclude" "split_config.armeabi_v7a split_config.x86 split_config.x86_64"
+	#patch "youtube-arm64-v8a" "morphe" "morphe"
+}
 case "$1" in
     1)
         1
@@ -78,5 +100,8 @@ case "$1" in
         ;;
     3)
         3
+        ;;
+    5)
+        5
         ;;
 esac

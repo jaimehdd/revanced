@@ -16,6 +16,7 @@ on:
         options:
           - 'Revanced'
           - 'Revanced Extended'
+          - 'Morphe'
       use_beta:
         description: 'Use beta versions'
         required: false
@@ -65,7 +66,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        run: [1, 2, 3, 5]
+        run: [1, 2, 3]
     steps:
       - name: Checkout
         uses: actions/checkout@v4.2.2
@@ -83,6 +84,31 @@ jobs:
       - name: Releasing APK files
         id: release-rve
         if: steps.check-gh-rve.outputs.internet_error == '0'
+        uses: ./.github/actions/release
+        with:
+          github_token: ${{ secrets.GH_TOKEN }}
+  patch_morphe:
+    name: Patch Morphe
+    if: ${{ github.event.inputs.org == 'Morphe' || inputs.org == 'Morphe' }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        run: [1]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.2.2
+      - name: Preparing to patch
+        uses: ./.github/actions/preparing
+      - name: Check github connection
+        id: check-gh-morphe
+        run: bash src/etc/connection.sh
+      - name: Patch apk
+        id: patch-morphe
+        if: steps.check-gh-morphe.outputs.internet_error == '0'
+        run: bash src/build/morphe.sh ${{ matrix.run }}
+      - name: Releasing APK files
+        id: release-morphe
+        if: steps.check-gh-morphe.outputs.internet_error == '0'
         uses: ./.github/actions/release
         with:
           github_token: ${{ secrets.GH_TOKEN }}

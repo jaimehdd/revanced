@@ -367,7 +367,7 @@ patch() {
 			p="patch " b="-p *.rvp" m="" a="" ks="ks" pu="--purge=true" opt="" force=" --force"
 			echo "Patching with Revanced-cli LisoUseInAIKyrios"
 		elif [ "$3" = morphe ]; then
-			p="patch " b="-p *.mpp" m="" a="" ks="ks" pu="--purge=true" opt="" force=" --force"
+			p="patch " b="-p *.mpp" m="" a="" ks="" pu="--purge=true" opt="" force=" --force"
 			echo "Patching with Morphe"
 		else
 			if [[ $(ls revanced-cli-*.jar) =~ revanced-cli-([0-9]+) ]]; then
@@ -390,7 +390,11 @@ patch() {
 		if [ "$3" = inotia ]; then
 			unset CI GITHUB_ACTION GITHUB_ACTIONS GITHUB_ACTOR GITHUB_EVENT_NAME GITHUB_EVENT_PATH GITHUB_HEAD_REF GITHUB_JOB GITHUB_REF GITHUB_REPOSITORY GITHUB_RUN_ID GITHUB_RUN_NUMBER GITHUB_SHA GITHUB_WORKFLOW GITHUB_WORKSPACE RUN_ID RUN_NUMBER
 		fi
-		eval java -jar *cli*.jar $p$b $m$opt --out=./release/$1-$2.apk$excludePatches$includePatches --keystore=./src/$ks.keystore $pu$force $a./download/$1.apk
+		local keystore_arg=""
+		if [ -n "$ks" ]; then
+			keystore_arg=" --keystore=./src/$ks.keystore"
+		fi
+		eval java -jar *cli*.jar $p$b $m$opt --out=./release/$1-$2.apk$excludePatches$includePatches$keystore_arg $pu$force $a./download/$1.apk
 		unset version
 		unset lock_version
 		unset excludePatches

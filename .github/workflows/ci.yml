@@ -34,6 +34,10 @@ jobs:
         id: check-rve-reddit
         if: steps.check-gh.outputs.internet_error == '0'
         run: bash src/etc/ci.sh inotia00/revanced-patches-arsclib latest reddit-revanced-extended.apk
+      - name: Check new patch Morphe
+        id: check-morphe
+        if: steps.check-gh.outputs.internet_error == '0'
+        run: bash src/etc/ci.sh MorpheApp/morphe-patches latest youtube-morphe.apk
       - name: Re-run workflow if github connection not stable
         if: always() && steps.check-rv.outcome == 'skipped' && env.retry_count < env.max_retries
         uses: actions/github-script@v7
@@ -60,6 +64,7 @@ jobs:
     outputs:
       check_rv: ${{ steps.check-rv.outputs.new_patch }}
       check_rve: ${{ steps.check-rve.outputs.new_patch }}
+      check_morphe: ${{ steps.check-morphe.outputs.new_patch }}
 
   Patch-Revanced:
     name: Patch Revanced Stable
@@ -77,3 +82,11 @@ jobs:
     secrets: inherit
     with:
       org: "Revanced Extended"
+  Patch-Morphe:
+    name: Patch Morphe
+    needs: check
+    if: ${{ needs.check.outputs.check_morphe == 1 }}
+    uses: ./.github/workflows/manual-patch.yml
+    secrets: inherit
+    with:
+      org: "Morphe"

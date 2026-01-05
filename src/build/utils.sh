@@ -7,7 +7,7 @@ wget -q -O ./pup.zip https://github.com/ericchiang/pup/releases/download/v0.4.0/
 unzip "./pup.zip" -d "./" > /dev/null 2>&1
 pup="./pup"
 #Setup APKEditor for install combine split apks
-wget -q -O ./APKEditor.jar https://github.com/REAndroid/APKEditor/releases/download/V1.4.2/APKEditor-1.4.2.jar
+wget -q -O ./APKEditor.jar https://github.com/REAndroid/APKEditor/releases/download/V1.4.7/APKEditor-1.4.7.jar
 APKEditor="./APKEditor.jar"
 
 #################################################
@@ -184,9 +184,9 @@ get_patches_key() {
 # Download apks files from APKMirror:
 _req() {
     if [ "$2" = "-" ]; then
-        wget -nv -O "$2" --header="User-Agent: Mozilla/5.0 (Android 14; Mobile; rv:134.0) Gecko/134.0 Firefox/134.0" --header="Content-Type: application/octet-stream" --header="Accept-Language: en-US,en;q=0.9" --header="Connection: keep-alive" --header="Upgrade-Insecure-Requests: 1" --header="Cache-Control: max-age=0" --header="Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" --keep-session-cookies --timeout=30 "$1" || rm -f "$2"
+        wget -nv -O "$2" --header="User-Agent: Mozilla/5.0 (Android 16; Mobile; rv:146.0) Gecko/146.0 Firefox/146.0" --header="Content-Type: application/octet-stream" --header="Accept-Language: en-US,en;q=0.9" --header="Connection: keep-alive" --header="Upgrade-Insecure-Requests: 1" --header="Cache-Control: max-age=0" --header="Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" --keep-session-cookies --timeout=30 "$1" || rm -f "$2"
     else
-        wget -nv -O "./download/$2" --header="User-Agent: Mozilla/5.0 (Android 14; Mobile; rv:134.0) Gecko/134.0 Firefox/134.0" --header="Content-Type: application/octet-stream" --header="Accept-Language: en-US,en;q=0.9" --header="Connection: keep-alive" --header="Upgrade-Insecure-Requests: 1" --header="Cache-Control: max-age=0" --header="Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" --keep-session-cookies --timeout=30 "$1" || rm -f "./download/$2"
+        wget -nv -O "./download/$2" --header="User-Agent: Mozilla/5.0 (Android 16; Mobile; rv:146.0) Gecko/146.0 Firefox/146.0" --header="Content-Type: application/octet-stream" --header="Accept-Language: en-US,en;q=0.9" --header="Connection: keep-alive" --header="Upgrade-Insecure-Requests: 1" --header="Cache-Control: max-age=0" --header="Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" --keep-session-cookies --timeout=30 "$1" || rm -f "./download/$2"
     fi
 }
 req() {
@@ -257,8 +257,22 @@ get_apk() {
             exit 1
         fi
         if [[ $5 == "Bundle" ]]; then
-            green_log "[+] Merge splits apk to standalone apk"
-            java -jar $APKEditor m -i ./download/$2.apkm -o ./download/$2.apk > /dev/null 2>&1
+			# Check if the downloaded file is an XAPK (contains .apk files) or already a standalone APK
+			if unzip -l "./download/$base_apk" 2>/dev/null | grep -q '\.apk$'; then
+				# It's an XAPK file with .apk files inside, needs merging
+				green_log "[+] Merge splits apk to standalone apk"
+				if ! java -jar $APKEditor m -i "./download/$base_apk" -o "./download/$2.apk" > /dev/null 2>&1; then
+					red_log "[-] Failed to merge $base_apk to standalone apk"
+					exit 1
+				fi
+			elif unzip -l "./download/$base_apk" 2>/dev/null | grep -q 'AndroidManifest.xml'; then
+				# It's already a standalone APK file, just rename it
+				green_log "[+] File is already a standalone APK, renaming"
+				mv "./download/$base_apk" "./download/$2.apk"
+			else
+				red_log "[-] Unknown file format for $base_apk"
+				exit 1
+			fi
         elif [[ $5 == "Bundle_extract" ]]; then
             unzip "./download/$base_apk" -d "./download/$(basename "$base_apk" .apkm)" > /dev/null 2>&1
         fi
@@ -302,8 +316,22 @@ get_apk() {
 		return 1
 	fi
 	if [[ $5 == "Bundle" ]]; then
-		green_log "[+] Merge splits apk to standalone apk"
-		java -jar $APKEditor m -i ./download/$2.apkm -o ./download/$2.apk > /dev/null 2>&1
+		# Check if the downloaded file is an XAPK (contains .apk files) or already a standalone APK
+		if unzip -l "./download/$base_apk" 2>/dev/null | grep -q '\.apk$'; then
+			# It's an XAPK file with .apk files inside, needs merging
+			green_log "[+] Merge splits apk to standalone apk"
+			if ! java -jar $APKEditor m -i "./download/$base_apk" -o "./download/$2.apk" > /dev/null 2>&1; then
+				red_log "[-] Failed to merge $base_apk to standalone apk"
+				exit 1
+			fi
+		elif unzip -l "./download/$base_apk" 2>/dev/null | grep -q 'AndroidManifest.xml'; then
+			# It's already a standalone APK file, just rename it
+			green_log "[+] File is already a standalone APK, renaming"
+			mv "./download/$base_apk" "./download/$2.apk"
+		else
+			red_log "[-] Unknown file format for $base_apk"
+			exit 1
+		fi
 	elif [[ $5 == "Bundle_extract" ]]; then
 		unzip "./download/$base_apk" -d "./download/$(basename "$base_apk" .apkm)" > /dev/null 2>&1
 	fi
@@ -361,11 +389,8 @@ patch() {
 	if [ -f "./download/$1.apk" ]; then
 		local p b m ks a pu opt force
 		if [ "$3" = inotia ]; then
-			p="patch " b="-p *.rvp" m="" a="" ks="_ks" pu="--purge=true" opt="--legacy-options=./src/options/$2.json" force=" --force"
+			p="patch " b="-p *.rvp" m="" a="" ks=" --keystore=./src/_ks.keystore" pu="--purge=true" opt="--legacy-options=./src/options/$2.json" force=" --force"
 			echo "Patching with Revanced-cli inotia"
-		elif [ "$3" = liso ]; then
-			p="patch " b="-p *.rvp" m="" a="" ks="ks" pu="--purge=true" opt="" force=" --force"
-			echo "Patching with Revanced-cli LisoUseInAIKyrios"
 		elif [ "$3" = morphe ]; then
 			p="patch " b="-p *.mpp" m="" a="" ks="" pu="--purge=true" opt="" force=" --force"
 			echo "Patching with Morphe"
@@ -373,16 +398,16 @@ patch() {
 			if [[ $(ls revanced-cli-*.jar) =~ revanced-cli-([0-9]+) ]]; then
 				num=${BASH_REMATCH[1]}
 				if [ $num -ge 5 ]; then
-					p="patch " b="-p *.rvp" m="" a="" ks="ks" pu="--purge=true" opt="" force=" --force"
+					p="patch " b="-p *.rvp" m="" a="" ks=" --keystore=./src/ks.keystore" pu="--purge=true" opt="" force=" --force"
 					echo "Patching with Revanced-cli version 5+"
 				elif [ $num -eq 4 ]; then
-					p="patch " b="--patch-bundle *patch*.jar" m="--merge *integration*.apk " a="" ks="ks" pu="--purge=true" opt="--options=./src/options/$2.json "
+					p="patch " b="--patch-bundle *patch*.jar" m="--merge *integration*.apk " a="" ks=" --keystore=./src/ks.keystore" pu="--purge=true" opt="--options=./src/options/$2.json "
 					echo "Patching with Revanced-cli version 4"
 				elif [ $num -eq 3 ]; then
-					p="patch " b="--patch-bundle *patch*.jar" m="--merge *integration*.apk " a="" ks="_ks" pu="--purge=true" opt="--options=./src/options/$2.json "
+					p="patch " b="--patch-bundle *patch*.jar" m="--merge *integration*.apk " a="" ks=" --keystore=./src/_ks.keystore" pu="--purge=true" opt="--options=./src/options/$2.json "
 					echo "Patching with Revanced-cli version 3"
 				elif [ $num -eq 2 ]; then
-					p="" b="--bundle *patch*.jar" m="--merge *integration*.apk " a="--apk " ks="_ks" pu="--clean" opt="--options=./src/options/$2.json " force=" --experimental"
+					p="" b="--bundle *patch*.jar" m="--merge *integration*.apk " a="--apk " ks=" --keystore=./src/_ks.keystore" pu="--clean" opt="--options=./src/options/$2.json " force=" --experimental"
 					echo "Patching with Revanced-cli version 2"
 				fi
 			fi
@@ -394,7 +419,7 @@ patch() {
 		if [ -n "$ks" ]; then
 			keystore_arg=" --keystore=./src/$ks.keystore"
 		fi
-		eval java -jar *cli*.jar $p$b $m$opt --out=./release/$1-$2.apk$excludePatches$includePatches$keystore_arg $pu$force $a./download/$1.apk
+		eval java -jar *cli*.jar $p$b $m$opt --out=./release/$1-$2.apk$excludePatches$includePatches$ks $pu$force $a./download/$1.apk
 		unset version
 		unset lock_version
 		unset excludePatches
@@ -438,6 +463,15 @@ split_editor() {
 }
 
 #################################################
+
+# Remove unused architectures directly
+apk_editor() {
+	local apk="$1" keep="$2"; shift 2
+	local dir="./download/$apk"
+	rm -rf "$dir" && unzip -q "./download/$apk.apk" -d "$dir" || return 1
+	for r in "$@"; do rm -rf "$dir/lib/$r"; done
+	(cd "$dir" && zip -qr "../$apk-$keep.apk" .)
+}
 
 # Split architectures using Revanced CLI, created by inotia00
 archs=("arm64-v8a" "armeabi-v7a" "x86_64" "x86")

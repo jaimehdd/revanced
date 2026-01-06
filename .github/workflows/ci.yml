@@ -82,6 +82,14 @@ jobs:
     secrets: inherit
     with:
       org: "Revanced Extended"
+  Patch-Reddit-Extended:
+    name: Patch Reddit Extended
+    needs: check
+    if: ${{ needs.check.outputs.check_rve == 1 }}
+    uses: ./.github/workflows/manual-patch.yml
+    secrets: inherit
+    with:
+      org: "Reddit Extended"
   Patch-Morphe:
     name: Patch Morphe
     needs: check

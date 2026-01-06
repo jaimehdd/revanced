@@ -222,19 +222,30 @@ get_apk() {
 			*) url_regexp='$5'"[^@]*$7"''"[^@]*$6"'</div>[^@]*@\([^"]*\)' ;;
 		esac
 	fi
+
 	if [ -z "$version" ] && [ "$lock_version" != "1" ]; then
-		if [[ $(ls revanced-cli-*.jar 2>/dev/null) =~ revanced-cli-([0-9]+) ]]; then
-			num=${BASH_REMATCH[1]}
-			if [ $num -ge 5 ]; then
-				version=$(java -jar *cli*.jar list-patches --with-packages --with-versions *.rvp | awk -v pkg="$1" 'BEGIN { found = 0 } /^Index:/ { found = 0 } /Package name: / { if ($3 == pkg) { found = 1 } } /Compatible versions:/ { if (found) { getline; latest_version = $1; while (getline && $1 ~ /^[0-9]+\./) { latest_version = $1 } print latest_version; exit } }')
-			else
-				version=$(jq -r '[.. | objects | select(.name == "'$1'" and .versions != null) | .versions[]] | reverse | .[0] // ""' *.json | uniq)
-			fi
-		elif [[ $(ls morphe-cli-*.jar 2>/dev/null) =~ morphe-cli-([0-9]+) ]]; then
-			num=${BASH_REMATCH[1]}
-			version=$(java -jar *cli*.jar list-patches --with-packages --with-versions *.mpp | awk -v pkg="$1" 'BEGIN { found = 0 } /^Index:/ { found = 0 } /Package name: / { if ($3 == pkg) { found = 1 } } /Compatible versions:/ { if (found) { getline; latest_version = $1; while (getline && $1 ~ /^[0-9]+\./) { latest_version = $1 } print latest_version; exit } }')
+	  for spec in "revanced-cli-|5|*.rvp" "morphe-cli-|1|*.mpp"; do
+		IFS="|" read -r jar_prefix min_major patch_glob <<<"$spec"
+
+		if [[ $(ls "${jar_prefix}"*.jar 2>/dev/null) =~ ${jar_prefix}([0-9]+) ]]; then
+		  num=${BASH_REMATCH[1]}
+
+		  if [ "$num" -ge "$min_major" ]; then
+			version=$(java -jar *cli*.jar list-patches --with-packages --with-versions $patch_glob | awk -v pkg="$1" '
+			  BEGIN { found = 0 }
+			  /^Index:/ { found = 0 }
+			  /Package name: / { if ($3 == pkg) { found = 1 } }
+			  /Compatible versions:/ { if (found) { getline; latest_version = $1; while (getline && $1 ~ /^[0-9]+\./) { latest_version = $1 } print latest_version; exit } }
+			')
+		  else
+			version=$(jq -r '[.. | objects | select(.name == "'"$1"'" and .versions != null) | .versions[]] | reverse | .[0] // ""' *.json 2>/dev/null | uniq)
+		  fi
 		fi
+
+		[ -n "$version" ] && break
+	  done
 	fi
+
 	export version="$version"
     if [[ -n "$version" ]]; then
         version=$(echo "$version" | tr -d ' ' | sed 's/\./-/g')
@@ -257,22 +268,8 @@ get_apk() {
             exit 1
         fi
         if [[ $5 == "Bundle" ]]; then
-			# Check if the downloaded file is an XAPK (contains .apk files) or already a standalone APK
-			if unzip -l "./download/$base_apk" 2>/dev/null | grep -q '\.apk$'; then
-				# It's an XAPK file with .apk files inside, needs merging
-				green_log "[+] Merge splits apk to standalone apk"
-				if ! java -jar $APKEditor m -i "./download/$base_apk" -o "./download/$2.apk" > /dev/null 2>&1; then
-					red_log "[-] Failed to merge $base_apk to standalone apk"
-					exit 1
-				fi
-			elif unzip -l "./download/$base_apk" 2>/dev/null | grep -q 'AndroidManifest.xml'; then
-				# It's already a standalone APK file, just rename it
-				green_log "[+] File is already a standalone APK, renaming"
-				mv "./download/$base_apk" "./download/$2.apk"
-			else
-				red_log "[-] Unknown file format for $base_apk"
-				exit 1
-			fi
+			green_log "[+] Merge splits apk to standalone apk"
+			java -jar $APKEditor m -i ./download/$2.apkm -o ./download/$2.apk > /dev/null 2>&1
         elif [[ $5 == "Bundle_extract" ]]; then
             unzip "./download/$base_apk" -d "./download/$(basename "$base_apk" .apkm)" > /dev/null 2>&1
         fi
@@ -296,9 +293,9 @@ get_apk() {
 			local base_apk="$2.apk"
 		fi
 		local dl_url=$(dl_apk "https://www.apkmirror.com/apk/$4-$version-release/" \
-								"$url_regexp" \
-								"$base_apk" \
-								"$5")
+							  "$url_regexp" \
+							  "$base_apk" \
+							  "$5")
 		if [[ -f "./download/$base_apk" ]]; then
 			green_log "[+] Successfully downloaded $2"
 			version=$(echo "$version" | sed 's/-/./g')
@@ -316,41 +313,36 @@ get_apk() {
 		return 1
 	fi
 	if [[ $5 == "Bundle" ]]; then
-		# Check if the downloaded file is an XAPK (contains .apk files) or already a standalone APK
-		if unzip -l "./download/$base_apk" 2>/dev/null | grep -q '\.apk$'; then
-			# It's an XAPK file with .apk files inside, needs merging
-			green_log "[+] Merge splits apk to standalone apk"
-			if ! java -jar $APKEditor m -i "./download/$base_apk" -o "./download/$2.apk" > /dev/null 2>&1; then
-				red_log "[-] Failed to merge $base_apk to standalone apk"
-				exit 1
-			fi
-		elif unzip -l "./download/$base_apk" 2>/dev/null | grep -q 'AndroidManifest.xml'; then
-			# It's already a standalone APK file, just rename it
-			green_log "[+] File is already a standalone APK, renaming"
-			mv "./download/$base_apk" "./download/$2.apk"
-		else
-			red_log "[-] Unknown file format for $base_apk"
-			exit 1
-		fi
+		green_log "[+] Merge splits apk to standalone apk"
+		java -jar $APKEditor m -i ./download/$2.apkm -o ./download/$2.apk > /dev/null 2>&1
 	elif [[ $5 == "Bundle_extract" ]]; then
 		unzip "./download/$base_apk" -d "./download/$(basename "$base_apk" .apkm)" > /dev/null 2>&1
 	fi
 }
-
 get_apkpure() {
 	if [ -z "$version" ] && [ "$lock_version" != "1" ]; then
-		if [[ $(ls revanced-cli-*.jar 2>/dev/null) =~ revanced-cli-([0-9]+) ]]; then
-			num=${BASH_REMATCH[1]}
-			if [ $num -ge 5 ]; then
-				version=$(java -jar *cli*.jar list-patches --with-packages --with-versions *.rvp | awk -v pkg="$1" 'BEGIN { found = 0 } /^Index:/ { found = 0 } /Package name: / { if ($3 == pkg) { found = 1 } } /Compatible versions:/ { if (found) { getline; latest_version = $1; while (getline && $1 ~ /^[0-9]+\./) { latest_version = $1 } print latest_version; exit } }')
-			else
-				version=$(jq -r '[.. | objects | select(.name == "'$1'" and .versions != null) | .versions[]] | reverse | .[0] // ""' *.json | uniq)
-			fi
-		elif [[ $(ls morphe-cli-*.jar 2>/dev/null) =~ morphe-cli-([0-9]+) ]]; then
-			num=${BASH_REMATCH[1]}
-			version=$(java -jar *cli*.jar list-patches --with-packages --with-versions *.mpp | awk -v pkg="$1" 'BEGIN { found = 0 } /^Index:/ { found = 0 } /Package name: / { if ($3 == pkg) { found = 1 } } /Compatible versions:/ { if (found) { getline; latest_version = $1; while (getline && $1 ~ /^[0-9]+\./) { latest_version = $1 } print latest_version; exit } }')
+	  for spec in "revanced-cli-|5|*.rvp" "morphe-cli-|1|*.mpp"; do
+		IFS="|" read -r jar_prefix min_major patch_glob <<<"$spec"
+
+		if [[ $(ls "${jar_prefix}"*.jar 2>/dev/null) =~ ${jar_prefix}([0-9]+) ]]; then
+		  num=${BASH_REMATCH[1]}
+
+		  if [ "$num" -ge "$min_major" ]; then
+			version=$(java -jar *cli*.jar list-patches --with-packages --with-versions $patch_glob | awk -v pkg="$1" '
+			  BEGIN { found = 0 }
+			  /^Index:/ { found = 0 }
+			  /Package name: / { if ($3 == pkg) { found = 1 } }
+			  /Compatible versions:/ { if (found) { getline; latest_version = $1; while (getline && $1 ~ /^[0-9]+\./) { latest_version = $1 } print latest_version; exit } }
+			')
+		  else
+			version=$(jq -r '[.. | objects | select(.name == "'"$1"'" and .versions != null) | .versions[]] | reverse | .[0] // ""' *.json 2>/dev/null | uniq)
+		  fi
 		fi
+
+		[ -n "$version" ] && break
+	  done
 	fi
+
 	export version="$version"
 	if [[ $4 == "Bundle" ]] || [[ $4 == "Bundle_extract" ]]; then
 		local base_apk="$2.xapk"
@@ -374,8 +366,23 @@ get_apkpure() {
 		exit 1
 	fi
 	if [[ $4 == "Bundle" ]]; then
-		green_log "[+] Merge splits apk to standalone apk"
-		java -jar $APKEditor m -i ./download/$2.xapk -o ./download/$2.apk > /dev/null 2>&1
+		# Check if the downloaded file is an XAPK (contains .apk files) or already a standalone APK
+		# XAPK files contain multiple .apk files, while APK files contain AndroidManifest.xml
+		if unzip -l "./download/$base_apk" 2>/dev/null | grep -q '\.apk$'; then
+			# It's an XAPK file with .apk files inside, needs merging
+			green_log "[+] Merge splits apk to standalone apk"
+			if ! java -jar $APKEditor m -i ./download/$2.xapk -o ./download/$2.apk > /dev/null 2>&1; then
+				red_log "[-] Failed to merge $2.xapk to standalone apk"
+				exit 1
+			fi
+		elif unzip -l "./download/$base_apk" 2>/dev/null | grep -q 'AndroidManifest.xml'; then
+			# It's already a standalone APK file, just rename it
+			green_log "[+] File is already a standalone APK, renaming"
+			mv "./download/$base_apk" "./download/$2.apk"
+		else
+			red_log "[-] Unknown file format for $base_apk"
+			exit 1
+		fi
 	elif [[ $4 == "Bundle_extract" ]]; then
 		unzip "./download/$base_apk" -d "./download/$(basename "$base_apk" .xapk)" > /dev/null 2>&1
 	fi
@@ -414,10 +421,6 @@ patch() {
 		fi
 		if [ "$3" = inotia ]; then
 			unset CI GITHUB_ACTION GITHUB_ACTIONS GITHUB_ACTOR GITHUB_EVENT_NAME GITHUB_EVENT_PATH GITHUB_HEAD_REF GITHUB_JOB GITHUB_REF GITHUB_REPOSITORY GITHUB_RUN_ID GITHUB_RUN_NUMBER GITHUB_SHA GITHUB_WORKFLOW GITHUB_WORKSPACE RUN_ID RUN_NUMBER
-		fi
-		local keystore_arg=""
-		if [ -n "$ks" ]; then
-			keystore_arg=" --keystore=./src/$ks.keystore"
 		fi
 		eval java -jar *cli*.jar $p$b $m$opt --out=./release/$1-$2.apk$excludePatches$includePatches$ks $pu$force $a./download/$1.apk
 		unset version
@@ -464,6 +467,9 @@ split_editor() {
 
 #################################################
 
+archs=("arm64-v8a" "armeabi-v7a" "x86_64" "x86")
+libs=("armeabi-v7a x86_64 x86" "arm64-v8a x86_64 x86" "armeabi-v7a arm64-v8a x86" "armeabi-v7a arm64-v8a x86_64")
+
 # Remove unused architectures directly
 apk_editor() {
 	local apk="$1" keep="$2"; shift 2
@@ -474,8 +480,6 @@ apk_editor() {
 }
 
 # Split architectures using Revanced CLI, created by inotia00
-archs=("arm64-v8a" "armeabi-v7a" "x86_64" "x86")
-libs=("armeabi-v7a x86_64 x86" "arm64-v8a x86_64 x86" "armeabi-v7a arm64-v8a x86" "armeabi-v7a arm64-v8a x86_64")
 gen_rip_libs() {
 	for lib in $@; do
 		echo -n "--rip-lib "$lib" "
@@ -483,15 +487,13 @@ gen_rip_libs() {
 }
 split_arch() {
 	green_log "[+] Splitting $1 to ${archs[i]}:"
-	if [ -f "./download/$1.apk" ]; then
-		unset CI GITHUB_ACTION GITHUB_ACTIONS GITHUB_ACTOR GITHUB_EVENT_NAME GITHUB_EVENT_PATH GITHUB_HEAD_REF GITHUB_JOB GITHUB_REF GITHUB_REPOSITORY GITHUB_RUN_ID GITHUB_RUN_NUMBER GITHUB_SHA GITHUB_WORKFLOW GITHUB_WORKSPACE RUN_ID RUN_NUMBER
+	if [ -f "./release/$1.apk" ]; then
 		eval java -jar revanced-cli*.jar patch \
 		-p *.rvp \
 		$3 \
 		--keystore=./src/_ks.keystore --force \
-		--legacy-options=./src/options/$2.json $excludePatches$includePatches \
-		--out=./release/$1-${archs[i]}-$2.apk\
-		./download/$1.apk
+		--out=./release/$1-${archs[i]}.apk\
+		./release/$1.apk
 	else
 		red_log "[-] Not found $1.apk"
 		exit 1

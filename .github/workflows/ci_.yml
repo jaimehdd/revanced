@@ -25,3 +25,5 @@ jobs:
         id: release-RVxposed
         if: steps.check-gh-RVxposed.outputs.internet_error == '0'
         uses: ./.github/actions/release
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}

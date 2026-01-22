@@ -15,7 +15,6 @@ on:
         type: choice
         options:
           - 'Revanced'
-          - 'Revanced Extended'
           - 'Reddit Extended'
           - 'Morphe'
       use_beta:
@@ -40,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        run: [2, 3, 4, 5, 10, 11]
+        run: [2, 3, 4, 5, 10]
     steps:
       - name: Checkout
         uses: actions/checkout@v4.2.2
@@ -58,33 +57,6 @@ jobs:
       - name: Releasing APK files
         id: release-rv
         if: steps.check-gh-rv.outputs.internet_error == '0'
-        uses: ./.github/actions/release
-        with:
-          github_token: ${{ secrets.GH_TOKEN }}
-  patch_rve:
-    name: Patch Revanced Extended Stable
-    if: ${{ github.event.inputs.org == 'Revanced Extended' || inputs.org == 'Revanced Extended' }}
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        run: [1, 2]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4.2.2
-      - name: Preparing to patch
-        uses: ./.github/actions/preparing
-      - name: Check github connection
-        id: check-gh-rve
-        run: bash src/etc/connection.sh
-      - name: Patch apk
-        id: patch-rve
-        if: steps.check-gh-rve.outputs.internet_error == '0'
-        env:
-          use_beta: ${{ inputs.use_beta }}
-        run: bash src/build/Revanced-Extended.sh ${{ matrix.run }}
-      - name: Releasing APK files
-        id: release-rve
-        if: steps.check-gh-rve.outputs.internet_error == '0'
         uses: ./.github/actions/release
         with:
           github_token: ${{ secrets.GH_TOKEN }}

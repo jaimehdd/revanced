@@ -17,17 +17,6 @@ revanced_dl(){
 	fi
 }
 
-1() {
-	revanced_dl
-	# Patch YouTube:
-	echo "APP_NAME=youtube" >> $GITHUB_ENV
-	echo "VARIANT=rv" >> $GITHUB_ENV
-	get_patches_key "youtube-revanced"
-	get_apk "com.google.android.youtube" "youtube" "youtube" "google-inc/youtube/youtube" "Bundle_extract"
-	# Patch Youtube Arm64-v8a
-	split_editor "youtube" "youtube-arm64-v8a" "exclude" "split_config.armeabi_v7a split_config.x86 split_config.x86_64"
-	patch "youtube-arm64-v8a" "revanced"
-}
 2() {
 	revanced_dl
 	# Patch Messenger:
@@ -82,58 +71,6 @@ revanced_dl(){
 	req "$url" "facebook-arm64-v8a.apk"
 	patch "facebook-arm64-v8a" "revanced"
 }
-6() {
-	revanced_dl
-	# Patch Tumblr:
-	get_patches_key "tumblr"
-	get_apk "com.tumblr" "tumblr" "tumblr" "tumblr-inc/tumblr/tumblr-social-media-art" "Bundle_extract"
-	split_editor "tumblr" "tumblr"
-	patch "tumblr" "revanced"
-	# Patch Tumblr Arm64-v8a:
-	get_patches_key "tumblr"
-	split_editor "tumblr" "tumblr-arm64-v8a" "exclude" "split_config.armeabi_v7a split_config.x86 split_config.x86_64"
-	patch "tumblr-arm64-v8a" "revanced"
-	# Patch SoundCloud:
-	get_patches_key "soundcloud"
-	get_apk "com.soundcloud.android" "soundcloud" "soundcloud-soundcloud" "soundcloud/soundcloud-soundcloud/soundcloud-play-music-songs" "Bundle_extract"
-	split_editor "soundcloud" "soundcloud"
-	patch "soundcloud" "revanced"
-	# Patch SoundCloud Arm64-v8a:
-	get_patches_key "soundcloud"
-	split_editor "soundcloud" "soundcloud-arm64-v8a" "exclude" "split_config.armeabi_v7a split_config.x86 split_config.x86_64"
-	patch "soundcloud-arm64-v8a" "revanced"
-}
-7() {
-	revanced_dl
-	# Patch RAR:
-	get_patches_key "rar"
-	get_apk "com.rarlab.rar" "rar" "rar" "rarlab-published-by-win-rar-gmbh/rar/rar" "Bundle"
-	patch "rar" "revanced"
-	# Patch Lightroom:
-	get_patches_key "lightroom"
-	url="https://adobe-lightroom-mobile.en.uptodown.com/android/download/1033600808" #Use uptodown because apkmirror always ask pass Cloudflare on this app
-	url="https://dw.uptodown.com/dwn/$(req "$url" - | $pup -p --charset utf-8 'button#detail-download-button attr{data-url}')"
-	req "$url" "lightroom.apk"
-	patch "lightroom" "revanced"
-}
-8() {
-	revanced_dl
-	get_apk "com.google.android.youtube" "youtube-lite" "youtube" "google-inc/youtube/youtube" "Bundle_extract"
-	# Patch YouTube Lite Arm64-v8a:
-	get_patches_key "youtube-revanced"
-	split_editor "youtube-lite" "youtube-lite-arm64-v8a" "include" "split_config.arm64_v8a split_config.en split_config.xxxhdpi"
-	patch "youtube-lite-arm64-v8a" "revanced"
-}
-9() {
-	revanced_dl
-	# Patch YouTube Music:
-	echo "APP_NAME=youtube-music" >> $GITHUB_ENV
-	echo "VARIANT=rv" >> $GITHUB_ENV
-	# Arm64-v8a
-	get_patches_key "youtube-music-revanced"
-	get_apk "com.google.android.apps.youtube.music" "youtube-music-arm64-v8a" "youtube-music" "google-inc/youtube-music/youtube-music" "arm64-v8a"
-	patch "youtube-music-arm64-v8a" "revanced"
-}
 10() {
 	revanced_dl
 	# Patch Strava:
@@ -155,9 +92,6 @@ revanced_dl(){
 	patch "spotjfy-arm64-v8a" "revanced"
 }
 case "$1" in
-    1)
-        1
-        ;;
     2)
         2
         ;;
@@ -169,18 +103,6 @@ case "$1" in
         ;;
     5)
         5
-        ;;
-    6)
-        6
-        ;;
-    7)
-        7
-        ;;
-    8)
-        8
-        ;;
-    9)
-        9
         ;;
 	10)
 		10

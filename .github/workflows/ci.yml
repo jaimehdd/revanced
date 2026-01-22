@@ -27,10 +27,6 @@ jobs:
         id: check-rv
         if: steps.check-gh.outputs.internet_error == '0'
         run: bash src/etc/ci.sh ReVanced/revanced-patches latest youtube.*revanced.*apk
-      - name: Check new patch Revanced Extended
-        id: check-rve
-        if: steps.check-gh.outputs.internet_error == '0'
-        run: bash src/etc/ci.sh inotia00/revanced-patches latest youtube.*revanced-extended.*apk
       - name: Check new patch Revanced Extended Reddit
         id: check-rve-reddit
         if: steps.check-gh.outputs.internet_error == '0'
@@ -64,7 +60,7 @@ jobs:
           max_retries: 3
     outputs:
       check_rv: ${{ steps.check-rv.outputs.new_patch }}
-      check_rve: ${{ steps.check-rve.outputs.new_patch }}
+      check-rve-reddit: ${{ steps.check-rve-reddit.outputs.new_patch }}
       check_morphe: ${{ steps.check-morphe.outputs.new_patch }}
 
   Patch-Revanced:
@@ -75,18 +71,10 @@ jobs:
     secrets: inherit
     with:
       org: "Revanced"
-  Patch-Revanced-Extended:
-    name: Patch Revanced Extended
-    needs: check
-    if: ${{ needs.check.outputs.check_rve == 1 }}
-    uses: ./.github/workflows/manual-patch.yml
-    secrets: inherit
-    with:
-      org: "Revanced Extended"
   Patch-Reddit-Extended:
     name: Patch Reddit Extended
     needs: check
-    if: ${{ needs.check.outputs.check_rve == 1 }}
+    if: ${{ needs.check.outputs.check-rve-reddit == 1 }}
     uses: ./.github/workflows/manual-patch.yml
     secrets: inherit
     with:

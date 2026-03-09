@@ -1,0 +1,56 @@
+name: Releasing APK files
+inputs:
+  github_token:
+    description: "GitHub Token"
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Generate release info
+      shell: bash
+      run: |
+        echo "
+        **Change log** :point_down:
+        [Revanced](https://github.com/revanced/revanced-patches/releases)
+        [Morphe](https://github.com/MorpheApp/morphe-patches/releases)
+        "> ${{ github.workspace }}-CHANGELOG.txt
+
+    - name: Release
+      uses: ncipollo/release-action@v1.14.0
+      with:
+        artifacts: |
+          ./release/*.apk
+        name: ${{ env.APP_NAME }}-${{ env.VARIANT }}-${{ env.APP_VERSION }}-${{ env.patch_version }}
+        token: ${{ inputs.github_token }}
+        tag: ${{ env.APP_NAME }}-${{ env.VARIANT }}-${{ env.APP_VERSION }}-${{ env.patch_version }}
+        bodyFile: ${{ github.workspace }}-CHANGELOG.txt
+        allowUpdates: true
+
+    - name: Cleanup old releases
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github_token }}
+      run: |
+        APP_PREFIX="${APP_NAME}-${VARIANT}-"
+        KEEP_COUNT=2
+
+        echo "Cleaning up old releases for: $APP_PREFIX (keeping $KEEP_COUNT)"
+
+        # Get all releases matching this app prefix, sorted by semantic version desc
+        releases=$(gh release list --repo ${{ github.repository }} --limit 100 --json tagName,name \
+          | jq -r --arg prefix "$APP_PREFIX" '.[] | select(.name | startswith($prefix)) | .tagName' \
+          | sed 's/-dev/~dev/g' \
+          | sort -V -r \
+          | sed 's/~dev/-dev/g')
+
+        # Count and delete old releases
+        count=0
+        for tag in $releases; do
+          count=$((count + 1))
+          if [ $count -gt $KEEP_COUNT ]; then
+            echo "Deleting old release: $tag"
+            gh release delete "$tag" --repo ${{ github.repository }} --yes --cleanup-tag || true
+          fi
+        done
+
+        echo "Cleanup complete. Kept $KEEP_COUNT most recent releases for $APP_PREFIX"

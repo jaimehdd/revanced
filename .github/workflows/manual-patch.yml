@@ -1,0 +1,86 @@
+name: Manual Patch
+permissions: write-all
+env:
+  repository: ${{ github.repository }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  org_input: ${{ inputs.org }}
+  org_event_input: ${{ github.event.inputs.org }}
+on:
+  workflow_dispatch:
+    inputs:
+      org:
+        description: 'Which "Revanced" do you want to patch?'
+        required: true
+        default: "Revanced"
+        type: choice
+        options:
+          - "Revanced"
+          - "Morphe"
+      use_beta:
+        description: "Use beta versions"
+        required: false
+        default: false
+        type: boolean
+  workflow_call:
+    inputs:
+      org:
+        required: true
+        type: string
+      use_beta:
+        description: "Use beta versions"
+        required: false
+        type: boolean
+        default: false
+jobs:
+  patch_rv:
+    name: Patch Revanced Stable
+    if: ${{ github.event.inputs.org == 'Revanced' || inputs.org == 'Revanced' }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        run: [messenger, photos, instagram, facebook, strava]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.2.2
+      - name: Preparing to patch
+        uses: ./.github/actions/preparing
+      - name: Check github connection
+        id: check-gh-rv
+        run: bash src/etc/connection.sh
+      - name: Patch apk
+        id: patch-rv
+        if: steps.check-gh-rv.outputs.internet_error == '0'
+        env:
+          use_beta: ${{ inputs.use_beta }}
+        run: bash src/build/Revanced.sh ${{ matrix.run }}
+      - name: Releasing APK files
+        id: release-rv
+        if: steps.check-gh-rv.outputs.internet_error == '0'
+        uses: ./.github/actions/release
+        with:
+          github_token: ${{ secrets.GH_TOKEN }}
+  patch_morphe:
+    name: Patch Morphe
+    if: ${{ github.event.inputs.org == 'Morphe' || inputs.org == 'Morphe' }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        run: [youtube, reddit, youtube-music]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.2.2
+      - name: Preparing to patch
+        uses: ./.github/actions/preparing
+      - name: Check github connection
+        id: check-gh-morphe
+        run: bash src/etc/connection.sh
+      - name: Patch apk
+        id: patch-morphe
+        if: steps.check-gh-morphe.outputs.internet_error == '0'
+        run: bash src/build/morphe.sh ${{ matrix.run }}
+      - name: Releasing APK files
+        id: release-morphe
+        if: steps.check-gh-morphe.outputs.internet_error == '0'
+        uses: ./.github/actions/release
+        with:
+          github_token: ${{ secrets.GH_TOKEN }}

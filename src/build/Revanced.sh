@@ -55,8 +55,8 @@ instagram() {
 	revanced_dl
 	# Patch Instagram:
 	get_patches_key "instagram"
-	# # Skip patch version limit and download the absolute latest
-	# lock_version="1"
+	# Skip patch version limit and download the absolute latest
+	lock_version="1"
 	get_apkpure "com.instagram.android" "instagram-arm64-v8a" "instagram-android/com.instagram.android" "Bundle"
 	patch "instagram-arm64-v8a" "revanced"
 }

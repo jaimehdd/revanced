@@ -243,12 +243,14 @@ get_apk() {
 		  num=${BASH_REMATCH[1]}
 
 		  if [ "$num" -ge "$min_major" ]; then
-			if [ "$num" -ge 6 ]; then
+			if [ "${jar_prefix}" = "morphe-cli-" ]; then
+			  list_patches_flags="list-patches --with-packages --with-versions --patches"
+			elif [ "$num" -ge 6 ]; then
 			  list_patches_flags="list-patches --packages --versions --options -bp"
 			else
 			  list_patches_flags="list-patches --with-packages --with-versions"
 			fi
-			version=$(java -jar *cli*.jar $list_patches_flags $patch_glob | awk -v pkg="$1" '
+			version=$(java -jar "${jar_prefix}"*.jar $list_patches_flags $patch_glob | awk -v pkg="$1" '
 			  BEGIN { found = 0; printing = 0 }
 			  /^Index:/ { if (printing) exit; found = 0 }
 			  /Package name: / { if ($3 == pkg) found = 1 }
@@ -350,12 +352,14 @@ get_apkpure() {
 		  num=${BASH_REMATCH[1]}
 
 		  if [ "$num" -ge "$min_major" ]; then
-			if [ "$num" -ge 6 ]; then
+			if [ "${jar_prefix}" = "morphe-cli-" ]; then
+			  list_patches_flags="list-patches --with-packages --with-versions --patches"
+			elif [ "$num" -ge 6 ]; then
 			  list_patches_flags="list-patches --packages --versions --options -bp"
 			else
 			  list_patches_flags="list-patches --with-packages --with-versions"
 			fi
-			version=$(java -jar *cli*.jar $list_patches_flags $patch_glob | awk -v pkg="$1" '
+			version=$(java -jar "${jar_prefix}"*.jar $list_patches_flags $patch_glob | awk -v pkg="$1" '
 			  BEGIN { found = 0; printing = 0 }
 			  /^Index:/ { if (printing) exit; found = 0 }
 			  /Package name: / { if ($3 == pkg) found = 1 }

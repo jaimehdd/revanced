@@ -2,9 +2,17 @@
 # Morphe build
 source ./src/build/utils.sh
 # Download requirements
+morphe_dl_beta(){
+	dl_gh "morphe-cli" "MorpheApp" "prerelease"
+	dl_gh "morphe-patches" "MorpheApp" "prerelease"
+}
+
 morphe_dl(){
-	dl_gh "morphe-patches" "MorpheApp" "latest"
-	dl_gh "morphe-cli" "MorpheApp" "latest"
+	if [ "$use_beta" = true ]; then
+		morphe_dl_beta
+	else
+		dl_gh "morphe-patches morphe-cli" "MorpheApp" "latest"
+	fi
 }
 youtube() {
 	morphe_dl

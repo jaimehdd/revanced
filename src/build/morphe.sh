@@ -23,12 +23,14 @@ youtube() {
 	echo "VARIANT=morphe" >> $GITHUB_ENV
 	get_patches_key "youtube-morphe"
 	get_apk "com.google.android.youtube" "youtube" "youtube" "google-inc/youtube/youtube"
-	# Remove unused architectures
-	for i in {0..0}; do
-		apk_editor "youtube" "${archs[i]}" ${libs[i]}
-	done
-	# Patch Youtube Arm64-v8a
-	patch "youtube-arm64-v8a" "morphe" "morphe"
+	patch "youtube" "morphe" "morphe"
+
+	# # Remove unused architectures
+	# for i in {0..0}; do
+	# 	apk_editor "youtube" "${archs[i]}" ${libs[i]}
+	# done
+	# # Patch Youtube Arm64-v8a
+	# patch "youtube-arm64-v8a" "morphe" "morphe"
 }
 reddit() {
 	morphe_dl

@@ -63,6 +63,10 @@ dl_gh() {
 						url=$(echo $line | cut -d '"' -f 4)
 							if [[ $url != *.asc ]]; then
 							name=$(basename "$url")
+							# Exclude dev versions for morphe-cli
+							if [[ "$name" == *"morphe-cli"* ]] && [[ "$name" == *"dev"* ]]; then
+								continue
+							fi
 							wget -q -O "$name" "$url"
 							green_log "[+] Downloading $name from $owner"
 							if [[ $name == *.jar ]] && [[ $name == *"revanced-patches"* ]]; then

@@ -2,6 +2,8 @@
 # Morphe build
 source ./src/build/utils.sh
 # Download requirements
+use_beta="${use_beta:-false}"
+
 morphe_dl_beta(){
 	dl_gh "morphe-cli" "MorpheApp" "prerelease"
 	dl_gh "morphe-patches" "MorpheApp" "prerelease"

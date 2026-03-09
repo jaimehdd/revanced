@@ -58,7 +58,7 @@ jobs:
         if: steps.check-gh-rv.outputs.internet_error == '0'
         uses: ./.github/actions/release
         with:
-          github_token: ${{ secrets.GH_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
   patch_morphe:
     name: Patch Morphe
     if: ${{ github.event.inputs.org == 'Morphe' || inputs.org == 'Morphe' }}
@@ -83,4 +83,4 @@ jobs:
         if: steps.check-gh-morphe.outputs.internet_error == '0'
         uses: ./.github/actions/release
         with:
-          github_token: ${{ secrets.GH_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}

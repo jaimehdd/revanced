@@ -77,6 +77,8 @@ jobs:
       - name: Patch apk
         id: patch-morphe
         if: steps.check-gh-morphe.outputs.internet_error == '0'
+        env:
+          use_beta: ${{ inputs.use_beta }}
         run: bash src/build/morphe.sh ${{ matrix.run }}
       - name: Releasing APK files
         id: release-morphe

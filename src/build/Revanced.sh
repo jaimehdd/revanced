@@ -24,15 +24,7 @@ messenger() {
 	echo "VARIANT=rv" >> $GITHUB_ENV
 	# Arm64-v8a
 	get_patches_key "messenger"
-	# # Download from Uptodown and extract version
-	# uptodown_page="https://facebook-messenger.en.uptodown.com/android/download"
-	# page_content=$(req "$uptodown_page" -)
-	# version=$(echo "$page_content" | $pup -p --charset utf-8 'span.version text{}' | head -1 | tr -d ' ')
-	# echo "APP_VERSION=$version" >> $GITHUB_ENV
 	get_apkpure "com.facebook.orca" "messenger-arm64-v8a" "facebook-messenger/com.facebook.orca"
-	# green_log "[+] Downloading messenger version: $version"
-	# url="https://dw.uptodown.com/dwn/$(echo "$page_content" | $pup -p --charset utf-8 'button#detail-download-button attr{data-url}')"
-	# req "$url" "messenger-arm64-v8a.apk"
 	patch "messenger-arm64-v8a" "revanced"
 }
 photos() {
@@ -68,7 +60,7 @@ facebook() {
 	# Arm64-v8a
 	get_patches_key "facebook"
 	# Download from APKPure with specific version code
-	# versionCode 457020009 = 490.0.0.63.82
+	# versionCode 457020014 = 490.0.0.63.82
 	version="490.0.0.63.82"
 	echo "APP_VERSION=$version" >> $GITHUB_ENV
 	green_log "[+] Downloading facebook version: $version"

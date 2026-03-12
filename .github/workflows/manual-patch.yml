@@ -41,7 +41,7 @@ jobs:
         run: [messenger, photos, instagram, facebook, strava]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.3.1
+        uses: actions/checkout@v6.0.2
       - name: Preparing to patch
         uses: ./.github/actions/preparing
       - name: Check github connection
@@ -68,7 +68,7 @@ jobs:
         run: [youtube, reddit, youtube-music]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.3.1
+        uses: actions/checkout@v6.0.2
       - name: Preparing to patch
         uses: ./.github/actions/preparing
       - name: Check github connection

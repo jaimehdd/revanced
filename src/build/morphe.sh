@@ -36,7 +36,7 @@ reddit() {
 	echo "APP_NAME=reddit" >> $GITHUB_ENV
 	echo "VARIANT=morphe" >> $GITHUB_ENV
 	get_patches_key "reddit-morphe"
-	prefer_version="2026.11.0"
+	prefer_version="2026.10.0"
 	get_apk "com.reddit.frontpage" "reddit" "reddit" "redditinc/reddit/reddit" "Bundle_extract"
 	split_editor "reddit" "reddit"
 	patch "reddit" "morphe" "morphe"

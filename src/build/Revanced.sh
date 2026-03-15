@@ -28,9 +28,7 @@ messenger() {
 	patch "messenger-arm64-v8a" "revanced"
 }
 photos() {
-	# revanced_dl
-	dl_gh "revanced-cli" "revanced" "v5.0.1"
-	dl_gh "revanced-patches" "revanced" "v5.48.0" #https://github.com/ReVanced/revanced-patches/issues/6593
+	revanced_dl
 	# Patch Google photos:
 	echo "APP_NAME=google-photos" >> $GITHUB_ENV
 	echo "VARIANT=rv" >> $GITHUB_ENV
@@ -40,15 +38,13 @@ photos() {
 	patch "gg-photos-arm64-v8a" "revanced"
 }
 instagram() {
-	echo "APP_NAME=instagram" >> $GITHUB_ENV
-	echo "VARIANT=rv" >> $GITHUB_ENV
-
-	# official ReVanced
 	revanced_dl
 	# Patch Instagram:
+	echo "APP_NAME=instagram" >> $GITHUB_ENV
+	echo "VARIANT=rv" >> $GITHUB_ENV
 	get_patches_key "instagram"
-	# Skip patch version limit and download the absolute latest
-	lock_version="1"
+	# # Skip patch version limit and download the absolute latest
+	# lock_version="1"
 	get_apkpure "com.instagram.android" "instagram-arm64-v8a" "instagram-android/com.instagram.android" "Bundle"
 	patch "instagram-arm64-v8a" "revanced"
 }

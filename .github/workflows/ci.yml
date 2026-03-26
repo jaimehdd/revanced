@@ -31,10 +31,9 @@ jobs:
       - name: Check new patch Morphe
         id: check-morphe
         if: steps.check-gh.outputs.internet_error == '0'
-        # run: bash src/etc/ci.sh MorpheApp/morphe-patches latest youtube.*morphe.*apk
-        run: bash src/etc/ci.sh MorpheApp/morphe-patches latest yt.*morphe.*apk # always patch
+        run: bash src/etc/ci.sh MorpheApp/morphe-patches latest youtube.*morphe.*apk
       - name: Re-run workflow if github connection not stable
-        if: always() && steps.check-rv.outcome == 'skipped' && env.retry_count < env.max_retries
+        if: always() && steps.check-morphe.outcome == 'skipped' && env.retry_count < env.max_retries
         uses: actions/github-script@v8
         with:
           script: |

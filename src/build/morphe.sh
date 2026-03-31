@@ -22,14 +22,12 @@ youtube() {
 	echo "APP_NAME=youtube" >> $GITHUB_ENV
 	echo "VARIANT=morphe" >> $GITHUB_ENV
 	get_patches_key "youtube-morphe"
-	get_apk "com.google.android.youtube" "youtube" "youtube" "google-inc/youtube/youtube" "Bundle_extract"
-	split_editor "youtube" "youtube"
+	get_apk "com.google.android.youtube" "youtube" "youtube" "google-inc/youtube/youtube"
 	patch "youtube" "morphe" "morphe"
-
-	# Patch Youtube Arm64-v8a
-	get_patches_key "youtube-morphe"
-	split_editor "youtube" "youtube-arm64-v8a" "exclude" "split_config.armeabi_v7a split_config.x86 split_config.x86_64"
-	patch "youtube-arm64-v8a" "morphe" "morphe"
+	# Remove unused architectures
+	for i in {0..0}; do
+		split_arch "youtube" "morphe"
+	done
 }
 reddit() {
 	morphe_dl
@@ -42,6 +40,7 @@ reddit() {
 	patch "reddit" "morphe" "morphe"
 	# Patch Arm64-v8a:
 	split_editor "reddit" "reddit-arm64-v8a" "exclude" "split_config.armeabi_v7a split_config.x86_64 split_config.mdpi split_config.ldpi split_config.hdpi split_config.xhdpi split_config.xxhdpi split_config.tvdpi"
+	get_patches_key "reddit-morphe"
 	patch "reddit-arm64-v8a" "morphe" "morphe"
 }
 youtube-music() {

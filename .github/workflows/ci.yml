@@ -23,11 +23,11 @@ jobs:
       - name: Check github connection
         id: check-gh
         run: bash src/etc/connection.sh
-      - name: Check new patch ReVanced
-        id: check-rv
-        if: steps.check-gh.outputs.internet_error == '0'
-        # run: bash src/etc/ci.sh ReVanced/revanced-patches latest messenger.*revanced.*apk
-        run: bash src/etc/ci.sh ReVanced/revanced-patches latest youtube.*revanced.*apk # always patch
+      # - name: Check new patch ReVanced
+      #   id: check-rv
+      #   if: steps.check-gh.outputs.internet_error == '0'
+      #   # run: bash src/etc/ci.sh ReVanced/revanced-patches latest messenger.*revanced.*apk
+      #   run: bash src/etc/ci.sh ReVanced/revanced-patches latest youtube.*revanced.*apk # always patch
       - name: Check new patch Morphe
         id: check-morphe
         if: steps.check-gh.outputs.internet_error == '0'
@@ -59,14 +59,14 @@ jobs:
       check_rv: ${{ steps.check-rv.outputs.new_patch }}
       check_morphe: ${{ steps.check-morphe.outputs.new_patch }}
 
-  Patch-Revanced:
-    name: Patch Revanced Stable
-    needs: check
-    if: ${{ needs.check.outputs.check_rv == 1 }}
-    uses: ./.github/workflows/manual-patch.yml
-    secrets: inherit
-    with:
-      org: "Revanced"
+  # Patch-Revanced:
+  #   name: Patch Revanced Stable
+  #   needs: check
+  #   if: ${{ needs.check.outputs.check_rv == 1 }}
+  #   uses: ./.github/workflows/manual-patch.yml
+  #   secrets: inherit
+  #   with:
+  #     org: "Revanced"
   Patch-Morphe:
     name: Patch Morphe
     needs: check

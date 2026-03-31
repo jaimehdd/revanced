@@ -10,9 +10,6 @@ get_date() {
 		prerelease)
 			updated_at=$(echo "$json" | jq -r 'first(.[] | select(.prerelease == true) | .assets[] | select(.name | test("'$3'")) | .updated_at)')
 			;;
-		all)
-			updated_at=$(echo "$json" | jq -r 'first(.[] | .assets[] | select(.name | test("'$3'")) | .updated_at)')
-			;;
 		*)
 			updated_at=$(echo "$json" | jq -r 'first(.[] | select(.tag_name == "'$2'") | .assets[] | select(.name | test("'$3'")) | .updated_at)')
 			;;
@@ -22,7 +19,7 @@ get_date() {
 
 checker(){
 	local date1 date2 date1_sec date1_sec repo=$1 ur_repo=$repository check=$3
-	date1=$(get_date "$repo" "$2" "^(.*\\\.jar|.*\\\.rvp)$")
+	date1=$(get_date "$repo" "$2" "^(.*\\\.jar|.*\\\.rvp|.*\\\.mpp)$")
 	date2=$(get_date "$ur_repo" "all" "$check")
 	date1_sec=$(date -d "$date1" +%s)
 	date2_sec=$(date -d "$date2" +%s)

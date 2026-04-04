@@ -11,7 +11,7 @@ on:
       org:
         description: 'Which "Revanced" do you want to patch?'
         required: true
-        default: "Revanced"
+        default: "Morphe"
         type: choice
         options:
           - "Revanced"
@@ -34,7 +34,7 @@ on:
         default: false
 jobs:
   patch_rv:
-    name: Patch Revanced Stable
+    name: Patch Revanced
     if: ${{ github.event.inputs.org == 'Revanced' || inputs.org == 'Revanced' }}
     runs-on: ubuntu-latest
     strategy:
@@ -61,7 +61,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
   patch_derv:
-    name: Patch DeRevanced Stable
+    name: Patch DeRevanced
     if: ${{ github.event.inputs.org == 'DeRevanced' || inputs.org == 'DeRevanced' }}
     runs-on: ubuntu-latest
     strategy:

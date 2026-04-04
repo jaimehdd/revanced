@@ -79,11 +79,15 @@ jobs:
       - name: Patch apk
         id: patch-derv
         if: steps.check-gh-derv.outputs.internet_error == '0'
+        env:
+          use_beta: ${{ inputs.use_beta }}
         run: bash src/build/DeRevanced.sh ${{ matrix.run }}
       - name: Releasing APK files
         id: release-derv
         if: steps.check-gh-derv.outputs.internet_error == '0'
         uses: ./.github/actions/release
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
   patch_morphe:
     name: Patch Morphe
     if: ${{ github.event.inputs.org == 'Morphe' || inputs.org == 'Morphe' }}

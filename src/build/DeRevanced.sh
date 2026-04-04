@@ -21,6 +21,8 @@ derevanced_dl(){
 messenger() {
 	derevanced_dl
 	# Patch Messenger:
+	echo "APP_NAME=messenger" >> $GITHUB_ENV
+	echo "VARIANT=rv" >> $GITHUB_ENV
 	# Arm64-v8a
 	get_patches_key "messenger-derevanced"
 	version="552.0.0.44.65"
@@ -31,6 +33,8 @@ messenger() {
 photos() {
 	derevanced_dl
 	# Patch Google photos:
+	echo "APP_NAME=google-photos" >> $GITHUB_ENV
+	echo "VARIANT=rv" >> $GITHUB_ENV
 	# Arm64-v8a
 	get_patches_key "gg-photos-derevanced"
 	get_apk "com.google.android.apps.photos" "gg-photos-arm64-v8a" "photos" "google-inc/photos/google-photos" "arm64-v8a" "nodpi"
@@ -40,8 +44,12 @@ photos() {
 facebook() {
 	derevanced_dl
 	# Patch Facebook:
+	echo "APP_NAME=facebook" >> $GITHUB_ENV
+	echo "VARIANT=rv" >> $GITHUB_ENV
 	# Arm64-v8a
 	get_patches_key "facebook-derevanced"
+	version="490.0.0.63.82"
+	echo "APP_VERSION=$version" >> $GITHUB_ENV
 	url="https://d.apkpure.com/b/APK/com.facebook.katana?versionCode=457020014"
 	req "$url" "facebook-arm64-v8a.apk"
 	patch "facebook-arm64-v8a" "derevanced" "morphe"
@@ -50,6 +58,8 @@ facebook() {
 strava() {
 	derevanced_dl
 	# Patch Strava:
+	echo "APP_NAME=strava" >> $GITHUB_ENV
+	echo "VARIANT=rv" >> $GITHUB_ENV
 	get_patches_key "strava-derevanced"
 	get_apkpure "com.strava" "strava-arm64-v8a" "strava-run-hike-android-exercise-laugh/com.strava" "Bundle"
 	patch "strava-arm64-v8a" "derevanced" "morphe"

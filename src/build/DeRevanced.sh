@@ -25,7 +25,6 @@ messenger() {
 	echo "VARIANT=rv" >> $GITHUB_ENV
 	# Arm64-v8a
 	get_patches_key "messenger"
-	version="552.0.0.44.65"
 	get_apkpure "com.facebook.orca" "messenger-arm64-v8a" "facebook-messenger/com.facebook.orca"
 	patch "messenger-arm64-v8a" "derevanced" "morphe"
 }
@@ -49,7 +48,6 @@ instagram() {
 	echo "APP_NAME=instagram" >> $GITHUB_ENV
 	echo "VARIANT=rv" >> $GITHUB_ENV
 	get_patches_key "instagram"
-	prefer_version="422.0.0.44.64"
 	get_apkpure "com.instagram.android" "instagram-arm64-v8a" "instagram-android/com.instagram.android" "Bundle"
 	patch "instagram-arm64-v8a" "piko" "morphe"
 	# patch "instagram-arm64-v8a" "brosssh" "morphe"

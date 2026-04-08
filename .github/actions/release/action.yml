@@ -6,7 +6,17 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Check for files to release
+      shell: bash
+      run: |
+        if ls ./release/*.apk >/dev/null 2>&1; then
+          echo "has_files=true" >> $GITHUB_ENV
+        else
+          echo "has_files=false" >> $GITHUB_ENV
+        fi
+
     - name: Generate release info
+      if: env.has_files == 'true'
       shell: bash
       run: |
         echo "
@@ -16,6 +26,7 @@ runs:
         "> ${{ github.workspace }}-CHANGELOG.txt
 
     - name: Release
+      if: env.has_files == 'true'
       uses: ncipollo/release-action@v1.21.0
       with:
         artifacts: |
@@ -27,6 +38,7 @@ runs:
         allowUpdates: true
 
     - name: Cleanup old releases
+      if: env.has_files == 'true'
       shell: bash
       env:
         GH_TOKEN: ${{ inputs.github_token }}

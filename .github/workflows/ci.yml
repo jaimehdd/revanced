@@ -38,7 +38,7 @@ jobs:
         run: bash src/etc/ci.sh RookieEnough/De-ReVanced latest gg-photos-arm64-v8a-derevanced.apk
       - name: Re-run workflow if github connection not stable
         if: always() && steps.check-morphe.outcome == 'skipped' && env.retry_count < env.max_retries
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const maxRetries = ${{ env.max_retries }};

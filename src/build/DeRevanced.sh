@@ -41,16 +41,22 @@ photos() {
 }
 
 instagram() {
-	dl_gh "morphe-cli" "MorpheApp" "latest"
-	# dl_gh "piko" "crimera" "prerelease"
-	dl_gh "morphe-patches" "brosssh" "prerelease"
 	# Patch Instagram:
 	echo "APP_NAME=instagram" >> $GITHUB_ENV
 	echo "VARIANT=rv" >> $GITHUB_ENV
+	dl_gh "morphe-cli" "MorpheApp" "latest"
+
+	# piko patches
+	dl_gh "piko" "crimera" "prerelease"
 	get_patches_key "instagram"
 	get_apkpure "com.instagram.android" "instagram-arm64-v8a" "instagram-android/com.instagram.android" "Bundle"
-	# patch "instagram-arm64-v8a" "piko" "morphe"
-	patch "instagram-arm64-v8a" "brosssh" "morphe"
+	patch "instagram-arm64-v8a" "piko" "morphe"
+
+	# cleanup and patch with brosssh patches on top
+	rm -f *.mpp
+	dl_gh "morphe-patches" "brosssh" "prerelease"
+	cp ./release/instagram-arm64-v8a-piko.apk ./download/instagram-arm64-v8a-piko.apk
+	patch "instagram-arm64-v8a-piko" "brosssh" "morphe"
 }
 
 facebook() {

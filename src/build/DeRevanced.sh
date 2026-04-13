@@ -18,6 +18,16 @@ derevanced_dl(){
 	fi
 }
 
+hoo-dles_dl() {
+	dl_gh "morphe-cli" "MorpheApp" "latest"
+	dl_gh "morphe-patches" "hoo-dles" "latest"
+}
+
+brosssh_dl() {
+	dl_gh "morphe-cli" "MorpheApp" "latest"
+	dl_gh "morphe-patches" "brosssh" "latest"
+}
+
 messenger() {
 	derevanced_dl
 	# Patch Messenger:
@@ -44,19 +54,44 @@ instagram() {
 	# Patch Instagram:
 	echo "APP_NAME=instagram" >> $GITHUB_ENV
 	echo "VARIANT=rv" >> $GITHUB_ENV
-	dl_gh "morphe-cli" "MorpheApp" "latest"
 
-	# piko patches
-	dl_gh "piko" "crimera" "prerelease"
+	brosssh_dl
 	get_patches_key "instagram"
 	get_apkpure "com.instagram.android" "instagram-arm64-v8a" "instagram-android/com.instagram.android" "Bundle"
-	patch "instagram-arm64-v8a" "piko" "morphe"
+	patch "instagram-arm64-v8a" "brosssh" "morphe"
+}
 
-	# cleanup and patch with brosssh patches on top
-	rm -f *.mpp
-	dl_gh "morphe-patches" "brosssh" "prerelease"
-	cp ./release/instagram-arm64-v8a-piko.apk ./download/instagram-arm64-v8a-piko.apk
-	patch "instagram-arm64-v8a-piko" "brosssh" "morphe"
+komoot() {
+	echo "APP_NAME=komoot" >> $GITHUB_ENV
+	echo "VARIANT=brosssh" >> $GITHUB_ENV
+
+	brosssh_dl
+	get_patches_key "komoot"
+	# https://apkpure.com/komoot-hike-bike-run/de.komoot.android
+	get_apkpure "de.komoot.android" "komoot-arm64-v8a" "komoot-hike-bike-run/de.komoot.android" "Bundle"
+	patch "komoot-arm64-v8a" "brosssh" "morphe"
+}
+
+fotmob() {
+	echo "APP_NAME=fotmob" >> $GITHUB_ENV
+	echo "VARIANT=hoo-dles" >> $GITHUB_ENV
+
+	hoo-dles_dl
+	get_patches_key "fotmob"
+	# https://apkpure.com/fotmob-soccer-live-scores/com.mobilefootie.wc2010
+	get_apkpure "com.mobilefootie.wc2010" "fotmob-arm64-v8a" "fotmob-soccer-live-scores/com.mobilefootie.wc2010" "Bundle"
+	patch "fotmob-arm64-v8a" "hoo-dles" "morphe"
+}
+
+windy() {
+	echo "APP_NAME=windy" >> $GITHUB_ENV
+	echo "VARIANT=hoo-dles" >> $GITHUB_ENV
+
+	hoo-dles_dl
+	get_patches_key "windy"
+	# https://apkpure.com/windy-com-weather-forecast/com.windyty.android
+	get_apkpure "com.windyty.android" "windy-arm64-v8a" "windy-com-weather-forecast/com.windyty.android" "Bundle"
+	patch "windy-arm64-v8a" "hoo-dles" "morphe"
 }
 
 facebook() {

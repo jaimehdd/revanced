@@ -27,7 +27,7 @@ jobs:
         id: check-morphe
         if: steps.check-gh.outputs.internet_error == '0'
         run: bash src/etc/ci.sh MorpheApp/morphe-patches latest youtube.*morphe.*apk
-      - name: Check new patch DeReVanced
+      - name: Check new patch Morphe Community
         id: check-derv
         if: steps.check-gh.outputs.internet_error == '0'
         run: bash src/etc/ci.sh RookieEnough/De-ReVanced latest gg-photos-arm64-v8a-derevanced.apk
@@ -66,10 +66,10 @@ jobs:
     secrets: inherit
     with:
       org: "Morphe"
-  Patch-DeRevanced:
-    name: Patch DeRevanced Stable
+  Patch-Morphe-Community:
+    name: Patch Morphe Community
     needs: check
     if: ${{ needs.check.outputs.check_derv == 1 }}
     uses: ./.github/workflows/manual-patch.yml
     with:
-      org: "DeRevanced"
+      org: "Morphe-Community"

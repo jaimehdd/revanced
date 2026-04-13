@@ -15,7 +15,7 @@ on:
         type: choice
         options:
           - "Revanced"
-          - "DeRevanced"
+          - "Morphe-Community"
           - "Morphe"
       use_beta:
         description: "Use beta versions"
@@ -61,8 +61,8 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
   patch_derv:
-    name: Patch DeRevanced
-    if: ${{ github.event.inputs.org == 'DeRevanced' || inputs.org == 'DeRevanced' }}
+    name: Patch Morphe Community
+    if: ${{ github.event.inputs.org == 'Morphe-Community' || inputs.org == 'Morphe-Community' }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -81,7 +81,7 @@ jobs:
         if: steps.check-gh-derv.outputs.internet_error == '0'
         env:
           use_beta: ${{ inputs.use_beta }}
-        run: bash src/build/DeRevanced.sh ${{ matrix.run }}
+        run: bash src/build/Morphe-Community.sh ${{ matrix.run }}
       - name: Releasing APK files
         id: release-derv
         if: steps.check-gh-derv.outputs.internet_error == '0'

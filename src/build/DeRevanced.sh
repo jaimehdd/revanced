@@ -134,4 +134,13 @@ case "$1" in
 	strava)
 		strava
 		;;
+	komoot)
+		komoot
+		;;
+	fotmob)
+		fotmob
+		;;
+	windy)
+		windy
+		;;
 esac

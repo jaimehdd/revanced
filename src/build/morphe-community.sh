@@ -1,21 +1,12 @@
 #!/bin/bash
-# DeRevanced build
+# Morphe Community build
 source ./src/build/utils.sh
 # Download requirements
 use_beta="${use_beta:-false}"
 
-derevanced_dl_beta(){
-	dl_gh "morphe-cli" "MorpheApp" "prerelease"
-	dl_gh "De-ReVanced" "RookieEnough" "prerelease"
-}
-
 derevanced_dl(){
-	if [ "$use_beta" = true ]; then
-		derevanced_dl_beta
-	else
-		dl_gh "morphe-cli" "MorpheApp" "latest"
-		dl_gh "De-ReVanced" "RookieEnough" "latest"
-	fi
+	dl_gh "morphe-cli" "MorpheApp" "latest"
+	dl_gh "De-ReVanced" "RookieEnough" "latest"
 }
 
 hoo-dles_dl() {

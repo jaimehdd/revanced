@@ -28,7 +28,7 @@ messenger() {
 	derevanced_dl
 	# Patch Messenger:
 	echo "APP_NAME=messenger" >> $GITHUB_ENV
-	echo "VARIANT=rv" >> $GITHUB_ENV
+	echo "VARIANT=drv" >> $GITHUB_ENV
 	# Arm64-v8a
 	get_patches_key "messenger"
 	get_apkpure "com.facebook.orca" "messenger-arm64-v8a" "facebook-messenger/com.facebook.orca"
@@ -39,7 +39,7 @@ photos() {
 	derevanced_dl
 	# Patch Google photos:
 	echo "APP_NAME=google-photos" >> $GITHUB_ENV
-	echo "VARIANT=rv" >> $GITHUB_ENV
+	echo "VARIANT=drv" >> $GITHUB_ENV
 	# Arm64-v8a
 	get_patches_key "gg-photos"
 	get_apk "com.google.android.apps.photos" "gg-photos-arm64-v8a" "photos" "google-inc/photos/google-photos" "arm64-v8a" "nodpi"
@@ -49,7 +49,7 @@ photos() {
 instagram() {
 	# Patch Instagram:
 	echo "APP_NAME=instagram" >> $GITHUB_ENV
-	echo "VARIANT=rv" >> $GITHUB_ENV
+	echo "VARIANT=brosssh" >> $GITHUB_ENV
 
 	brosssh_dl
 	get_patches_key "instagram"
@@ -106,7 +106,7 @@ facebook() {
 	derevanced_dl
 	# Patch Facebook:
 	echo "APP_NAME=facebook" >> $GITHUB_ENV
-	echo "VARIANT=rv" >> $GITHUB_ENV
+	echo "VARIANT=drv" >> $GITHUB_ENV
 	# Arm64-v8a
 	get_patches_key "facebook"
 	version="490.0.0.63.82"
@@ -120,7 +120,7 @@ strava() {
 	derevanced_dl
 	# Patch Strava:
 	echo "APP_NAME=strava" >> $GITHUB_ENV
-	echo "VARIANT=rv" >> $GITHUB_ENV
+	echo "VARIANT=drv" >> $GITHUB_ENV
 	get_patches_key "strava"
 	get_apkpure "com.strava" "strava-arm64-v8a" "strava-run-hike-android-exercise-laugh/com.strava" "Bundle"
 	patch "strava-arm64-v8a" "derevanced" "morphe"

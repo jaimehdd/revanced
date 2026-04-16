@@ -21,8 +21,11 @@ runs:
       run: |
         echo "
         **Change log** :point_down:
-        [Revanced](https://github.com/revanced/revanced-patches/releases)
         [Morphe](https://github.com/MorpheApp/morphe-patches/releases)
+        [De-ReVanced](https://github.com/RookieEnough/De-ReVanced/releases)
+        [hoo-dles](https://github.com/hoo-dles/morphe-patches/releases)
+        [brosssh](https://github.com/brosssh/morphe-patches/releases)
+        [piko](https://github.com/crimera/piko/releases)
         "> ${{ github.workspace }}-CHANGELOG.txt
 
     - name: Release

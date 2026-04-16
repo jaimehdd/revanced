@@ -33,34 +33,7 @@ on:
         type: boolean
         default: false
 jobs:
-  patch_rv:
-    name: Patch Revanced
-    if: ${{ github.event.inputs.org == 'Revanced' || inputs.org == 'Revanced' }}
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        run: [messenger, photos, instagram, facebook, strava]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6.0.2
-      - name: Preparing to patch
-        uses: ./.github/actions/preparing
-      - name: Check github connection
-        id: check-gh-rv
-        run: bash src/etc/connection.sh
-      - name: Patch apk
-        id: patch-rv
-        if: steps.check-gh-rv.outputs.internet_error == '0'
-        env:
-          use_beta: ${{ inputs.use_beta }}
-        run: bash src/build/Revanced.sh ${{ matrix.run }}
-      - name: Releasing APK files
-        id: release-rv
-        if: steps.check-gh-rv.outputs.internet_error == '0'
-        uses: ./.github/actions/release
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-  patch_derv:
+  patch_community:
     name: Patch Morphe Community
     if: ${{ github.event.inputs.org == 'Morphe-Community' || inputs.org == 'Morphe-Community' }}
     runs-on: ubuntu-latest

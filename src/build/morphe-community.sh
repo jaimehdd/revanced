@@ -4,24 +4,30 @@ source ./src/build/utils.sh
 # Download requirements
 use_beta="${use_beta:-false}"
 
+if [ "$use_beta" = false ]; then
+	tag="latest"
+else
+	tag="prerelease"
+fi
+
 derevanced_dl(){
 	dl_gh "morphe-cli" "MorpheApp" "latest"
-	dl_gh "De-ReVanced" "RookieEnough" "latest"
+	dl_gh "De-ReVanced" "RookieEnough" "$tag"
 }
 
 hoo-dles_dl() {
 	dl_gh "morphe-cli" "MorpheApp" "latest"
-	dl_gh "morphe-patches" "hoo-dles" "latest"
+	dl_gh "morphe-patches" "hoo-dles" "$tag"
 }
 
 brosssh_dl() {
 	dl_gh "morphe-cli" "MorpheApp" "latest"
-	dl_gh "morphe-patches" "brosssh" "latest"
+	dl_gh "morphe-patches" "brosssh" "$tag"
 }
 
 piko_dl(){
 	dl_gh "morphe-cli" "MorpheApp" "latest"
-	dl_gh "piko" "crimera" "latest"
+	dl_gh "piko" "crimera" "$tag"
 }
 
 messenger() {

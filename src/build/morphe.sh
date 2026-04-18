@@ -24,10 +24,10 @@ youtube() {
 	get_patches_key "youtube-morphe"
 	get_apk "com.google.android.youtube" "youtube" "youtube" "google-inc/youtube/youtube"
 	patch "youtube" "morphe" "morphe"
-	# Remove unused architectures
-	for i in {0..0}; do
-		split_arch "youtube" "morphe"
-	done
+	# # Remove unused architectures
+	# for i in {0..0}; do
+	# 	split_arch "youtube" "morphe"
+	# done
 }
 reddit() {
 	morphe_dl

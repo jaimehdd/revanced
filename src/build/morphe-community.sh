@@ -32,7 +32,7 @@ piko_dl(){
 
 binarymend_dl(){
 	dl_gh "morphe-cli" "MorpheApp" "latest"
-	dl_gh ""morphe-patches" "binarymend" "$tag"
+	dl_gh "morphe-patches" "binarymend" "$tag"
 }
 
 messenger() {

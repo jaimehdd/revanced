@@ -30,6 +30,11 @@ piko_dl(){
 	dl_gh "piko" "crimera" "$tag"
 }
 
+binarymend_dl(){
+	dl_gh "morphe-cli" "MorpheApp" "latest"
+	dl_gh ""morphe-patches" "binarymend" "$tag"
+}
+
 messenger() {
 	derevanced_dl
 	# Patch Messenger:
@@ -132,6 +137,17 @@ strava() {
 	patch "strava-arm64-v8a" "derevanced" "morphe"
 }
 
+moonreader() {
+	echo "APP_NAME=moonreader" >> $GITHUB_ENV
+	echo "VARIANT=binarymend" >> $GITHUB_ENV
+
+	binarymend_dl
+	get_patches_key "moonreader"
+	# https://apkpure.com/moon-reader/com.flyersoft.moonreader
+	get_apkpure "com.flyersoft.moonreader" "moonreader-arm64-v8a" "moon-reader/com.flyersoft.moonreader" "Bundle"
+	patch "moonreader-arm64-v8a" "binarymend" "morphe"
+}
+
 case "$1" in
 	messenger)
 		messenger
@@ -159,5 +175,8 @@ case "$1" in
 		;;
 	windy)
 		windy
+		;;
+	moonreader)
+		moonreader
 		;;
 esac

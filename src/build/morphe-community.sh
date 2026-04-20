@@ -91,6 +91,16 @@ komoot() {
 	patch "komoot-arm64-v8a" "brosssh" "morphe"
 }
 
+adguard() {
+	echo "APP_NAME=adguard" >> $GITHUB_ENV
+	echo "VARIANT=hoo-dles" >> $GITHUB_ENV
+
+	hoo-dles_dl
+	get_patches_key "adguard"
+	get_apk "com.adguard.android" "adguard" "adguard" "adguard-software-limited/adguard/adguard-for-android"
+	patch "adguard" "hoo-dles" "morphe"
+}
+
 fotmob() {
 	echo "APP_NAME=fotmob" >> $GITHUB_ENV
 	echo "VARIANT=hoo-dles" >> $GITHUB_ENV
@@ -178,5 +188,8 @@ case "$1" in
 		;;
 	moonreader)
 		moonreader
+		;;
+	adguard)
+		adguard
 		;;
 esac

@@ -39,7 +39,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        run: [messenger, photos, instagram, instagram-piko, facebook, strava, komoot, fotmob, windy, moonreader]
+        run: [messenger, photos, instagram, instagram-piko, facebook, strava, komoot, fotmob, windy, moonreader, adguard]
     steps:
       - name: Checkout
         uses: actions/checkout@v6.0.2

@@ -30,11 +30,11 @@ youtube() {
 	# 	split_arch "youtube" "morphe"
 	# done
 
-	# apkm split_editor arm64-v8a
-	get_patches_key "youtube-morphe"
-	get_apk "com.google.android.youtube" "youtube" "youtube" "google-inc/youtube/youtube" "Bundle_extract"
-	split_editor "youtube" "youtube-arm64-v8a" "exclude" "split_config.armeabi_v7a split_config.x86 split_config.x86_64"
-	patch "youtube-arm64-v8a" "morphe" "morphe"
+	# # apkm split_editor arm64-v8a
+	# get_patches_key "youtube-morphe"
+	# get_apk "com.google.android.youtube" "youtube" "youtube" "google-inc/youtube/youtube" "Bundle_extract"
+	# split_editor "youtube" "youtube-arm64-v8a" "exclude" "split_config.armeabi_v7a split_config.x86 split_config.x86_64"
+	# patch "youtube-arm64-v8a" "morphe" "morphe"
 }
 reddit() {
 	morphe_dl

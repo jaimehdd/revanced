@@ -25,23 +25,17 @@ youtube() {
 	get_apk "com.google.android.youtube" "youtube" "youtube" "google-inc/youtube/youtube"
 	patch "youtube" "morphe" "morphe"
 
-	# # morphe-cli split_arch
-	# for i in {0..0}; do
-	# 	split_arch "youtube" "morphe"
-	# done
-
-	# # apkm split_editor arm64-v8a
-	# get_patches_key "youtube-morphe"
-	# get_apk "com.google.android.youtube" "youtube" "youtube" "google-inc/youtube/youtube" "Bundle_extract"
-	# split_editor "youtube" "youtube-arm64-v8a" "exclude" "split_config.armeabi_v7a split_config.x86 split_config.x86_64"
-	# patch "youtube-arm64-v8a" "morphe" "morphe"
+	# Remove unused architectures
+	for i in {0..0}; do
+		split_arch "youtube" "morphe"
+	done
 }
 reddit() {
 	morphe_dl
 	echo "APP_NAME=reddit" >> $GITHUB_ENV
 	echo "VARIANT=morphe" >> $GITHUB_ENV
 	get_patches_key "reddit-morphe"
-	prefer_version="2026.14.0"
+	prefer_version="2026.16.0"
 	get_apk "com.reddit.frontpage" "reddit" "reddit" "redditinc/reddit/reddit" "Bundle_extract"
 	# split_editor "reddit" "reddit"
 	# patch "reddit" "morphe" "morphe"

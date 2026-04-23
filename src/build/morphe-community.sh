@@ -27,7 +27,7 @@ brosssh_dl() {
 
 piko_dl(){
 	dl_gh "morphe-cli" "MorpheApp" "latest"
-	dl_gh "piko" "crimera" "$tag"
+	dl_gh "piko" "crimera" "prerelease"
 }
 
 binarymend_dl(){

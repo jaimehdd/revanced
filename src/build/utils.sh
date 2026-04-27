@@ -63,10 +63,6 @@ dl_gh() {
 						url=$(echo $line | cut -d '"' -f 4)
 							if [[ $url != *.asc ]]; then
 							name=$(basename "$url")
-							# Exclude dev versions for morphe-cli
-							if [[ "$name" == *"morphe-cli"* ]] && [[ "$name" == *"dev"* ]]; then
-								continue
-							fi
 							wget -q -O "$name" "$url"
 							green_log "[+] Downloading $name from $owner"
 							if [[ $name == *.jar ]] && [[ $name == *"revanced-patches"* ]]; then
@@ -110,10 +106,6 @@ dl_gh() {
 			| jq -r '.assets[] | "\(.browser_download_url) \(.name)"' \
 			| while read -r url names; do
    				if [[ $url != *.asc ]]; then
-					# Exclude dev versions for morphe-cli
-					if [[ "$names" == *"morphe-cli"* ]] && [[ "$names" == *"dev"* ]]; then
-						continue
-					fi
 					green_log "[+] Downloading $names from $2"
 					if [[ $names == *.jar ]] && [[ $names == *"revanced-patches"* ]]; then
 						# arsclib jar files: revanced-patches-X.Y.Z.jar

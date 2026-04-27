@@ -28,9 +28,13 @@ jobs:
         if: steps.check-gh.outputs.internet_error == '0'
         run: bash src/etc/ci.sh MorpheApp/morphe-patches latest youtube.*morphe.*apk
       - name: Check new patch Morphe Community
-        id: check-derv
+        id: check-morphe-community
         if: steps.check-gh.outputs.internet_error == '0'
         run: bash src/etc/ci.sh RookieEnough/De-ReVanced latest gg-photos-arm64-v8a-derevanced.apk
+      - name: Check new patch Morphe Beta
+        id: check-morphe-beta
+        if: steps.check-gh.outputs.internet_error == '0'
+        run: bash src/etc/ci.sh MorpheApp/morphe-patches latest youtube-beta.*morphe.*apk
       - name: Re-run workflow if github connection not stable
         if: always() && steps.check-morphe.outcome == 'skipped' && env.retry_count < env.max_retries
         uses: actions/github-script@v9
@@ -56,7 +60,8 @@ jobs:
           max_retries: 3
     outputs:
       check_morphe: ${{ steps.check-morphe.outputs.new_patch }}
-      check_derv: ${{ steps.check-derv.outputs.new_patch }}
+      check_morphe_community: ${{ steps.check-morphe-community.outputs.new_patch }}
+      check_morphe_beta: ${{ steps.check-morphe-beta.outputs.new_patch }}
 
   Patch-Morphe:
     name: Patch Morphe

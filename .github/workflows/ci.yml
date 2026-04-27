@@ -73,3 +73,11 @@ jobs:
     uses: ./.github/workflows/manual-patch.yml
     with:
       org: "Morphe-Community"
+  Patch-Morphe-Beta:
+    name: Patch Morphe Beta
+    needs: check
+    if: ${{ needs.check.outputs.check_morphe_beta == 1 }}
+    uses: ./.github/workflows/manual-patch.yml
+    secrets: inherit
+    with:
+      org: "Morphe-Beta"

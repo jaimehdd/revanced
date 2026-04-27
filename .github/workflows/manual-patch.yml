@@ -89,7 +89,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
   patch_morphe_beta:
     name: Patch Morphe
-    if: ${{ github.event.inputs.org == 'Morphe' || inputs.org == 'Morphe' }}
+    if: ${{ github.event.inputs.org == 'Morphe-Beta' || inputs.org == 'Morphe-Beta' }}
     runs-on: ubuntu-latest
     strategy:
       matrix:

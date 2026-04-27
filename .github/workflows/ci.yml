@@ -30,7 +30,7 @@ jobs:
       - name: Check new patch Morphe Community
         id: check-morphe-community
         if: steps.check-gh.outputs.internet_error == '0'
-        run: bash src/etc/ci.sh hoo-dles/morphe-patches latest windy-arm64-v8a-hoo-dles.apk
+        run: bash src/etc/ci.sh hoo-dles/morphe-patches latest windy.*hoo-dles.*apk
       - name: Check new patch Morphe Beta
         id: check-morphe-beta
         if: steps.check-gh.outputs.internet_error == '0'

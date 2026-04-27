@@ -35,6 +35,9 @@ binarymend_dl(){
 	dl_gh "morphe-patches" "binarymend" "$tag"
 }
 
+#############
+# De-ReVanced
+#############
 messenger() {
 	derevanced_dl
 	# Patch Messenger:
@@ -57,17 +60,33 @@ photos() {
 	patch "gg-photos-arm64-v8a" "derevanced" "morphe"
 }
 
-instagram() {
-	# Patch Instagram:
-	echo "APP_NAME=instagram" >> $GITHUB_ENV
-	echo "VARIANT=brosssh" >> $GITHUB_ENV
-
-	brosssh_dl
-	get_patches_key "instagram"
-	get_apkpure "com.instagram.android" "instagram-arm64-v8a" "instagram-android/com.instagram.android" "Bundle"
-	patch "instagram-arm64-v8a" "brosssh" "morphe"
+facebook() {
+	derevanced_dl
+	# Patch Facebook:
+	echo "APP_NAME=facebook" >> $GITHUB_ENV
+	echo "VARIANT=drv" >> $GITHUB_ENV
+	# Arm64-v8a
+	get_patches_key "facebook"
+	version="490.0.0.63.82"
+	echo "APP_VERSION=$version" >> $GITHUB_ENV
+	url="https://d.apkpure.com/b/APK/com.facebook.katana?versionCode=457020014"
+	req "$url" "facebook-arm64-v8a.apk"
+	patch "facebook-arm64-v8a" "derevanced" "morphe"
 }
 
+strava() {
+	derevanced_dl
+	# Patch Strava:
+	echo "APP_NAME=strava" >> $GITHUB_ENV
+	echo "VARIANT=drv" >> $GITHUB_ENV
+	get_patches_key "strava"
+	get_apkpure "com.strava" "strava-arm64-v8a" "strava-run-hike-android-exercise-laugh/com.strava" "Bundle"
+	patch "strava-arm64-v8a" "derevanced" "morphe"
+}
+
+#############
+# Piko
+#############
 instagram-piko() {
 	# Patch Instagram:
 	echo "APP_NAME=instagram" >> $GITHUB_ENV
@@ -78,6 +97,20 @@ instagram-piko() {
 	get_patches_key "instagram-piko"
 	get_apkpure "com.instagram.android" "instagram-arm64-v8a" "instagram-android/com.instagram.android" "Bundle"
 	patch "instagram-arm64-v8a" "piko" "morphe"
+}
+
+#############
+# Brosssh
+#############
+instagram() {
+	# Patch Instagram:
+	echo "APP_NAME=instagram" >> $GITHUB_ENV
+	echo "VARIANT=brosssh" >> $GITHUB_ENV
+
+	brosssh_dl
+	get_patches_key "instagram"
+	get_apkpure "com.instagram.android" "instagram-arm64-v8a" "instagram-android/com.instagram.android" "Bundle"
+	patch "instagram-arm64-v8a" "brosssh" "morphe"
 }
 
 komoot() {
@@ -91,6 +124,9 @@ komoot() {
 	patch "komoot-arm64-v8a" "brosssh" "morphe"
 }
 
+#############
+# Hoo-dles
+#############
 adguard() {
 	echo "APP_NAME=adguard" >> $GITHUB_ENV
 	echo "VARIANT=hoo-dles" >> $GITHUB_ENV
@@ -123,30 +159,9 @@ windy() {
 	patch "windy-arm64-v8a" "hoo-dles" "morphe"
 }
 
-facebook() {
-	derevanced_dl
-	# Patch Facebook:
-	echo "APP_NAME=facebook" >> $GITHUB_ENV
-	echo "VARIANT=drv" >> $GITHUB_ENV
-	# Arm64-v8a
-	get_patches_key "facebook"
-	version="490.0.0.63.82"
-	echo "APP_VERSION=$version" >> $GITHUB_ENV
-	url="https://d.apkpure.com/b/APK/com.facebook.katana?versionCode=457020014"
-	req "$url" "facebook-arm64-v8a.apk"
-	patch "facebook-arm64-v8a" "derevanced" "morphe"
-}
-
-strava() {
-	derevanced_dl
-	# Patch Strava:
-	echo "APP_NAME=strava" >> $GITHUB_ENV
-	echo "VARIANT=drv" >> $GITHUB_ENV
-	get_patches_key "strava"
-	get_apkpure "com.strava" "strava-arm64-v8a" "strava-run-hike-android-exercise-laugh/com.strava" "Bundle"
-	patch "strava-arm64-v8a" "derevanced" "morphe"
-}
-
+#############
+# Binarymend
+#############
 moonreader() {
 	echo "APP_NAME=moonreader" >> $GITHUB_ENV
 	echo "VARIANT=binarymend" >> $GITHUB_ENV

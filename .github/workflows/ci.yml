@@ -30,8 +30,7 @@ jobs:
       - name: Check new patch Morphe Community
         id: check-morphe-community
         if: steps.check-gh.outputs.internet_error == '0'
-        # run: bash src/etc/ci.sh hoo-dles/morphe-patches latest windy.*hoo-dles.*apk
-        run: bash src/etc/ci.sh hoo-dles/morphe-patches latest windyyy.*hoo-dles.*apk # always patch
+        run: bash src/etc/ci.sh hoo-dles/morphe-patches latest windy.*hoo-dles.*apk
       - name: Check new patch Morphe Beta
         id: check-morphe-beta
         if: steps.check-gh.outputs.internet_error == '0'
@@ -75,8 +74,9 @@ jobs:
   Patch-Morphe-Community:
     name: Patch Morphe Community
     needs: check
-    if: ${{ needs.check.outputs.check_derv == 1 }}
+    if: ${{ needs.check.outputs.check_morphe_community == 1 }}
     uses: ./.github/workflows/manual-patch.yml
+    secrets: inherit
     with:
       org: "Morphe-Community"
   Patch-Morphe-Beta:

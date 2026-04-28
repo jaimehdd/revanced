@@ -132,9 +132,7 @@ dl_gh() {
 	else
 		for repo in $1 ; do
 			tags=$( [ "$3" == "latest" ] && echo "latest" || echo "tags/$3" )
-			wget -qO- "https://api.github.com/repos/$2/$repo/releases/$tags" \
-			| jq -r '.assets[] | "\(.browser_download_url) \(.name)"' \
-			| while read -r url names; do
+			while read -r url names; do
    				if [[ $url != *.asc ]]; then
 					green_log "[+] Downloading $names from $2"
 					if [[ $names == *.jar ]] && [[ $names == *"revanced-patches"* ]]; then
@@ -162,7 +160,7 @@ dl_gh() {
 					fi
 					wget -q -O "$names" $url
 					fi
-			done
+			done < <(wget -qO- "https://api.github.com/repos/$2/$repo/releases/$tags" | jq -r '.assets[] | "\(.browser_download_url) \(.name)"')
 		done
 	fi
 }

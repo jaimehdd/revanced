@@ -29,6 +29,36 @@ red_log() {
 
 #################################################
 
+release_exists() {
+	local app_version="${APP_VERSION:-$version}"
+	local repo="${repository:-$GITHUB_REPOSITORY}"
+	local release_tag="${APP_NAME}-${VARIANT}-${app_version}-${patch_version}"
+
+	if [[ -z "$APP_NAME" || -z "$VARIANT" || -z "$app_version" || -z "$patch_version" ]]; then
+		red_log "[-] Missing release metadata, patching will continue"
+		return 1
+	fi
+
+	if [[ -z "$repo" ]]; then
+		red_log "[-] Missing repository metadata, patching will continue"
+		return 1
+	fi
+
+	green_log "[+] Checking existing release: $release_tag"
+	local apk_asset_count
+	apk_asset_count=$(gh release view "$release_tag" --repo "$repo" --json assets --jq '[.assets[].name | select(endswith(".apk"))] | length' 2>/dev/null) || return 1
+
+	if [[ "$apk_asset_count" -gt 0 ]]; then
+		green_log "[+] Release already has APK asset(s), skipping patch: $release_tag"
+		return 0
+	fi
+
+	green_log "[+] Release exists without APK assets, patching will continue: $release_tag"
+	return 1
+}
+
+#################################################
+
 # Download Github assets requirement:
 dl_gh() {
 	if [ $3 == "prerelease" ]; then

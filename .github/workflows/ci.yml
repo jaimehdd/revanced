@@ -30,7 +30,8 @@ jobs:
       - name: Check new patch Morphe Community
         id: check-morphe-community
         if: steps.check-gh.outputs.internet_error == '0'
-        run: bash src/etc/ci.sh hoo-dles/morphe-patches latest windy.*hoo-dles.*apk
+        # run: bash src/etc/ci.sh hoo-dles/morphe-patches latest windy.*hoo-dles.*apk
+        run: bash src/etc/ci.sh hoo-dles/morphe-patches latest windyyy.*hoo-dles.*apk # always patch
       - name: Check new patch Morphe Beta
         id: check-morphe-beta
         if: steps.check-gh.outputs.internet_error == '0'

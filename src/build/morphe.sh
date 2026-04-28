@@ -19,10 +19,13 @@ morphe_dl(){
 youtube() {
 	morphe_dl
 	# Patch YouTube:
-	echo "APP_NAME=youtube" >> $GITHUB_ENV
-	echo "VARIANT=morphe" >> $GITHUB_ENV
+	APP_NAME="youtube"
+	VARIANT="morphe"
+	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
 	get_patches_key "youtube-morphe"
 	get_apk "com.google.android.youtube" "youtube" "youtube" "google-inc/youtube/youtube"
+	release_exists && return 0
 	patch "youtube" "morphe" "morphe"
 
 	# Remove unused architectures
@@ -32,11 +35,14 @@ youtube() {
 }
 reddit() {
 	morphe_dl
-	echo "APP_NAME=reddit" >> $GITHUB_ENV
-	echo "VARIANT=morphe" >> $GITHUB_ENV
+	APP_NAME="reddit"
+	VARIANT="morphe"
+	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
 	get_patches_key "reddit-morphe"
 	prefer_version="2026.16.0"
 	get_apk "com.reddit.frontpage" "reddit" "reddit" "redditinc/reddit/reddit" "Bundle_extract"
+	release_exists && return 0
 	# split_editor "reddit" "reddit"
 	# patch "reddit" "morphe" "morphe"
 	# Patch Arm64-v8a:
@@ -47,11 +53,14 @@ reddit() {
 youtube-music() {
 	morphe_dl
 	# Patch YouTube Music:
-	echo "APP_NAME=youtube-music" >> $GITHUB_ENV
-	echo "VARIANT=morphe" >> $GITHUB_ENV
+	APP_NAME="youtube-music"
+	VARIANT="morphe"
+	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
 	# Arm64-v8a
 	get_patches_key "youtube-music-morphe"
 	get_apk "com.google.android.apps.youtube.music" "youtube-music-arm64-v8a" "youtube-music" "google-inc/youtube-music/youtube-music" "arm64-v8a"
+	release_exists && return 0
 	patch "youtube-music-arm64-v8a" "morphe" "morphe"
 }
 case "$1" in

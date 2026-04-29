@@ -16,6 +16,7 @@ on:
         options:
           - "Morphe-Community"
           - "Morphe"
+          - "Morphe-Beta"
       use_beta:
         description: "Use beta versions"
         required: false

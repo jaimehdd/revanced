@@ -10,12 +10,22 @@ else
 	tag="prerelease"
 fi
 
+separate_morphe_universal_patches=true
+
 morphe_universal_dl() {
 	dl_gh "morphe-patches" "MorpheApp" "$tag"
 	for patches_file in patches-*.mpp; do
 		[ -e "$patches_file" ] || continue
-		mv "$patches_file" "morphe-universal-$patches_file"
+		mv "$patches_file" "morphe-universal-$patches_file.disabled"
 	done
+}
+
+community_patch() {
+	patch "$1" "$2" "morphe"
+	if [ "${detachPlayStoreUpdates:-false}" = true ]; then
+		morphe_disable_play_store_updates "$1" "$2"
+	fi
+	unset detachPlayStoreUpdates
 }
 
 derevanced_dl(){
@@ -62,7 +72,7 @@ messenger() {
 	get_patches_key "messenger"
 	get_apkpure "com.facebook.orca" "messenger-arm64-v8a" "facebook-messenger/com.facebook.orca"
 	release_exists && return 0
-	patch "messenger-arm64-v8a" "derevanced" "morphe"
+	community_patch "messenger-arm64-v8a" "derevanced"
 }
 
 photos() {
@@ -76,7 +86,7 @@ photos() {
 	get_patches_key "gg-photos"
 	get_apk "com.google.android.apps.photos" "gg-photos-arm64-v8a" "photos" "google-inc/photos/google-photos" "arm64-v8a" "nodpi"
 	release_exists && return 0
-	patch "gg-photos-arm64-v8a" "derevanced" "morphe"
+	community_patch "gg-photos-arm64-v8a" "derevanced"
 }
 
 facebook() {
@@ -93,7 +103,7 @@ facebook() {
 	release_exists && return 0
 	url="https://d.apkpure.com/b/APK/com.facebook.katana?versionCode=457020014"
 	req "$url" "facebook-arm64-v8a.apk"
-	patch "facebook-arm64-v8a" "derevanced" "morphe"
+	community_patch "facebook-arm64-v8a" "derevanced"
 }
 
 strava() {
@@ -106,7 +116,7 @@ strava() {
 	get_patches_key "strava"
 	get_apkpure "com.strava" "strava-arm64-v8a" "strava-run-hike-android-exercise-laugh/com.strava" "Bundle"
 	release_exists && return 0
-	patch "strava-arm64-v8a" "derevanced" "morphe"
+	community_patch "strava-arm64-v8a" "derevanced"
 }
 
 #############
@@ -124,7 +134,7 @@ instagram-piko() {
 	get_patches_key "instagram-piko"
 	get_apkpure "com.instagram.android" "instagram-arm64-v8a" "instagram-android/com.instagram.android" "Bundle"
 	release_exists && return 0
-	patch "instagram-arm64-v8a" "piko" "morphe"
+	community_patch "instagram-arm64-v8a" "piko"
 }
 
 #############
@@ -141,7 +151,7 @@ instagram() {
 	get_patches_key "instagram"
 	get_apkpure "com.instagram.android" "instagram-arm64-v8a" "instagram-android/com.instagram.android" "Bundle"
 	release_exists && return 0
-	patch "instagram-arm64-v8a" "brosssh" "morphe"
+	community_patch "instagram-arm64-v8a" "brosssh"
 }
 
 komoot() {
@@ -155,7 +165,7 @@ komoot() {
 	# https://apkpure.com/komoot-hike-bike-run/de.komoot.android
 	get_apkpure "de.komoot.android" "komoot-arm64-v8a" "komoot-hike-bike-run/de.komoot.android" "Bundle"
 	release_exists && return 0
-	patch "komoot-arm64-v8a" "brosssh" "morphe"
+	community_patch "komoot-arm64-v8a" "brosssh"
 }
 
 #############
@@ -171,7 +181,7 @@ adguard() {
 	get_patches_key "adguard"
 	get_apk "com.adguard.android" "adguard" "adguard" "adguard-software-limited/adguard/adguard-for-android"
 	release_exists && return 0
-	patch "adguard" "hoo-dles" "morphe"
+	community_patch "adguard" "hoo-dles"
 }
 
 fotmob() {
@@ -185,7 +195,7 @@ fotmob() {
 	# https://apkpure.com/fotmob-soccer-live-scores/com.mobilefootie.wc2010
 	get_apkpure "com.mobilefootie.wc2010" "fotmob-arm64-v8a" "fotmob-soccer-live-scores/com.mobilefootie.wc2010" "Bundle"
 	release_exists && return 0
-	patch "fotmob-arm64-v8a" "hoo-dles" "morphe"
+	community_patch "fotmob-arm64-v8a" "hoo-dles"
 }
 
 windy() {
@@ -199,7 +209,7 @@ windy() {
 	# https://apkpure.com/windy-com-weather-forecast/com.windyty.android
 	get_apkpure "com.windyty.android" "windy-arm64-v8a" "windy-com-weather-forecast/com.windyty.android" "Bundle"
 	release_exists && return 0
-	patch "windy-arm64-v8a" "hoo-dles" "morphe"
+	community_patch "windy-arm64-v8a" "hoo-dles"
 }
 
 #############
@@ -216,7 +226,7 @@ moonreader() {
 	# https://apkpure.com/moon-reader/com.flyersoft.moonreader
 	get_apkpure "com.flyersoft.moonreader" "moonreader-arm64-v8a" "moon-reader/com.flyersoft.moonreader" "Bundle"
 	release_exists && return 0
-	patch "moonreader-arm64-v8a" "binarymend" "morphe"
+	community_patch "moonreader-arm64-v8a" "binarymend"
 }
 
 case "$1" in

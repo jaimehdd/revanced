@@ -176,6 +176,7 @@ dl_gh() {
 get_patches_key() {
 	excludePatches=""
 	includePatches=""
+	detachPlayStoreUpdates=false
 	excludeLinesFound=false
 	includeLinesFound=false
 
@@ -211,6 +212,10 @@ get_patches_key() {
 		while IFS= read -r line2 || [[ -n "$line2" ]]; do
 			[[ -z "$line2" ]] && continue
 			patch_name="${line2%%|*}"   # ignore options part for options.json flow
+			if [[ "${separate_morphe_universal_patches:-false}" == "true" && "$patch_name" == "Disable Play Store updates" ]]; then
+				detachPlayStoreUpdates=true
+				continue
+			fi
 			includePatches+=" -e \"$patch_name\""
 			includeLinesFound=true
 		done < "$patchDir/include-patches"
@@ -257,6 +262,7 @@ get_patches_key() {
 
 	export excludePatches
 	export includePatches
+	export detachPlayStoreUpdates
 }
 
 #################################################
@@ -274,8 +280,8 @@ req() {
 }
 
 morphe_patches_args() {
-	local option="${1:--p}" args="" patches_file
-	for patches_file in *.mpp; do
+	local option="${1:--p}" pattern="${2:-*.mpp}" args="" patches_file
+	for patches_file in $pattern; do
 		[ -e "$patches_file" ] || continue
 		args+=" $option \"$patches_file\""
 	done
@@ -524,6 +530,29 @@ patch() {
 		unset includePatches
 	else
 		red_log "[-] Not found $1.apk"
+		exit 1
+	fi
+}
+
+#################################################
+
+morphe_disable_play_store_updates() {
+	local input_apk="./release/$1-$2.apk"
+	local output_apk="./release/$1-$2-detached.apk"
+	local patches_args
+	patches_args="$(morphe_patches_args "-p" "morphe-universal-*.mpp.disabled")"
+
+	if [ -z "$patches_args" ]; then
+		red_log "[-] Morphe universal patches bundle not found"
+		exit 1
+	fi
+
+	green_log "[+] Disabling Play Store updates for $1:"
+	if eval java -jar *cli*.jar patch $patches_args --exclusive -e "\"Disable Play Store updates\"" \
+		--out="$output_apk" --keystore=./src/morphe.keystore --purge=true --force "$input_apk"; then
+		mv "$output_apk" "$input_apk"
+	else
+		red_log "[-] Failed to disable Play Store updates for $1"
 		exit 1
 	fi
 }

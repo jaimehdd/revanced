@@ -44,7 +44,7 @@ runs:
           local body="$1"
           local app_pattern="$2"
 
-          echo "$body" | grep -oP "$app_pattern.*experimental( support)?.*?\K[0-9]+(?:\.[0-9]+)+(?![-[:alnum:].])" | head -1 || true
+          echo "$body" | grep -oP "$app_pattern.*experimental( support)?.*?\K[0-9]+(?:\.[0-9]+)+(?![-[:alnum:].])" | sort -V | tail -n1 || true
         }
 
         while true; do

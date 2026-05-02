@@ -5,6 +5,7 @@ env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   org_input: ${{ inputs.org }}
   org_event_input: ${{ github.event.inputs.org }}
+  force_patch: ${{ inputs.force_patch || false }}
 on:
   workflow_dispatch:
     inputs:
@@ -22,6 +23,11 @@ on:
         required: false
         default: false
         type: boolean
+      force_patch:
+        description: "Force patch even if release already has APK assets"
+        required: false
+        default: false
+        type: boolean
   workflow_call:
     inputs:
       org:
@@ -29,6 +35,11 @@ on:
         type: string
       use_beta:
         description: "Use beta versions"
+        required: false
+        type: boolean
+        default: false
+      force_patch:
+        description: "Force patch even if release already has APK assets"
         required: false
         type: boolean
         default: false

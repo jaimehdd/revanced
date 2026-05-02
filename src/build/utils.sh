@@ -34,6 +34,11 @@ release_exists() {
 	local repo="${repository:-$GITHUB_REPOSITORY}"
 	local release_tag="${APP_NAME}-${VARIANT}-${app_version}-${patch_version}"
 
+	if [[ "${force_patch:-false}" == "true" ]]; then
+		green_log "[+] Force patch enabled, skipping existing release check"
+		return 1
+	fi
+
 	if [[ -z "$APP_NAME" || -z "$VARIANT" || -z "$app_version" || -z "$patch_version" ]]; then
 		red_log "[-] Missing release metadata, patching will continue"
 		return 1

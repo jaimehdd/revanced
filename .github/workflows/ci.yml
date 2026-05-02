@@ -31,10 +31,6 @@ jobs:
         id: check-morphe-community
         if: steps.check-gh.outputs.internet_error == '0'
         run: bash src/etc/ci.sh hoo-dles/morphe-patches latest windy.*hoo-dles.*apk
-      - name: Check new patch Morphe Beta
-        id: check-morphe-beta
-        if: steps.check-gh.outputs.internet_error == '0'
-        run: bash src/etc/ci.sh MorpheApp/morphe-patches latest youtube-beta.*morphe.*apk
       - name: Re-run workflow if github connection not stable
         if: always() && steps.check-morphe.outcome == 'skipped' && env.retry_count < env.max_retries
         uses: actions/github-script@v9
@@ -61,7 +57,6 @@ jobs:
     outputs:
       check_morphe: ${{ steps.check-morphe.outputs.new_patch }}
       check_morphe_community: ${{ steps.check-morphe-community.outputs.new_patch }}
-      check_morphe_beta: ${{ steps.check-morphe-beta.outputs.new_patch }}
 
   Patch-Morphe:
     name: Patch Morphe
@@ -79,11 +74,3 @@ jobs:
     secrets: inherit
     with:
       org: "Morphe-Community"
-  Patch-Morphe-Beta:
-    name: Patch Morphe Beta
-    needs: check
-    if: ${{ needs.check.outputs.check_morphe_beta == 1 }}
-    uses: ./.github/workflows/manual-patch.yml
-    secrets: inherit
-    with:
-      org: "Morphe-Beta"

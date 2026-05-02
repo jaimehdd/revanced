@@ -317,7 +317,7 @@ detect_version() {
 			else
 			  list_patches_flags="list-patches --with-packages --with-versions"
 			fi
-			version=$(java -jar *cli*.jar $list_patches_flags $patch_glob | awk -v pkg="$1" '
+			version=$(eval java -jar *cli*.jar $list_patches_flags $patch_glob | awk -v pkg="$1" '
 			  BEGIN { found = 0; printing = 0 }
 			  /^Index:/ { if (printing) exit; found = 0 }
 			  /Package name: / { if ($3 == pkg) found = 1 }

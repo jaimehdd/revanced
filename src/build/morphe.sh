@@ -24,6 +24,7 @@ youtube() {
 	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
 	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
 	get_patches_key "youtube-morphe"
+	prefer_version="$youtube_experimental_support"
 	get_apk "com.google.android.youtube" "youtube" "youtube" "google-inc/youtube/youtube"
 	release_exists && return 0
 	patch "youtube" "morphe" "morphe"
@@ -40,7 +41,7 @@ reddit() {
 	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
 	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
 	get_patches_key "reddit-morphe"
-	prefer_version="2026.16.0"
+	prefer_version="${reddit_experimental_support:-2026.16.0}"
 	get_apk "com.reddit.frontpage" "reddit" "reddit" "redditinc/reddit/reddit" "Bundle_extract"
 	release_exists && return 0
 	# split_editor "reddit" "reddit"
@@ -59,6 +60,7 @@ youtube-music() {
 	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
 	# Arm64-v8a
 	get_patches_key "youtube-music-morphe"
+	prefer_version="$youtube_music_experimental_support"
 	get_apk "com.google.android.apps.youtube.music" "youtube-music-arm64-v8a" "youtube-music" "google-inc/youtube-music/youtube-music" "arm64-v8a"
 	release_exists && return 0
 	patch "youtube-music-arm64-v8a" "morphe" "morphe"

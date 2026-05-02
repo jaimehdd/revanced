@@ -10,28 +10,41 @@ else
 	tag="prerelease"
 fi
 
+morphe_universal_dl() {
+	dl_gh "morphe-patches" "MorpheApp" "$tag"
+	for patches_file in patches-*.mpp; do
+		[ -e "$patches_file" ] || continue
+		mv "$patches_file" "morphe-universal-$patches_file"
+	done
+}
+
 derevanced_dl(){
 	dl_gh "morphe-cli" "MorpheApp" "latest"
+	morphe_universal_dl
 	dl_gh "De-ReVanced" "RookieEnough" "$tag"
 }
 
 hoo-dles_dl() {
 	dl_gh "morphe-cli" "MorpheApp" "latest"
+	morphe_universal_dl
 	dl_gh "morphe-patches" "hoo-dles" "$tag"
 }
 
 brosssh_dl() {
 	dl_gh "morphe-cli" "MorpheApp" "latest"
+	morphe_universal_dl
 	dl_gh "morphe-patches" "brosssh" "$tag"
 }
 
 piko_dl(){
 	dl_gh "morphe-cli" "MorpheApp" "latest"
+	morphe_universal_dl
 	dl_gh "piko" "crimera" "prerelease"
 }
 
 binarymend_dl(){
 	dl_gh "morphe-cli" "MorpheApp" "latest"
+	morphe_universal_dl
 	dl_gh "morphe-patches" "binarymend" "$tag"
 }
 

@@ -272,6 +272,16 @@ _req() {
 req() {
     _req "$1" "$2"
 }
+
+morphe_patches_args() {
+	local option="${1:--p}" args="" patches_file
+	for patches_file in *.mpp; do
+		[ -e "$patches_file" ] || continue
+		args+=" $option \"$patches_file\""
+	done
+	printf '%s' "$args"
+}
+
 dl_apk() {
 	local url=$1 regexp=$2 output=$3
 	if [[ -z "$4" ]] || [[ $4 == "Bundle" ]] || [[ $4 == "Bundle_extract" ]]; then
@@ -300,7 +310,8 @@ detect_version() {
 
 		  if [ "$num" -ge "$min_major" ]; then
 			if [[ "$jar_prefix" == "morphe-cli-" ]]; then
-			  list_patches_flags="list-patches --with-packages --with-versions --with-options --patches"
+			  list_patches_flags="list-patches --with-packages --with-versions --with-options"
+			  patch_glob="$(morphe_patches_args "--patches")"
 			elif [ "$num" -ge 6 ]; then
 			  list_patches_flags="list-patches --packages --versions --options -bp"
 			else
@@ -480,7 +491,7 @@ patch() {
 			p="patch " b="-p *.rvp" m="" a="" ks=" --keystore=./src/_ks.keystore" pu="--purge=true" opt="--legacy-options=./src/options/$2.json" force=" --force"
 			echo "Patching with Revanced-cli inotia"
 		elif [ "$3" = morphe ]; then
-			p="patch " b="-p *.mpp" m="" a="" ks=" --keystore=./src/morphe.keystore" pu="--purge=true" opt="--options-file ./src/options/$2.json" force=" --force --continue-on-error"
+			p="patch " b="$(morphe_patches_args "-p")" m="" a="" ks=" --keystore=./src/morphe.keystore" pu="--purge=true" opt="--options-file ./src/options/$2.json" force=" --force --continue-on-error"
 			echo "Patching with Morphe"
 		else
 			if [[ $(ls revanced-cli-*.jar) =~ revanced-cli-([0-9]+) ]]; then
@@ -568,7 +579,7 @@ split_arch() {
 	green_log "[+] Splitting $1 to ${archs[i]}:"
 	if [ -f "./download/$1.apk" ]; then
 		eval java -jar *cli*.jar patch \
-		-p *.mpp $excludePatches$includePatches--options-file ./src/options/$2.json \
+		$(morphe_patches_args "-p") $excludePatches$includePatches --options-file ./src/options/$2.json \
 		--striplibs ${archs[i]} --purge=true \
 		--keystore=./src/morphe.keystore --force \
 		--out=./release/$1-${archs[i]}-$2.apk\

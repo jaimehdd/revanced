@@ -57,6 +57,11 @@ binarymend_dl(){
 	morphe_universal_dl
 	dl_gh "morphe-patches" "binarymend" "$tag"
 }
+meridianfresco_dl(){
+	dl_gh "morphe-cli" "MorpheApp" "latest"
+	morphe_universal_dl
+	dl_gh "morphe-meta-patches" "meridianfresco" "$tag"
+}
 
 #############
 # De-ReVanced
@@ -90,7 +95,7 @@ photos() {
 }
 
 facebook() {
-	derevanced_dl
+	meridianfresco_dl
 	# Patch Facebook:
 	APP_NAME="facebook"
 	VARIANT="drv"
@@ -103,7 +108,7 @@ facebook() {
 	release_exists && return 0
 	url="https://d.apkpure.com/b/APK/com.facebook.katana?versionCode=457020014"
 	req "$url" "facebook-arm64-v8a.apk"
-	community_patch "facebook-arm64-v8a" "derevanced"
+	community_patch "facebook-arm64-v8a" "meridianfresco"
 }
 
 strava() {

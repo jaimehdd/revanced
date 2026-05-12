@@ -166,7 +166,6 @@ komoot() {
 	brosssh_dl
 	get_patches_key "komoot"
 	# https://apkpure.com/komoot-hike-bike-run/de.komoot.android
-	get_apkpure "com.strava" "strava-arm64-v8a" "bundle"
 	get_apkpure "de.komoot.android" "komoot-arm64-v8a" "bundle"
 	release_exists && return 0
 	community_patch "komoot-arm64-v8a" "brosssh"

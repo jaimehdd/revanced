@@ -136,6 +136,18 @@
   "apkpure": {
     "com.strava": {
       "download_url": "https://apkpure.com/strava-run-hike-android-exercise-laugh/com.strava/downloading/"
+    },
+    "de.komoot.android": {
+      "download_url": "https://apkpure.com/komoot-hike-bike-run/de.komoot.android/downloading/"
+    },
+    "com.mobilefootie.wc2010": {
+      "download_url": "https://apkpure.com/fotmob-soccer-live-scores/com.mobilefootie.wc2010/downloading/"
+    },
+    "com.windyty.android": {
+      "download_url": "https://apkpure.com/windy-com-weather-forecast/com.windyty.android/downloading/"
+    },
+    "com.flyersoft.moonreader": {
+      "download_url": "https://apkpure.com/moon-reader/com.flyersoft.moonreader/downloading/"
     }
   }
 }

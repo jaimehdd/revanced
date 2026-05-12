@@ -29,6 +29,35 @@ red_log() {
 yellow_log() {
     echo -e "\e[33m$1\e[0m"
 }
+
+set_patch_version_from_asset_name() {
+	local asset_name="$1"
+	local detected_patch_version=""
+
+	if [[ $asset_name == *.jar ]] && [[ $asset_name == *"revanced-patches"* ]]; then
+		# arsclib jar files: revanced-patches-X.Y.Z.jar
+		detected_patch_version=${asset_name#"revanced-patches-"}
+		detected_patch_version=${detected_patch_version%.jar}
+	elif [[ $asset_name == *.rvp ]] && [[ $asset_name == *"patches-"* ]]; then
+		# rvp files: patches-X.Y.Z.rvp or revanced-patches-X.Y.Z.rvp
+		if [[ $asset_name == *"revanced-patches-"* ]]; then
+			detected_patch_version=${asset_name#"revanced-patches-"}
+		else
+			detected_patch_version=${asset_name#"patches-"}
+		fi
+		detected_patch_version=${detected_patch_version%.rvp}
+	elif [[ $asset_name == *.mpp ]] && [[ $asset_name == *"patches-"* ]]; then
+		# mpp files: patches-X.Y.Z.mpp (Morphe)
+		detected_patch_version=${asset_name#"patches-"}
+		detected_patch_version=${detected_patch_version%.mpp}
+	fi
+
+	if [[ -n "$detected_patch_version" ]]; then
+		patch_version="$detected_patch_version"
+		echo "patch_version=$patch_version" >> $GITHUB_ENV
+		green_log "Patch version: $patch_version"
+	fi
+}
 #################################################
 
 release_exists() {
@@ -102,13 +131,7 @@ dl_gh() {
 							name=$(basename "$url")
 							wget -q -O "$name" "$url"
 							green_log "[+] Downloading $name from $owner"
-							if [[ $name == *.mpp ]] && [[ $name == *"patches-"* ]]; then
-								# mpp files: patches-X.Y.Z.mpp (Morphe)
-								patch_version=${name#"patches-"}
-								patch_version=${patch_version%.mpp}
-								green_log "Patch version: $patch_version"
-								echo "patch_version=$patch_version" >> $GITHUB_ENV
-							fi
+							set_patch_version_from_asset_name "$name"
 						fi
 					fi
 				fi
@@ -126,13 +149,7 @@ dl_gh() {
 			while read -r url names; do
    				if [[ $url != *.asc ]]; then
 					green_log "[+] Downloading $names from $2"
-					if [[ $names == *.mpp ]] && [[ $names == *"patches-"* ]]; then
-						# mpp files: patches-X.Y.Z.mpp (Morphe)
-						patch_version=${names#"patches-"}
-						patch_version=${patch_version%.mpp}
-						echo "patch_version=$patch_version" >> $GITHUB_ENV
-						green_log "Patch version: $patch_version"
-					fi
+					set_patch_version_from_asset_name "$names"
 					wget -q -O "$names" $url
 					fi
 			done < <(wget -qO- "https://api.github.com/repos/$2/$repo/releases/$tags" | jq -r '.assets[] | "\(.browser_download_url) \(.name)"')
@@ -304,20 +321,41 @@ detect_version() {
 
 		  if [ "$num" -ge "$min_major" ]; then
 			if [[ "$jar_prefix" == "morphe-cli-" ]]; then
+			  local morphe_patch_args=()
 			  list_patches_flags="list-patches --with-packages --with-versions --with-options"
-			  patch_glob="$(morphe_patches_args "--patches")"
+			  for patches_file in *.mpp; do
+				[ -e "$patches_file" ] || continue
+				morphe_patch_args+=(--patches "$patches_file")
+			  done
+			  if [ ${#morphe_patch_args[@]} -eq 0 ]; then
+				continue
+			  fi
+			  version=$(java -jar *cli*.jar $list_patches_flags "${morphe_patch_args[@]}" | awk -v pkg="$1" '
+				BEGIN { found = 0; printing = 0 }
+				/^Index:/ { if (printing) exit; found = 0 }
+				/Package name: / { if ($3 == pkg) found = 1 }
+				/Compatible versions:/ { if (found) printing = 1; next }
+				printing && $1 ~ /^[0-9]+\./ { print $1 }
+			  ' | sort -V | tail -n1)
 			elif [ "$num" -ge 6 ]; then
 			  list_patches_flags="list-patches --packages --versions --options -bp"
+			  version=$(java -jar *cli*.jar $list_patches_flags $patch_glob | awk -v pkg="$1" '
+				BEGIN { found = 0; printing = 0 }
+				/^Index:/ { if (printing) exit; found = 0 }
+				/Package name: / { if ($3 == pkg) found = 1 }
+				/Compatible versions:/ { if (found) printing = 1; next }
+				printing && $1 ~ /^[0-9]+\./ { print $1 }
+			  ' | sort -V | tail -n1)
 			else
 			  list_patches_flags="list-patches --with-packages --with-versions"
+			  version=$(java -jar *cli*.jar $list_patches_flags $patch_glob | awk -v pkg="$1" '
+				BEGIN { found = 0; printing = 0 }
+				/^Index:/ { if (printing) exit; found = 0 }
+				/Package name: / { if ($3 == pkg) found = 1 }
+				/Compatible versions:/ { if (found) printing = 1; next }
+				printing && $1 ~ /^[0-9]+\./ { print $1 }
+			  ' | sort -V | tail -n1)
 			fi
-			version=$(java -jar *cli*.jar $list_patches_flags $patch_glob | awk -v pkg="$1" '
-			  BEGIN { found = 0; printing = 0 }
-			  /^Index:/ { if (printing) exit; found = 0 }
-			  /Package name: / { if ($3 == pkg) found = 1 }
-			  /Compatible versions:/ { if (found) printing = 1; next }
-			  printing && $1 ~ /^[0-9]+\./ { print $1 }
-			' | sort -V | tail -n1)
 		  else
 			version=$(jq -r '[.. | objects | select(.name == "'"$1"'" and .versions != null) | .versions[]] | reverse | .[0] // ""' *.json 2>/dev/null | uniq)
 		  fi
@@ -352,6 +390,7 @@ get_apk() {
 	local pkg_type=${3:-apk} arch=${4:-} dpi=${5:-nodpi} minver=${6:-}
 	local base_url="https://www.apkmirror.com"
 	local html=""
+	local version_slug=""
 
 	local apps_json="./src/build/apps.json"
 	local list_url example_url
@@ -377,7 +416,6 @@ get_apk() {
 
 	green_log "[+] Detected version: ${version:-latest} [$pkg_name]"
 	green_log "[+] Downloading $apk_name (type=$pkg_type arch=${arch:-any} dpi=$dpi)"
-	echo "APP_VERSION=$version" >> $GITHUB_ENV
 
 	local version_href=""
 
@@ -446,6 +484,18 @@ get_apk() {
 		echo "$base_url$version_href"
 		_fs_get "$base_url$version_href" || return 1
 	fi
+
+	# If compatible version lookup was empty, derive app version from selected release URL slug.
+	if [[ -z "$version" ]]; then
+		version_slug=$(echo "$version_href" | grep -oP '\d+(-\d+)+' | tail -1)
+		if [[ -n "$version_slug" ]]; then
+			version=${version_slug//-/.}
+		fi
+	fi
+
+	export version
+	echo "APP_VERSION=$version" >> $GITHUB_ENV
+	green_log "[+] APP_VERSION: ${version:-unknown}"
 
 	local type_badge="APK"
 	[[ "$pkg_type" == "bundle" || "$pkg_type" == "bundle_extract" ]] && type_badge="BUNDLE"

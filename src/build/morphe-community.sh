@@ -143,20 +143,6 @@ instagram-piko() {
 #############
 # Brosssh
 #############
-instagram() {
-	# Patch Instagram:
-	APP_NAME="instagram"
-	VARIANT="brosssh"
-	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
-	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
-
-	brosssh_dl
-	get_patches_key "instagram"
-	get_apk "com.instagram.android" "instagram-arm64-v8a" "bundle" "arm64-v8a" "120-640dpi"  "Android 9.0+"
-	release_exists && return 0
-	community_patch "instagram-arm64-v8a" "brosssh"
-}
-
 komoot() {
 	APP_NAME="komoot"
 	VARIANT="brosssh"

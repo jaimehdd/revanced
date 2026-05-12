@@ -23,7 +23,10 @@ xposed_dl() {
 }
 
 xposed_disable_play_store_updates() {
-	morphe_disable_play_store_updates "$1" "gnadgnaoh-lspatched"
+	local variant="playstore-detached"
+	cp "./download/$1.apk" "./release/$1-$variant.apk"
+	morphe_disable_play_store_updates "$1" "$variant"
+	mv "./release/$1-$variant.apk" "./download/$1.apk"
 }
 
 facebook() {
@@ -36,8 +39,8 @@ facebook() {
 	xposed_dl
 	# Patch Facebook:
 	get_apk "com.facebook.katana" "facebook-arm64-v8a" "bundle" "arm64-v8a" "nodpi" "Android 9+"
-	lspatch "facebook-arm64-v8a" "NexAlloy*.apk" "gnadgnaoh"
 	xposed_disable_play_store_updates "facebook-arm64-v8a"
+	lspatch "facebook-arm64-v8a" "NexAlloy*.apk" "gnadgnaoh"
 }
 
 messenger() {
@@ -50,8 +53,8 @@ messenger() {
 	xposed_dl
 	# Patch Messenger:
 	get_apk "com.facebook.orca" "messenger-arm64-v8a" "bundle" "arm64-v8a" "nodpi" "Android 9+"
-	lspatch "messenger-arm64-v8a" "NexAlloy*.apk" "gnadgnaoh"
 	xposed_disable_play_store_updates "messenger-arm64-v8a"
+	lspatch "messenger-arm64-v8a" "NexAlloy*.apk" "gnadgnaoh"
 }
 
 instagram() {
@@ -64,8 +67,8 @@ instagram() {
 	xposed_dl
 	# Patch Instagram:
 	get_apk "com.instagram.android" "instagram-arm64-v8a" "bundle" "arm64-v8a" "120-640dpi"  "Android 9.0+"
-	lspatch "instagram-arm64-v8a" "NexAlloy*.apk" "gnadgnaoh"
 	xposed_disable_play_store_updates "instagram-arm64-v8a"
+	lspatch "instagram-arm64-v8a" "NexAlloy*.apk" "gnadgnaoh"
 }
 
 case "$1" in

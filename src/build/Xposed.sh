@@ -11,6 +11,7 @@ facebook() {
 	VARIANT="xposed"
 	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
 	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
+	echo "patch_version=1" >> $GITHUB_ENV
 
 	LSPatch_dl
 	dl_gh "NexAlloy" "gnadgnaoh" "prerelease"
@@ -24,6 +25,7 @@ instagram() {
 	VARIANT="xposed"
 	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
 	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
+	echo "patch_version=1" >> $GITHUB_ENV
 
 	LSPatch_dl
 	dl_gh "NexAlloy" "gnadgnaoh" "prerelease"

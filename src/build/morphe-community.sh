@@ -96,7 +96,7 @@ photos() {
 }
 
 facebook() {
-	meridianfresco_dl
+	derevanced_dl
 	# Patch Facebook:
 	APP_NAME="facebook"
 	VARIANT="drv"
@@ -106,7 +106,7 @@ facebook() {
 	get_patches_key "facebook"
 	get_apk "com.facebook.orca" "facebook-arm64-v8a" "bundle" "arm64-v8a" "nodpi" "Android 11+"
 	release_exists && return 0
-	community_patch "facebook-arm64-v8a" "meridianfresco"
+	community_patch "facebook-arm64-v8a" "derevanced"
 }
 
 strava() {

@@ -107,3 +107,31 @@ jobs:
         uses: ./.github/actions/release
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+  patch_xposed:
+    name: Patch Xposed
+    if: ${{ github.event.inputs.org == 'Xposed' || inputs.org == 'Xposed' }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        run: [instagram, facebook]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6.0.2
+      - name: Preparing to patch
+        uses: ./.github/actions/preparing
+      - name: Check github connection
+        id: check-gh-xposed
+        run: bash src/etc/connection.sh
+      - name: Patch apk
+        id: patch-xposed
+        if: steps.check-gh-xposed.outputs.internet_error == '0'
+        env:
+          use_beta: ${{ inputs.use_beta }}
+        run: bash src/build/Xposed.sh ${{ matrix.run }}
+      - name: Releasing APK files
+        id: release-xposed
+        if: steps.check-gh-xposed.outputs.internet_error == '0'
+        uses: ./.github/actions/release
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}

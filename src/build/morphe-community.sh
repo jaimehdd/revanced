@@ -104,7 +104,7 @@ facebook() {
 	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
 	# Arm64-v8a
 	get_patches_key "facebook"
-	get_apk "com.facebook.orca" "facebook-arm64-v8a" "bundle" "arm64-v8a" "nodpi" "Android 11+"
+	get_apk "com.facebook.katana" "facebook-arm64-v8a" "bundle" "arm64-v8a" "nodpi" "Android 9.0+"
 	release_exists && return 0
 	community_patch "facebook-arm64-v8a" "derevanced"
 }

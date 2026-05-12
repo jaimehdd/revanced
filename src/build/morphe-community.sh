@@ -57,6 +57,7 @@ binarymend_dl(){
 	morphe_universal_dl
 	dl_gh "morphe-patches" "binarymend" "$tag"
 }
+
 meridianfresco_dl(){
 	dl_gh "morphe-cli" "MorpheApp" "latest"
 	morphe_universal_dl
@@ -75,7 +76,7 @@ messenger() {
 	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
 	# Arm64-v8a
 	get_patches_key "messenger"
-	get_apkpure "com.facebook.orca" "messenger-arm64-v8a" "facebook-messenger/com.facebook.orca"
+	get_apk "com.facebook.orca" "messenger-arm64-v8a" "apk" "arm64-v8a" "nodpi" "Android 9.0+"
 	release_exists && return 0
 	community_patch "messenger-arm64-v8a" "derevanced"
 }
@@ -89,7 +90,7 @@ photos() {
 	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
 	# Arm64-v8a
 	get_patches_key "gg-photos"
-	get_apk "com.google.android.apps.photos" "gg-photos-arm64-v8a" "photos" "google-inc/photos/google-photos" "arm64-v8a" "nodpi"
+	get_apk "com.google.android.apps.photos" "gg-photos-arm64-v8a" "apk" "arm64-v8a" "nodpi"
 	release_exists && return 0
 	community_patch "gg-photos-arm64-v8a" "derevanced"
 }
@@ -103,11 +104,8 @@ facebook() {
 	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
 	# Arm64-v8a
 	get_patches_key "facebook"
-	version="490.0.0.63.82"
-	echo "APP_VERSION=$version" >> $GITHUB_ENV
+	get_apk "com.facebook.orca" "facebook-arm64-v8a" "bundle" "arm64-v8a" "nodpi" "Android 11+"
 	release_exists && return 0
-	url="https://d.apkpure.com/b/APK/com.facebook.katana?versionCode=457020014"
-	req "$url" "facebook-arm64-v8a.apk"
 	community_patch "facebook-arm64-v8a" "meridianfresco"
 }
 
@@ -119,7 +117,7 @@ strava() {
 	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
 	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
 	get_patches_key "strava"
-	get_apkpure "com.strava" "strava-arm64-v8a" "strava-run-hike-android-exercise-laugh/com.strava" "Bundle"
+	get_apkpure "com.strava" "strava-arm64-v8a" "bundle"
 	release_exists && return 0
 	community_patch "strava-arm64-v8a" "derevanced"
 }
@@ -137,7 +135,7 @@ instagram-piko() {
 	piko_dl
 	# Patch Instagram
 	get_patches_key "instagram-piko"
-	get_apkpure "com.instagram.android" "instagram-arm64-v8a" "instagram-android/com.instagram.android" "Bundle"
+	get_apk "com.instagram.android" "instagram-arm64-v8a" "bundle" "arm64-v8a" "120-640dpi"  "Android 9.0+"
 	release_exists && return 0
 	community_patch "instagram-arm64-v8a" "piko"
 }
@@ -154,7 +152,7 @@ instagram() {
 
 	brosssh_dl
 	get_patches_key "instagram"
-	get_apkpure "com.instagram.android" "instagram-arm64-v8a" "instagram-android/com.instagram.android" "Bundle"
+	get_apk "com.instagram.android" "instagram-arm64-v8a" "bundle" "arm64-v8a" "120-640dpi"  "Android 9.0+"
 	release_exists && return 0
 	community_patch "instagram-arm64-v8a" "brosssh"
 }
@@ -168,7 +166,8 @@ komoot() {
 	brosssh_dl
 	get_patches_key "komoot"
 	# https://apkpure.com/komoot-hike-bike-run/de.komoot.android
-	get_apkpure "de.komoot.android" "komoot-arm64-v8a" "komoot-hike-bike-run/de.komoot.android" "Bundle"
+	get_apkpure "com.strava" "strava-arm64-v8a" "bundle"
+	get_apkpure "de.komoot.android" "komoot-arm64-v8a" "bundle"
 	release_exists && return 0
 	community_patch "komoot-arm64-v8a" "brosssh"
 }
@@ -198,7 +197,7 @@ fotmob() {
 	hoo-dles_dl
 	get_patches_key "fotmob"
 	# https://apkpure.com/fotmob-soccer-live-scores/com.mobilefootie.wc2010
-	get_apkpure "com.mobilefootie.wc2010" "fotmob-arm64-v8a" "fotmob-soccer-live-scores/com.mobilefootie.wc2010" "Bundle"
+	get_apkpure "com.mobilefootie.wc2010" "fotmob-arm64-v8a" "bundle"
 	release_exists && return 0
 	community_patch "fotmob-arm64-v8a" "hoo-dles"
 }
@@ -212,7 +211,7 @@ windy() {
 	hoo-dles_dl
 	get_patches_key "windy"
 	# https://apkpure.com/windy-com-weather-forecast/com.windyty.android
-	get_apkpure "com.windyty.android" "windy-arm64-v8a" "windy-com-weather-forecast/com.windyty.android" "Bundle"
+	get_apkpure "com.windyty.android" "windy-arm64-v8a" "bundle"
 	release_exists && return 0
 	community_patch "windy-arm64-v8a" "hoo-dles"
 }
@@ -229,7 +228,7 @@ moonreader() {
 	binarymend_dl
 	get_patches_key "moonreader"
 	# https://apkpure.com/moon-reader/com.flyersoft.moonreader
-	get_apkpure "com.flyersoft.moonreader" "moonreader-arm64-v8a" "moon-reader/com.flyersoft.moonreader" "Bundle"
+	get_apkpure "com.flyersoft.moonreader" "moonreader-arm64-v8a" "bundle"
 	release_exists && return 0
 	community_patch "moonreader-arm64-v8a" "binarymend"
 }

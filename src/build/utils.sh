@@ -368,26 +368,32 @@ detect_version() {
 
 _fs_get() {
 	local url=$1
-	local response
-	response=$(curl -s -X POST 'http://localhost:8191/v1' \
-		-H 'Content-Type: application/json' \
-		-d "{\"cmd\":\"request.get\",\"url\":\"$url\",\"maxTimeout\":60000}")
-	local status
-	status=$(echo "$response" | jq -r '.status // empty')
-	if [[ "$status" != "ok" ]]; then
-		red_log "[-] FlareSolverr failed: $url"
-		return 1
-	fi
-	html=$(echo "$response" | jq -r '.solution.response // empty')
-	export FS_COOKIES
-	FS_COOKIES=$(echo "$response" | jq -r '[.solution.cookies[] | .name + "=" + .value] | join("; ")')
-	user_agent=$(echo "$response" | jq -r '.solution.userAgent // empty')
-	return 0
+	local max_retries=5
+	local attempt
+	for attempt in $(seq 1 $max_retries); do
+		local response
+		response=$(curl -s -X POST 'http://localhost:8191/v1' \
+			-H 'Content-Type: application/json' \
+			-d "{\"cmd\":\"request.get\",\"url\":\"$url\",\"maxTimeout\":60000}")
+		local status
+		status=$(echo "$response" | jq -r '.status // empty')
+		if [[ "$status" == "ok" ]]; then
+			html=$(echo "$response" | jq -r '.solution.response // empty')
+			export FS_COOKIES
+			FS_COOKIES=$(echo "$response" | jq -r '[.solution.cookies[] | .name + "=" + .value] | join("; ")')
+			user_agent=$(echo "$response" | jq -r '.solution.userAgent // empty')
+			return 0
+		fi
+		yellow_log "[!] FlareSolverr attempt $attempt/$max_retries failed: $url"
+		sleep 10
+	done
+	red_log "[-] FlareSolverr failed after $max_retries attempts: $url"
+	return 1
 }
 
 get_apk() {
 	local pkg_name=$1 apk_name=$2
-	local pkg_type=${3:-apk} arch=${4:-} dpi=${5:-nodpi} minver=${6:-}
+	local pkg_type=${3:-apk} arch=${4:-} dpi=${5:-} minver=${6:-}
 	local base_url="https://www.apkmirror.com"
 	local html=""
 	local version_slug=""
@@ -502,29 +508,60 @@ get_apk() {
 	vtable_html=$(echo "$html" | $pup 'div.variants-table')
 	rows=$(echo "$vtable_html" | tr '\n' ' ' | sed 's/<div class="table-row/\n<div class="table-row/g')
 
-	if [[ -n "$arch" ]]; then
-		variant_href=$(echo "$rows" | grep -iP "apkm-badge[^>]*>\s*$type_badge\s*<" | grep -i "$arch" | \
-			grep -oP 'accent_color[^>]*href="\K[^"]+' | head -1)
+	local dpi_fallback=("120-640dpi" "120-480dpi" "480-640dpi" "480dpi")
+	local type_attempts=("$type_badge")
+	if [[ "$type_badge" == "BUNDLE" ]]; then
+		type_attempts+=("APK")
+	else
+		type_attempts+=("BUNDLE")
 	fi
 
-	if [[ -z "$variant_href" ]]; then
-		variant_href=$(echo "$rows" | grep -iP "apkm-badge[^>]*>\s*$type_badge\s*<" | \
-			grep -oP 'accent_color[^>]*href="\K[^"]+' | head -1)
-	fi
+	local matched_type=""
+	for try_type in "${type_attempts[@]}"; do
+		local filtered_rows
+		filtered_rows=$(echo "$rows" | grep -iP "apkm-badge[^>]*>\s*$try_type\s*<")
+		[[ -n "$arch" ]] && filtered_rows=$(echo "$filtered_rows" | grep -i "$arch")
+		[[ -n "$minver" ]] && filtered_rows=$(echo "$filtered_rows" | grep -i "$minver")
+
+		if [[ -n "$dpi" ]]; then
+			local dpi_filtered
+			dpi_filtered=$(echo "$filtered_rows" | grep -i "$dpi")
+			if [[ -z "$dpi_filtered" ]]; then
+				for fb_dpi in "${dpi_fallback[@]}"; do
+					dpi_filtered=$(echo "$filtered_rows" | grep -i "$fb_dpi")
+					[[ -n "$dpi_filtered" ]] && { yellow_log "[!] DPI fallback: $dpi -> $fb_dpi"; break; }
+				done
+			fi
+			filtered_rows="$dpi_filtered"
+		fi
+
+		variant_href=$(echo "$filtered_rows" | grep -oP 'accent_color[^>]*href="\K[^"]+' | head -1)
+		if [[ -n "$variant_href" ]]; then
+			matched_type="$try_type"
+			[[ "$try_type" != "$type_badge" ]] && yellow_log "[!] Type fallback: $type_badge -> $try_type"
+			break
+		fi
+	done
 
 	if [[ -z "$variant_href" ]]; then
-		red_log "[-] Could not find variant (type=$type_badge arch=${arch:-any})"
+		red_log "[-] Could not find variant (type=$type_badge arch=${arch:-any} dpi=$dpi)"
 		return 1
 	fi
 	variant_href=$(echo "$variant_href" | sed 's/&amp;/\&/g')
 	echo "$base_url$variant_href"
+
+	if [[ "$matched_type" == "BUNDLE" ]]; then
+		base_apk="$apk_name.apkm"
+	else
+		base_apk="$apk_name.apk"
+	fi
 
 	_fs_get "$base_url$variant_href" || return 1
 
 	local dl_btn_href
 	local all_dl_btns
 	all_dl_btns=$(echo "$html" | $pup 'a.downloadButton attr{href}')
-	if [[ "$pkg_type" == "bundle" || "$pkg_type" == "bundle_extract" ]]; then
+	if [[ "$matched_type" == "BUNDLE" ]]; then
 		dl_btn_href=$(echo "$all_dl_btns" | grep -v 'forcebaseapk' | head -1)
 		[[ -z "$dl_btn_href" ]] && dl_btn_href=$(echo "$all_dl_btns" | head -1)
 	else
@@ -568,11 +605,13 @@ get_apk() {
 		return 1
 	fi
 
-	if [[ "$pkg_type" == "bundle" ]]; then
-		green_log "[+] Merge splits apk to standalone apk"
-		java -jar $APKEditor m -i "./download/$apk_name.apkm" -o "./download/$apk_name.apk" > /dev/null 2>&1
-	elif [[ "$pkg_type" == "bundle_extract" ]]; then
-		unzip "./download/$base_apk" -d "./download/$(basename "$base_apk" .apkm)" > /dev/null 2>&1
+	if [[ "$matched_type" == "BUNDLE" ]]; then
+		if [[ "$pkg_type" == "bundle_extract" && "$type_badge" == "BUNDLE" ]]; then
+			unzip "./download/$base_apk" -d "./download/$(basename "$base_apk" .apkm)" > /dev/null 2>&1
+		else
+			green_log "[+] Merge splits apk to standalone apk"
+			java -jar $APKEditor m -i "./download/$apk_name.apkm" -o "./download/$apk_name.apk" > /dev/null 2>&1
+		fi
 	fi
 }
 

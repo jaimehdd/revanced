@@ -38,7 +38,7 @@ facebook() {
 
 	xposed_dl
 	# Patch Facebook:
-	get_apk "com.facebook.katana" "facebook-arm64-v8a" "bundle" "arm64-v8a" "nodpi" "Android 9+"
+	get_apk "com.facebook.katana" "facebook-arm64-v8a" "apk" "arm64-v8a" "nodpi" "Android 9.0+"
 	xposed_disable_play_store_updates "facebook-arm64-v8a"
 	lspatch "facebook-arm64-v8a" "NexAlloy*.apk" "gnadgnaoh"
 }
@@ -52,7 +52,7 @@ messenger() {
 
 	xposed_dl
 	# Patch Messenger:
-	get_apk "com.facebook.orca" "messenger-arm64-v8a" "bundle" "arm64-v8a" "nodpi" "Android 9+"
+	get_apk "com.facebook.orca" "messenger-arm64-v8a" "apk" "arm64-v8a" "nodpi" "Android 9.0+"
 	xposed_disable_play_store_updates "messenger-arm64-v8a"
 	lspatch "messenger-arm64-v8a" "NexAlloy*.apk" "gnadgnaoh"
 }

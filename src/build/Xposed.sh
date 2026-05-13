@@ -18,8 +18,7 @@ xposed_dl() {
 	LSPatch_dl
 	dl_gh "morphe-cli" "MorpheApp" "latest"
 	xposed_morphe_universal_dl
-	dl_gh "NexAlloy" "gnadgnaoh" "prerelease"
-	echo "patch_version=1" >> $GITHUB_ENV
+	dl_gh "NexAlloy" "gnadgnaoh" "v58"
 }
 
 xposed_disable_play_store_updates() {
@@ -38,7 +37,7 @@ facebook() {
 
 	xposed_dl
 	# Patch Facebook:
-	get_apk "com.facebook.katana" "facebook-arm64-v8a" "apk" "arm64-v8a" "nodpi" "Android 9.0+"
+	get_apk "com.facebook.katana" "facebook-arm64-v8a" "apk" "arm64-v8a" "nodpi" "Android 11+"
 	xposed_disable_play_store_updates "facebook-arm64-v8a"
 	lspatch "facebook-arm64-v8a" "NexAlloy*.apk" "gnadgnaoh"
 }

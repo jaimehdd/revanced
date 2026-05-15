@@ -18,7 +18,7 @@ xposed_dl() {
 	LSPatch_dl
 	dl_gh "morphe-cli" "MorpheApp" "latest"
 	xposed_morphe_universal_dl
-	dl_gh "NexAlloy" "gnadgnaoh" "v58"
+	dl_gh "NexAlloy" "gnadgnaoh" "prerelease" # or `v58`
 }
 
 xposed_disable_play_store_updates() {

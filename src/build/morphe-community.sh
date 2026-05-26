@@ -90,7 +90,7 @@ photos() {
 	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
 	# Arm64-v8a
 	get_patches_key "gg-photos"
-	get_apk "com.google.android.apps.photos" "gg-photos-arm64-v8a" "apk" "arm64-v8a" "nodpi"
+	get_apk "com.google.android.apps.photos" "gg-photos-arm64-v8a" "bundle" "arm64-v8a" "320-640dpi" "Android 12L+"
 	release_exists && return 0
 	community_patch "gg-photos-arm64-v8a" "derevanced"
 }
@@ -151,8 +151,7 @@ komoot() {
 
 	brosssh_dl
 	get_patches_key "komoot"
-	# https://apkpure.com/komoot-hike-bike-run/de.komoot.android
-	get_apkpure "de.komoot.android" "komoot-arm64-v8a" "bundle"
+	get_apk "de.komoot.android" "komoot-arm64-v8a" "bundle" "universal" "120-640dpi" "Android 8.0+"
 	release_exists && return 0
 	community_patch "komoot-arm64-v8a" "brosssh"
 }
@@ -181,8 +180,7 @@ fotmob() {
 
 	hoo-dles_dl
 	get_patches_key "fotmob"
-	# https://apkpure.com/fotmob-soccer-live-scores/com.mobilefootie.wc2010
-	get_apkpure "com.mobilefootie.wc2010" "fotmob-arm64-v8a" "bundle"
+	get_apk "com.mobilefootie.wc2010" "fotmob-arm64-v8a" "bundle" "universal" "nodpi" "Android 12L+"
 	release_exists && return 0
 	community_patch "fotmob-arm64-v8a" "hoo-dles"
 }
@@ -195,8 +193,7 @@ windy() {
 
 	hoo-dles_dl
 	get_patches_key "windy"
-	# https://apkpure.com/windy-com-weather-forecast/com.windyty.android
-	get_apkpure "com.windyty.android" "windy-arm64-v8a" "bundle"
+	get_apk "com.windyty.android" "windy-arm64-v8a" "bundle" "universal" "120-640dpi" "Android 8.0+"
 	release_exists && return 0
 	community_patch "windy-arm64-v8a" "hoo-dles"
 }
@@ -212,7 +209,6 @@ moonreader() {
 
 	binarymend_dl
 	get_patches_key "moonreader"
-	# https://apkpure.com/moon-reader/com.flyersoft.moonreader
 	get_apkpure "com.flyersoft.moonreader" "moonreader-arm64-v8a" "bundle"
 	release_exists && return 0
 	community_patch "moonreader-arm64-v8a" "binarymend"

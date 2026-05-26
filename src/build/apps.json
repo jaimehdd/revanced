@@ -1,5 +1,17 @@
 {
   "apkmirror": {
+    "de.komoot.android": {
+      "list_url": "https://www.apkmirror.com/uploads/?appcategory=komoot-cycling-hiking-mountain-biking-maps",
+      "example_url": "https://www.apkmirror.com/apk/komoot-gmbh/komoot-cycling-hiking-mountain-biking-maps/komoot-hike-bike-run-2026-21-2-release/"
+    },
+    "com.mobilefootie.wc2010": {
+      "list_url": "https://www.apkmirror.com/uploads/?appcategory=fotmob-live-soccer-scores",
+      "example_url": "https://www.apkmirror.com/apk/fotmob-as/fotmob-live-soccer-scores/fotmob-soccer-live-scores-233-16746-20260521-release/"
+    },
+    "com.windyty.android": {
+      "list_url": "https://www.apkmirror.com/uploads/?appcategory=windy-wind-waves-and-hurricanes-forecast",
+      "example_url": "https://www.apkmirror.com/apk/windyty-se/windy-wind-waves-and-hurricanes-forecast/windy-com-weather-forecast-50-0-2-release/"
+    },
     "ch.protonmail.android": {
       "list_url": "https://www.apkmirror.com/uploads/?appcategory=protonmail-encrypted-email",
       "example_url": "https://www.apkmirror.com/apk/proton-technologies-ag/protonmail-encrypted-email/proton-mail-encrypted-email-7-9-4-release/"

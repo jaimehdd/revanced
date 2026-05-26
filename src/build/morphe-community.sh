@@ -31,7 +31,7 @@ community_patch() {
 derevanced_dl(){
 	dl_gh "morphe-cli" "MorpheApp" "latest"
 	morphe_universal_dl
-	dl_gh "De-ReVanced" "RookieEnough" "$tag"
+	dl_gh "De-Vanced" "RookieEnough" "$tag"
 }
 
 hoo-dles_dl() {

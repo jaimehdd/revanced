@@ -37,7 +37,7 @@ facebook() {
 
 	xposed_dl
 	# Patch Facebook:
-	version="561.0.0.42.67"
+	version="564.0.0.48.74"
 	get_apk "com.facebook.katana" "facebook-arm64-v8a" "bundle" "arm64-v8a" "nodpi" "Android 11+"
 	xposed_disable_play_store_updates "facebook-arm64-v8a"
 	lspatch "facebook-arm64-v8a" "NexAlloy-nonroot-release*.apk" "gnadgnaoh"

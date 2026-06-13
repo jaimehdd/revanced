@@ -121,6 +121,8 @@ jobs:
         uses: actions/checkout@v6.0.2
       - name: Preparing to patch
         uses: ./.github/actions/preparing
+        with:
+          install_bouncy_castle: 'true'
       - name: Check github connection
         id: check-gh-xposed
         run: bash src/etc/connection.sh

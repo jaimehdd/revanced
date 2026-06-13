@@ -13,8 +13,8 @@ APKEditor="./APKEditor.jar"
 user_agent=$(wget -qO- https://www.whatismybrowser.com/guides/the-latest-user-agent/firefox | tr '\n' ' ' | sed 's#</tr>#\n#g' | grep 'Firefox (Standard)' | sed -n 's/.*<span class="code">\([^<]*Android[^<]*\)<\/span>.*/\1/p') \
 || user_agent=
 [ -z "$user_agent" ] && {
-	user_agent='Mozilla/5.0 (Android 16; Mobile; rv:146.0) Gecko/146.0 Firefox/146.0'
-	echo "[-] Can't found lastest user-agent"
+  user_agent='Mozilla/5.0 (Android 16; Mobile; rv:146.0) Gecko/146.0 Firefox/146.0'
+  echo "[-] Can't found lastest user-agent"
 }
 
 #################################################
@@ -58,7 +58,6 @@ set_patch_version_from_asset_name() {
 		green_log "Patch version: $patch_version"
 	fi
 }
-#################################################
 
 release_exists() {
 	local app_version="${APP_VERSION:-$version}"
@@ -97,64 +96,69 @@ release_exists() {
 
 # Download Github assets requirement:
 dl_gh() {
-	if [ $3 == "prerelease" ]; then
-		local repo=$1
-		for repo in $1 ; do
-			local owner=$2 tag=$3 found=0 assets=0
-			releases=$(wget -qO- "https://api.github.com/repos/$owner/$repo/releases")
-			while read -r line; do
-				if [[ $line == *"\"tag_name\":"* ]]; then
-					tag_name=$(echo $line | cut -d '"' -f 4)
-					if [ "$tag" == "latest" ] || [ "$tag" == "prerelease" ]; then
-						found=1
-					else
-						found=0
-					fi
-				fi
-				if [[ $line == *"\"prerelease\":"* ]]; then
-					prerelease=$(echo $line | cut -d ' ' -f 2 | tr -d ',')
-					if [ "$tag" == "prerelease" ] && [ "$prerelease" == "true" ] ; then
-						found=1
-						elif [ "$tag" == "prerelease" ] && [ "$prerelease" == "false" ]; then
-						found=1
-					fi
-				fi
-				if [[ $line == *"\"assets\":"* ]]; then
-					if [ $found -eq 1 ]; then
-						assets=1
-					fi
-				fi
-				if [[ $line == *"\"browser_download_url\":"* ]]; then
-					if [ $assets -eq 1 ]; then
-						url=$(echo $line | cut -d '"' -f 4)
-							if [[ $url != *.asc ]]; then
-							name=$(basename "$url")
-							wget -q -O "$name" "$url"
-							green_log "[+] Downloading $name from $owner"
-							set_patch_version_from_asset_name "$name"
-						fi
-					fi
-				fi
-				if [[ $line == *"],"* ]]; then
-					if [ $assets -eq 1 ]; then
-						assets=0
-						break
-					fi
-				fi
-			done <<< "$releases"
-		done
-	else
-		for repo in $1 ; do
-			tags=$( [ "$3" == "latest" ] && echo "latest" || echo "tags/$3" )
-			while read -r url names; do
-   				if [[ $url != *.asc ]]; then
-					green_log "[+] Downloading $names from $2"
-					set_patch_version_from_asset_name "$names"
-					wget -q -O "$names" $url
-					fi
-			done < <(wget -qO- "https://api.github.com/repos/$2/$repo/releases/$tags" | jq -r '.assets[] | "\(.browser_download_url) \(.name)"')
-		done
-	fi
+  if [ $3 == "prerelease" ]; then
+    local repo=$1
+    for repo in $1 ; do
+      local owner=$2 tag=$3 found=0 assets=0
+      releases=$(wget -qO- "https://api.github.com/repos/$owner/$repo/releases")
+      while read -r line; do
+        if [[ $line == *"\"tag_name\":"* ]]; then
+          tag_name=$(echo $line | cut -d '"' -f 4)
+          if [ "$tag" == "latest" ] || [ "$tag" == "prerelease" ]; then
+            found=1
+          else
+            found=0
+          fi
+        fi
+        if [[ $line == *"\"prerelease\":"* ]]; then
+          prerelease=$(echo $line | cut -d ' ' -f 2 | tr -d ',')
+          if [ "$tag" == "prerelease" ] && [ "$prerelease" == "true" ] ; then
+            found=1
+          elif [ "$tag" == "prerelease" ] && [ "$prerelease" == "false" ]; then
+            found=1
+          fi
+        fi
+        if [[ $line == *"\"assets\":"* ]]; then
+          if [ $found -eq 1 ]; then
+            assets=1
+          fi
+        fi
+        if [[ $line == *"\"browser_download_url\":"* ]]; then
+          if [ $assets -eq 1 ]; then
+            url=$(echo $line | cut -d '"' -f 4)
+            if [[ $url != *.asc ]]; then
+              name=$(basename "$url")
+              wget -q -O "$name" "$url"
+              green_log "[+] Downloading $name from $owner"
+              set_patch_version_from_asset_name "$name"
+            fi
+          fi
+        fi
+        if [[ $line == *"],"* ]]; then
+          if [ $assets -eq 1 ]; then
+            assets=0
+            break
+          fi
+        fi
+      done <<< "$releases"
+    done
+  else
+    for repo in $1 ; do
+      tags=$( [ "$3" == "latest" ] && echo "latest" || echo "tags/$3" )
+      wget -qO- "https://api.github.com/repos/$2/$repo/releases/$tags" \
+        | jq -r '.assets[] | "\(.browser_download_url) \(.name)"' \
+        | while read -r url names; do
+          if [[ $url != *.asc ]]; then
+            if [[ "$3" == "latest" && "$names" == *dev* ]]; then
+              continue
+            fi
+            green_log "[+] Downloading $names from $2"
+            set_patch_version_from_asset_name "$names"
+            wget -q -O "$names" $url
+          fi
+        done
+    done
+  fi
 }
 
 dl_gl() {
@@ -232,7 +236,7 @@ get_patches_key() {
 
 		while IFS= read -r line2 || [[ -n "$line2" ]]; do
 			[[ -z "$line2" ]] && continue
-			patch_name="${line2%%|*}"   # ignore options part for options.json flow
+			patch_name="${line2%%|*}"
 			if [[ "${separate_morphe_universal_patches:-false}" == "true" && "$patch_name" == "Disable Play Store updates" ]]; then
 				detachPlayStoreUpdates=true
 				continue
@@ -310,7 +314,6 @@ morphe_patches_args() {
 	printf '%s' "$args"
 }
 
-# Detect compatible version from CLI patches:
 detect_version() {
 	if [ -z "$version" ] && [ "$lock_version" != "1" ]; then
 	  for spec in "revanced-cli-|5|*.rvp" "morphe-cli-|1|*.mpp"; do
@@ -321,41 +324,19 @@ detect_version() {
 
 		  if [ "$num" -ge "$min_major" ]; then
 			if [[ "$jar_prefix" == "morphe-cli-" ]]; then
-			  local morphe_patch_args=()
-			  list_patches_flags="list-patches --with-packages --with-versions --with-options"
-			  for patches_file in *.mpp; do
-				[ -e "$patches_file" ] || continue
-				morphe_patch_args+=(--patches "$patches_file")
-			  done
-			  if [ ${#morphe_patch_args[@]} -eq 0 ]; then
-				continue
-			  fi
-			  version=$(java -jar *cli*.jar $list_patches_flags "${morphe_patch_args[@]}" | awk -v pkg="$1" '
-				BEGIN { found = 0; printing = 0 }
-				/^Index:/ { if (printing) exit; found = 0 }
-				/Package name: / { if ($3 == pkg) found = 1 }
-				/Compatible versions:/ { if (found) printing = 1; next }
-				printing && $1 ~ /^[0-9]+\./ { print $1 }
-			  ' | sort -V | tail -n1)
+			  list_patches_flags="list-patches --with-packages --with-versions --with-options --patches"
 			elif [ "$num" -ge 6 ]; then
 			  list_patches_flags="list-patches --packages --versions --options -bp"
-			  version=$(java -jar *cli*.jar $list_patches_flags $patch_glob | awk -v pkg="$1" '
-				BEGIN { found = 0; printing = 0 }
-				/^Index:/ { if (printing) exit; found = 0 }
-				/Package name: / { if ($3 == pkg) found = 1 }
-				/Compatible versions:/ { if (found) printing = 1; next }
-				printing && $1 ~ /^[0-9]+\./ { print $1 }
-			  ' | sort -V | tail -n1)
 			else
 			  list_patches_flags="list-patches --with-packages --with-versions"
-			  version=$(java -jar *cli*.jar $list_patches_flags $patch_glob | awk -v pkg="$1" '
-				BEGIN { found = 0; printing = 0 }
-				/^Index:/ { if (printing) exit; found = 0 }
-				/Package name: / { if ($3 == pkg) found = 1 }
-				/Compatible versions:/ { if (found) printing = 1; next }
-				printing && $1 ~ /^[0-9]+\./ { print $1 }
-			  ' | sort -V | tail -n1)
 			fi
+			version=$(java -jar *cli*.jar $list_patches_flags $patch_glob | awk -v pkg="$1" '
+			  BEGIN { found = 0; printing = 0 }
+			  /^Index:/ { if (printing) exit; found = 0 }
+			  /Package name: / { if ($3 == pkg) found = 1 }
+			  /Compatible versions:/ { if (found) printing = 1; next }
+			  printing && $1 ~ /^[0-9]+\./ { print $1 }
+			' | sort -V | tail -n1)
 		  else
 			version=$(jq -r '[.. | objects | select(.name == "'"$1"'" and .versions != null) | .versions[]] | reverse | .[0] // ""' *.json 2>/dev/null | uniq)
 		  fi
@@ -396,7 +377,6 @@ get_apk() {
 	local pkg_type=${3:-apk} arch=${4:-} dpi=${5:-} minver=${6:-}
 	local base_url="https://www.apkmirror.com"
 	local html=""
-	local version_slug=""
 
 	local apps_json="./src/build/apps.json"
 	local list_url example_url
@@ -740,7 +720,7 @@ patch() {
 			unset CI GITHUB_ACTION GITHUB_ACTIONS GITHUB_ACTOR GITHUB_ENV GITHUB_EVENT_NAME GITHUB_EVENT_PATH GITHUB_HEAD_REF GITHUB_JOB GITHUB_REF GITHUB_REPOSITORY GITHUB_RUN_ID GITHUB_RUN_NUMBER GITHUB_SHA GITHUB_WORKFLOW GITHUB_WORKSPACE RUN_ID RUN_NUMBER
 		fi
 		eval java -jar *cli*.jar $p$b $m$opt --out=./release/$1-$2.apk$excludePatches$includePatches$ks $pu$force $a./download/$1.apk
-		unset version
+  		unset version
 		unset lock_version
 		unset excludePatches
 		unset includePatches
@@ -768,12 +748,12 @@ morphe_disable_play_store_updates() {
 		--out="$output_apk" --keystore=./src/morphe.keystore --purge=true --force "$input_apk"; then
 		mv "$output_apk" "$input_apk"
 	else
-		red_log "[-] Not found $1.apk"
+		red_log "[-] Failed to disable Play Store updates for $1"
 		exit 1
 	fi
 }
 
-lspatch() {
+npatch() {
 	green_log "[+] Patching $1:"
 	if [ -f "./download/$1.apk" ]; then
 		local module
@@ -787,8 +767,10 @@ lspatch() {
 			red_log "[-] Module not found: $2"
 			return 1
 		fi
-		java -jar lspatch.jar ./download/$1.apk -k ./src/fiorenmas.ks fiorenmas fiorenmas fiorenmas -m "$module" -o ./release/
-		mv ./release/$1-*-lspatched.apk ./release/$1-$3-lspatched.apk
+		java -jar jar*.jar ./download/$1.apk -k ./src/fiorenmas.ks "fiorenmas" "morphe" "fiorenmas" $4 -m "$module" -o ./release/
+		mv ./release/$1-*-npatched.apk ./release/$1-$3-npatched.apk
+		unset version
+		unset lock_version
 	else
 		red_log "[-] Not found $1.apk"
 		exit 1
@@ -855,3 +837,5 @@ split_arch() {
 		exit 1
 	fi
 }
+
+#################################################

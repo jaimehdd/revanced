@@ -1,7 +1,7 @@
 #!/bin/bash
 # Morphe Community build
 source ./src/build/utils.sh
-# Download requirements
+
 use_beta="${use_beta:-false}"
 
 if [ "$use_beta" = false ]; then
@@ -34,22 +34,16 @@ derevanced_dl(){
 	dl_gh "De-Vanced" "RookieEnough" "$tag"
 }
 
-hoo-dles_dl() {
-	dl_gh "morphe-cli" "MorpheApp" "latest"
-	morphe_universal_dl
-	dl_gh "morphe-patches" "hoo-dles" "$tag"
-}
-
-brosssh_dl() {
-	dl_gh "morphe-cli" "MorpheApp" "latest"
-	morphe_universal_dl
-	dl_gh "morphe-patches" "brosssh" "$tag"
-}
-
 piko_dl(){
 	dl_gh "morphe-cli" "MorpheApp" "latest"
 	morphe_universal_dl
-	dl_gh "piko" "crimera" "prerelease"
+	dl_gh "piko" "crimera" "$tag"
+}
+
+brosssh_dl(){
+	dl_gh "morphe-cli" "MorpheApp" "latest"
+	morphe_universal_dl
+	dl_gh "morphe-patches" "brosssh" "$tag"
 }
 
 binarymend_dl(){
@@ -58,91 +52,72 @@ binarymend_dl(){
 	dl_gh "morphe-patches" "binarymend" "$tag"
 }
 
-meridianfresco_dl(){
+hoo-dles_dl(){
 	dl_gh "morphe-cli" "MorpheApp" "latest"
 	morphe_universal_dl
-	dl_gh "morphe-meta-patches" "meridianfresco" "$tag"
-}
-
-#############
-# De-ReVanced
-#############
-messenger() {
-	derevanced_dl
-	# Patch Messenger:
-	APP_NAME="messenger"
-	VARIANT="drv"
-	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
-	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
-	# Arm64-v8a
-	get_patches_key "messenger"
-	get_apk "com.facebook.orca" "messenger-arm64-v8a" "apk" "arm64-v8a" "nodpi" "Android 9.0+"
-	release_exists && return 0
-	community_patch "messenger-arm64-v8a" "derevanced"
+	dl_gh "morphe-patches" "hoo-dles" "$tag"
 }
 
 photos() {
-	derevanced_dl
-	# Patch Google photos:
 	APP_NAME="google-photos"
 	VARIANT="drv"
 	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
 	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
-	# Arm64-v8a
+
+	derevanced_dl
 	get_patches_key "gg-photos"
 	get_apk "com.google.android.apps.photos" "gg-photos-arm64-v8a" "bundle" "arm64-v8a" "320-640dpi" "Android 12L+"
+
 	release_exists && return 0
+
 	community_patch "gg-photos-arm64-v8a" "derevanced"
 }
 
-facebook() {
-	derevanced_dl
-	# Patch Facebook:
-	APP_NAME="facebook"
-	VARIANT="drv"
-	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
-	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
-	# Arm64-v8a
-	get_patches_key "facebook"
-	get_apk "com.facebook.katana" "facebook-arm64-v8a" "bundle" "arm64-v8a" "nodpi" "Android 9.0+"
-	release_exists && return 0
-	community_patch "facebook-arm64-v8a" "derevanced"
-}
-
-strava() {
-	derevanced_dl
-	# Patch Strava:
-	APP_NAME="strava"
-	VARIANT="drv"
-	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
-	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
-	get_patches_key "strava"
-	get_apkpure "com.strava" "strava-arm64-v8a" "bundle"
-	release_exists && return 0
-	community_patch "strava-arm64-v8a" "derevanced"
-}
-
-#############
-# Piko
-#############
 instagram-piko() {
-	# Patch Instagram:
 	APP_NAME="instagram"
 	VARIANT="piko"
 	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
 	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
 
 	piko_dl
-	# Patch Instagram
 	get_patches_key "instagram-piko"
-	get_apk "com.instagram.android" "instagram-arm64-v8a" "bundle" "arm64-v8a" "120-640dpi"  "Android 9.0+"
+	get_apk "com.instagram.android" "instagram-arm64-v8a" "bundle" "arm64-v8a" "120-640dpi" "Android 9.0+"
+
 	release_exists && return 0
+
 	community_patch "instagram-arm64-v8a" "piko"
 }
 
-#############
-# Brosssh
-#############
+messenger() {
+	APP_NAME="messenger"
+	VARIANT="drv"
+	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
+
+	derevanced_dl
+	get_patches_key "messenger"
+	get_apk "com.facebook.orca" "messenger-arm64-v8a" "apk" "arm64-v8a" "nodpi" "Android 9.0+"
+
+	release_exists && return 0
+
+	community_patch "messenger-arm64-v8a" "derevanced"
+}
+
+strava() {
+	APP_NAME="strava"
+	VARIANT="drv"
+	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
+
+	derevanced_dl
+	get_patches_key "strava"
+	get_apkpure "com.strava" "strava-arm64-v8a" "bundle"
+
+	release_exists && return 0
+
+	community_patch "strava-arm64-v8a" "derevanced"
+}
+
 komoot() {
 	APP_NAME="komoot"
 	VARIANT="brosssh"
@@ -152,24 +127,10 @@ komoot() {
 	brosssh_dl
 	get_patches_key "komoot"
 	get_apk "de.komoot.android" "komoot-arm64-v8a" "bundle" "universal" "120-640dpi" "Android 8.0+"
+
 	release_exists && return 0
+
 	community_patch "komoot-arm64-v8a" "brosssh"
-}
-
-#############
-# Hoo-dles
-#############
-adguard() {
-	APP_NAME="adguard"
-	VARIANT="hoo-dles"
-	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
-	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
-
-	hoo-dles_dl
-	get_patches_key "adguard"
-	get_apk "com.adguard.android" "adguard" "adguard" "adguard-software-limited/adguard/adguard-for-android"
-	release_exists && return 0
-	community_patch "adguard" "hoo-dles"
 }
 
 fotmob() {
@@ -181,7 +142,9 @@ fotmob() {
 	hoo-dles_dl
 	get_patches_key "fotmob"
 	get_apk "com.mobilefootie.wc2010" "fotmob-arm64-v8a" "bundle" "universal" "nodpi" "Android 12L+"
+
 	release_exists && return 0
+
 	community_patch "fotmob-arm64-v8a" "hoo-dles"
 }
 
@@ -194,13 +157,12 @@ windy() {
 	hoo-dles_dl
 	get_patches_key "windy"
 	get_apk "com.windyty.android" "windy-arm64-v8a" "bundle" "universal" "120-640dpi" "Android 8.0+"
+
 	release_exists && return 0
+
 	community_patch "windy-arm64-v8a" "hoo-dles"
 }
 
-#############
-# Binarymend
-#############
 moonreader() {
 	APP_NAME="moonreader"
 	VARIANT="binarymend"
@@ -210,8 +172,25 @@ moonreader() {
 	binarymend_dl
 	get_patches_key "moonreader"
 	get_apkpure "com.flyersoft.moonreader" "moonreader-arm64-v8a" "bundle"
+
 	release_exists && return 0
+
 	community_patch "moonreader-arm64-v8a" "binarymend"
+}
+
+adguard() {
+	APP_NAME="adguard"
+	VARIANT="hoo-dles"
+	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
+
+	hoo-dles_dl
+	get_patches_key "adguard"
+	get_apk "com.adguard.android" "adguard" "apk"
+
+	release_exists && return 0
+
+	community_patch "adguard" "hoo-dles"
 }
 
 case "$1" in
@@ -221,14 +200,8 @@ case "$1" in
 	photos)
 		photos
 		;;
-	instagram)
-		instagram
-		;;
 	instagram-piko)
 		instagram-piko
-		;;
-	facebook)
-		facebook
 		;;
 	strava)
 		strava

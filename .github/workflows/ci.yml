@@ -27,14 +27,43 @@ jobs:
         id: check-morphe
         if: steps.check-gh.outputs.internet_error == '0'
         run: bash src/etc/ci.sh MorpheApp/morphe-patches latest youtube.*morphe.*apk
-      - name: Check new patch Morphe Community
-        id: check-morphe-community
+      - name: Check new patch De-Vanced
+        id: check-derv
+        if: steps.check-gh.outputs.internet_error == '0'
+        run: bash src/etc/ci.sh RookieEnough/De-Vanced latest gg-photos.*drv.*apk
+      - name: Check new patch Piko
+        id: check-piko
+        if: steps.check-gh.outputs.internet_error == '0'
+        run: bash src/etc/ci.sh crimera/piko latest instagram.*piko.*apk
+      - name: Check new patch Brosssh
+        id: check-brosssh
+        if: steps.check-gh.outputs.internet_error == '0'
+        run: bash src/etc/ci.sh brosssh/morphe-patches latest komoot.*brosssh.*apk
+      - name: Check new patch Binarymend
+        id: check-binarymend
+        if: steps.check-gh.outputs.internet_error == '0'
+        run: bash src/etc/ci.sh binarymend/morphe-patches latest moonreader.*binarymend.*apk
+      - name: Check new patch hoo-dles
+        id: check-hoo-dles
         if: steps.check-gh.outputs.internet_error == '0'
         run: bash src/etc/ci.sh hoo-dles/morphe-patches latest windy.*hoo-dles.*apk
+      - name: Combine check outputs
+        id: combine-community
+        if: steps.check-gh.outputs.internet_error == '0'
+        run: |
+          if [ "${{ steps.check-derv.outputs.new_patch }}" = "1" ] || \
+             [ "${{ steps.check-piko.outputs.new_patch }}" = "1" ] || \
+             [ "${{ steps.check-brosssh.outputs.new_patch }}" = "1" ] || \
+             [ "${{ steps.check-binarymend.outputs.new_patch }}" = "1" ] || \
+             [ "${{ steps.check-hoo-dles.outputs.new_patch }}" = "1" ]; then
+             echo "new_patch=1" >> $GITHUB_OUTPUT
+          else
+             echo "new_patch=0" >> $GITHUB_OUTPUT
+          fi
       - name: Check new patch Xposed
         id: check-xposed
         if: steps.check-gh.outputs.internet_error == '0'
-        run: bash src/etc/ci.sh gnadgnaoh/NexAlloy latest xposed.*Xposed.*apk
+        run: bash src/etc/ci.sh gnadgnaoh/NexAlloy latest facebook.*xposed.*apk
       - name: Re-run workflow if github connection not stable
         if: always() && steps.check-morphe.outcome == 'skipped' && env.retry_count < env.max_retries
         uses: actions/github-script@v9
@@ -60,7 +89,7 @@ jobs:
           max_retries: 3
     outputs:
       check_morphe: ${{ steps.check-morphe.outputs.new_patch }}
-      check_morphe_community: ${{ steps.check-morphe-community.outputs.new_patch }}
+      check_morphe_community: ${{ steps.combine-community.outputs.new_patch }}
       check_xposed: ${{ steps.check-xposed.outputs.new_patch }}
 
   Patch-Morphe:

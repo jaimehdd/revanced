@@ -17,6 +17,7 @@ on:
         options:
           - "Morphe-Community"
           - "Morphe"
+          - "Xposed"
       use_beta:
         description: "Use beta versions"
         required: false

@@ -54,7 +54,7 @@ facebook() {
 
 	release_exists && return 0
 
-	xposed_disable_play_store_updates "facebook-arm64-v8a"
+	# xposed_disable_play_store_updates "facebook-arm64-v8a"
 	npatch "facebook-arm64-v8a" "NexAlloy-nonroot-release*.apk" "gnadgnaoh" "--injectdex --sigbypasslv 3"
 }
 

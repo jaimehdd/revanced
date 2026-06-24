@@ -29,7 +29,7 @@ xposed_dl() {
 		dl_gh "NexAlloy" "gnadgnaoh" "prerelease"
 	else
 		dl_gh "morphe-cli" "MorpheApp" "latest"
-		dl_gh "NexAlloy" "gnadgnaoh" "v3.0"
+		dl_gh "NexAlloy" "gnadgnaoh" "v4.0"
 	fi
 	xposed_morphe_universal_dl
 }

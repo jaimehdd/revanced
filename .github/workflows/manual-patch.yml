@@ -53,7 +53,7 @@ jobs:
         run: [youtube, reddit, youtube-music]
     steps:
       - name: Checkout
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@v6.0.3
       - name: Preparing to patch
         uses: ./.github/actions/preparing
       - name: Check github connection
@@ -90,7 +90,7 @@ jobs:
         run: [photos, instagram-piko, messenger, strava, komoot, fotmob, windy, moonreader, adguard]
     steps:
       - name: Checkout
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@v6.0.3
       - name: Preparing to patch
         uses: ./.github/actions/preparing
       - name: Check github connection
@@ -118,7 +118,7 @@ jobs:
         run: [facebook, messenger]
     steps:
       - name: Checkout
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@v6.0.3
       - name: Preparing to patch
         uses: ./.github/actions/preparing
         with:

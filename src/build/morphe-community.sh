@@ -103,20 +103,20 @@ messenger() {
 	community_patch "messenger-arm64-v8a" "derevanced"
 }
 
-strava() {
-	APP_NAME="strava"
-	VARIANT="drv"
-	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
-	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
+# strava() {
+# 	APP_NAME="strava"
+# 	VARIANT="drv"
+# 	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+# 	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
 
-	derevanced_dl
-	get_patches_key "strava"
-	get_apkpure "com.strava" "strava-arm64-v8a" "bundle"
+# 	derevanced_dl
+# 	get_patches_key "strava"
+# 	get_apkpure "com.strava" "strava-arm64-v8a" "bundle"
 
-	release_exists && return 0
+# 	release_exists && return 0
 
-	community_patch "strava-arm64-v8a" "derevanced"
-}
+# 	community_patch "strava-arm64-v8a" "derevanced"
+# }
 
 komoot() {
 	APP_NAME="komoot"
@@ -156,7 +156,7 @@ windy() {
 
 	hoo-dles_dl
 	get_patches_key "windy"
-	get_apk "com.windyty.android" "windy-arm64-v8a" "bundle" "universal" "120-640dpi" "Android 8.0+"
+	get_apk "com.windyty.android" "windy-arm64-v8a" "bundle" "universal" "120-640dpi" "Android 12L+"
 
 	release_exists && return 0
 

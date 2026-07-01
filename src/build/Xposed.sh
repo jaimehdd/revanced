@@ -29,7 +29,7 @@ xposed_dl() {
 		dl_gh "NexAlloy" "gnadgnaoh" "prerelease"
 	else
 		dl_gh "morphe-cli" "MorpheApp" "latest"
-		dl_gh "NexAlloy" "gnadgnaoh" "v4.0"
+		dl_gh "NexAlloy" "gnadgnaoh" "v5.0"
 	fi
 	xposed_morphe_universal_dl
 }
@@ -49,7 +49,7 @@ facebook() {
 	echo "patch_version=1" >> $GITHUB_ENV
 
 	xposed_dl
-	version="566.0.0.48.73"
+	version="567.1.0.52.74"
 	get_apk "com.facebook.katana" "facebook-arm64-v8a" "bundle" "arm64-v8a" "nodpi" "Android 11+"
 
 	release_exists && return 0

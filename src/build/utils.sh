@@ -682,6 +682,63 @@ get_apkpure() {
 	fi
 }
 
+# Download APK from Google Play Store via AuroraStore anonymous auth
+get_apk_chplay() {
+	local pkg_name=$1 apk_name=$2
+	local pkg_type=${3:-apk} dispenser_url=${4:-}
+
+	local helper_script="./src/build/helper/ggplay_dl/ggplay_dl.py"
+
+	green_log "[+] Downloading $apk_name from Google Play (Ch Play) [$pkg_name]"
+
+	local dispenser_arg=""
+	[[ -n "$dispenser_url" ]] && dispenser_arg="--dispenser $dispenser_url"
+
+	local result
+	result=$(python "$helper_script" "$pkg_name" "./download/$apk_name.apk" $dispenser_arg 2>&1)
+	local exit_code=$?
+
+	local logs
+	logs=$(echo "$result" | grep -v '^{' | grep -v '^}')
+	local json_result
+	json_result=$(echo "$result" | grep '^{')
+
+	if [[ $exit_code -ne 0 ]]; then
+		red_log "[-] Failed to download $apk_name from Google Play"
+		[[ -n "$logs" ]] && echo "$logs" >&2
+		return 1
+	fi
+
+	local success
+	success=$(echo "$json_result" | jq -r '.success // false' 2>/dev/null)
+	if [[ "$success" != "true" ]]; then
+		local error_msg
+		error_msg=$(echo "$json_result" | jq -r '.error // "Unknown error"' 2>/dev/null)
+		red_log "[-] Download failed: $error_msg"
+		return 1
+	fi
+
+	local dl_size
+	dl_size=$(echo "$json_result" | jq -r '.size // 0' 2>/dev/null)
+	local is_split
+	is_split=$(echo "$json_result" | jq -r '.isSplit // false' 2>/dev/null)
+
+	green_log "[+] Successfully downloaded $apk_name (${dl_size} bytes)"
+
+	if [[ "$is_split" == "true" ]]; then
+		if [[ "$pkg_type" == "bundle_extract" ]]; then
+			green_log "[+] Extracting split APKs"
+			unzip "./download/$apk_name.apk" -d "./download/$apk_name" > /dev/null 2>&1
+		else
+			green_log "[+] Merging split APKs to standalone apk"
+			java -jar $APKEditor m -i "./download/$apk_name.apk" -o "./download/$apk_name.apk.merged" > /dev/null 2>&1
+			if [[ -f "./download/$apk_name.apk.merged" ]]; then
+				mv "./download/$apk_name.apk.merged" "./download/$apk_name.apk"
+			fi
+		fi
+	fi
+}
+
 #################################################
 
 # Patching apps with Revanced CLI:

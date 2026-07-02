@@ -103,20 +103,20 @@ messenger() {
 	community_patch "messenger-arm64-v8a" "derevanced"
 }
 
-# strava() {
-# 	APP_NAME="strava"
-# 	VARIANT="drv"
-# 	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
-# 	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
+strava() {
+	APP_NAME="strava"
+	VARIANT="drv"
+	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
 
-# 	derevanced_dl
-# 	get_patches_key "strava"
-# 	get_apkpure "com.strava" "strava-arm64-v8a" "bundle"
+	derevanced_dl
+	get_patches_key "strava"
+	get_apk_chplay "com.strava" "strava-arm64-v8a" "bundle"
 
-# 	release_exists && return 0
+	release_exists && return 0
 
-# 	community_patch "strava-arm64-v8a" "derevanced"
-# }
+	community_patch "strava-arm64-v8a" "derevanced"
+}
 
 komoot() {
 	APP_NAME="komoot"
@@ -171,7 +171,7 @@ moonreader() {
 
 	binarymend_dl
 	get_patches_key "moonreader"
-	get_apkpure "com.flyersoft.moonreader" "moonreader-arm64-v8a" "bundle"
+	get_apk "com.flyersoft.moonreader" "moonreader-arm64-v8a" "bundle" "universal" "nodpi"
 
 	release_exists && return 0
 

@@ -479,10 +479,13 @@ class GooglePlaySession:
 
         item = details.item
         version_code = 0
+        version_name = ""
         offer_type = 1
 
         if item.HasField("details") and item.details.HasField("appDetails"):
             version_code = item.details.appDetails.versionCode
+            if hasattr(item.details.appDetails, "versionString"):
+                version_name = item.details.appDetails.versionString
 
         if len(item.offer) > 0:
             offer_type = item.offer[0].offerType
@@ -490,8 +493,8 @@ class GooglePlaySession:
         if version_code == 0:
             raise Exception(f"Could not find versionCode for {package_name}")
 
-        print(f"[+] versionCode={version_code}, offerType={offer_type}", file=sys.stderr)
-        return version_code, offer_type
+        print(f"[+] versionCode={version_code}, versionName={version_name}, offerType={offer_type}", file=sys.stderr)
+        return version_code, version_name, offer_type
 
     def step6_purchase(self, package_name, version_code, offer_type):
         print(f"[+] Step 6: Purchasing {package_name} v{version_code}...", file=sys.stderr)
@@ -594,7 +597,7 @@ class GooglePlaySession:
 
     def download_apk(self, package_name, output_path):
         self.build_session()
-        version_code, offer_type = self.step5_get_app_details(package_name)
+        version_code, version_name, offer_type = self.step5_get_app_details(package_name)
         download_url, download_size, expected_sha256, splits = self.step6_purchase(
             package_name, version_code, offer_type
         )
@@ -630,6 +633,7 @@ class GooglePlaySession:
                 "success": True,
                 "package": package_name,
                 "versionCode": version_code,
+                "versionName": version_name,
                 "offerType": offer_type,
                 "size": total_size,
                 "sha256": "",
@@ -666,6 +670,7 @@ class GooglePlaySession:
             "success": True,
             "package": package_name,
             "versionCode": version_code,
+            "versionName": version_name,
             "offerType": offer_type,
             "downloadUrl": download_url,
             "size": total,

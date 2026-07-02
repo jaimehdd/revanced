@@ -721,6 +721,15 @@ get_apk_chplay() {
 	dl_size=$(echo "$json_result" | jq -r '.size // 0' 2>/dev/null)
 	local is_split
 	is_split=$(echo "$json_result" | jq -r '.isSplit // false' 2>/dev/null)
+	local version_name
+	version_name=$(echo "$json_result" | jq -r '.versionName // empty' 2>/dev/null)
+
+	if [[ -n "$version_name" ]]; then
+		version="$version_name"
+		export version
+		echo "APP_VERSION=$version" >> $GITHUB_ENV
+		green_log "[+] APP_VERSION: $version"
+	fi
 
 	green_log "[+] Successfully downloaded $apk_name (${dl_size} bytes)"
 

@@ -750,7 +750,7 @@ patch() {
 			p="patch " b="-p *.rvp" m="" a="" ks=" --keystore=./src/_ks.keystore" pu="--purge" opt="--legacy-options=./src/options/$2.json" force=" --force"
 			echo "Patching with Revanced-cli inotia"
 		elif [ "$3" = morphe ]; then
-			p="patch " b="$(morphe_patches_args "-p")" m="" a="" ks=" --keystore=./src/morphe.keystore" pu="--purge" opt="--options-file ./src/options/$2.json" force=" --force --continue-on-error"
+			p="patch " b="$(morphe_patches_args "-p")" m="" a="" ks=" --keystore=./src/morphe.keystore" pu="" opt="--options-file ./src/options/$2.json" force=" --force --continue-on-error"
 			echo "Patching with Morphe"
 		else
 			if [[ $(ls revanced-cli-*.jar) =~ revanced-cli-([0-9]+) ]]; then
@@ -802,7 +802,7 @@ morphe_disable_play_store_updates() {
 
 	green_log "[+] Disabling Play Store updates for $1:"
 	if eval java -jar *cli*.jar patch $patches_args --exclusive -e "\"Disable Play Store updates\"" \
-		--out="$output_apk" --keystore=./src/morphe.keystore --purge --force "$input_apk"; then
+		--out="$output_apk" --keystore=./src/morphe.keystore --force "$input_apk"; then
 		mv "$output_apk" "$input_apk"
 	else
 		red_log "[-] Failed to disable Play Store updates for $1"
@@ -885,7 +885,7 @@ split_arch() {
 	if [ -f "./download/$1.apk" ]; then
 		eval java -jar *cli*.jar patch \
 		$(morphe_patches_args "-p") $excludePatches$includePatches --options-file ./src/options/$2.json \
-		--striplibs ${archs[i]} --purge \
+		--striplibs ${archs[i]} \
 		--keystore=./src/morphe.keystore --force \
 		--out=./release/$1-${archs[i]}-$2.apk\
 		./download/$1.apk

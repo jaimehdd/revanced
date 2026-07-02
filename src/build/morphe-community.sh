@@ -171,7 +171,7 @@ moonreader() {
 
 	binarymend_dl
 	get_patches_key "moonreader"
-	get_apk "com.flyersoft.moonreader" "moonreader-arm64-v8a" "bundle" "universal" "nodpi"
+	get_apk "com.flyersoft.moonreader" "moonreader-arm64-v8a" "bundle"
 
 	release_exists && return 0
 

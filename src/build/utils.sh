@@ -54,6 +54,7 @@ set_patch_version_from_asset_name() {
 
 	if [[ -n "$detected_patch_version" ]]; then
 		patch_version="$detected_patch_version"
+		export patch_version
 		echo "patch_version=$patch_version" >> $GITHUB_ENV
 		green_log "Patch version: $patch_version"
 	fi
@@ -145,18 +146,16 @@ dl_gh() {
   else
     for repo in $1 ; do
       tags=$( [ "$3" == "latest" ] && echo "latest" || echo "tags/$3" )
-      wget -qO- "https://api.github.com/repos/$2/$repo/releases/$tags" \
-        | jq -r '.assets[] | "\(.browser_download_url) \(.name)"' \
-        | while read -r url names; do
-          if [[ $url != *.asc ]]; then
-            if [[ "$3" == "latest" && "$names" == *dev* ]]; then
-              continue
-            fi
-            green_log "[+] Downloading $names from $2"
-            set_patch_version_from_asset_name "$names"
-            wget -q -O "$names" $url
+      while read -r url names; do
+        if [[ $url != *.asc ]]; then
+          if [[ "$3" == "latest" && "$names" == *dev* ]]; then
+            continue
           fi
-        done
+          green_log "[+] Downloading $names from $2"
+          set_patch_version_from_asset_name "$names"
+          wget -q -O "$names" $url
+        fi
+      done < <(wget -qO- "https://api.github.com/repos/$2/$repo/releases/$tags" | jq -r '.assets[] | "\(.browser_download_url) \(.name)"')
     done
   fi
 }

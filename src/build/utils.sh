@@ -747,25 +747,25 @@ patch() {
 	if [ -f "./download/$1.apk" ]; then
 		local p b m ks a pu opt force
 		if [ "$3" = inotia ]; then
-			p="patch " b="-p *.rvp" m="" a="" ks=" --keystore=./src/_ks.keystore" pu="--purge=true" opt="--legacy-options=./src/options/$2.json" force=" --force"
+			p="patch " b="-p *.rvp" m="" a="" ks=" --keystore=./src/_ks.keystore" pu="--purge" opt="--legacy-options=./src/options/$2.json" force=" --force"
 			echo "Patching with Revanced-cli inotia"
 		elif [ "$3" = morphe ]; then
-			p="patch " b="$(morphe_patches_args "-p")" m="" a="" ks=" --keystore=./src/morphe.keystore" pu="--purge=true" opt="--options-file ./src/options/$2.json" force=" --force --continue-on-error"
+			p="patch " b="$(morphe_patches_args "-p")" m="" a="" ks=" --keystore=./src/morphe.keystore" pu="--purge" opt="--options-file ./src/options/$2.json" force=" --force --continue-on-error"
 			echo "Patching with Morphe"
 		else
 			if [[ $(ls revanced-cli-*.jar) =~ revanced-cli-([0-9]+) ]]; then
 				num=${BASH_REMATCH[1]}
 				if [ $num -eq 6 ]; then
-					p="patch " b="-bp *.rvp" m="" a="" ks=" --keystore=./src/ks.keystore" pu="--purge=true" opt="" force=" --force"
+					p="patch " b="-bp *.rvp" m="" a="" ks=" --keystore=./src/ks.keystore" pu="--purge" opt="" force=" --force"
 					echo "Patching with Revanced-cli version 6+"
 				elif [ $num -eq 5 ]; then
-					p="patch " b="-p *.rvp" m="" a="" ks=" --keystore=./src/ks.keystore" pu="--purge=true" opt="" force=" --force"
+					p="patch " b="-p *.rvp" m="" a="" ks=" --keystore=./src/ks.keystore" pu="--purge" opt="" force=" --force"
 					echo "Patching with Revanced-cli version 5"
 				elif [ $num -eq 4 ]; then
-					p="patch " b="--patch-bundle *patch*.jar" m="--merge *integration*.apk " a="" ks=" --keystore=./src/ks.keystore" pu="--purge=true" opt="--options=./src/options/$2.json "
+					p="patch " b="--patch-bundle *patch*.jar" m="--merge *integration*.apk " a="" ks=" --keystore=./src/ks.keystore" pu="--purge" opt="--options=./src/options/$2.json "
 					echo "Patching with Revanced-cli version 4"
 				elif [ $num -eq 3 ]; then
-					p="patch " b="--patch-bundle *patch*.jar" m="--merge *integration*.apk " a="" ks=" --keystore=./src/_ks.keystore" pu="--purge=true" opt="--options=./src/options/$2.json "
+					p="patch " b="--patch-bundle *patch*.jar" m="--merge *integration*.apk " a="" ks=" --keystore=./src/_ks.keystore" pu="--purge" opt="--options=./src/options/$2.json "
 					echo "Patching with Revanced-cli version 3"
 				elif [ $num -eq 2 ]; then
 					p="" b="--bundle *patch*.jar" m="--merge *integration*.apk " a="--apk " ks=" --keystore=./src/_ks.keystore" pu="--clean" opt="--options=./src/options/$2.json " force=" --experimental"
@@ -802,7 +802,7 @@ morphe_disable_play_store_updates() {
 
 	green_log "[+] Disabling Play Store updates for $1:"
 	if eval java -jar *cli*.jar patch $patches_args --exclusive -e "\"Disable Play Store updates\"" \
-		--out="$output_apk" --keystore=./src/morphe.keystore --purge=true --force "$input_apk"; then
+		--out="$output_apk" --keystore=./src/morphe.keystore --purge --force "$input_apk"; then
 		mv "$output_apk" "$input_apk"
 	else
 		red_log "[-] Failed to disable Play Store updates for $1"
@@ -885,7 +885,7 @@ split_arch() {
 	if [ -f "./download/$1.apk" ]; then
 		eval java -jar *cli*.jar patch \
 		$(morphe_patches_args "-p") $excludePatches$includePatches --options-file ./src/options/$2.json \
-		--striplibs ${archs[i]} --purge=true \
+		--striplibs ${archs[i]} --purge \
 		--keystore=./src/morphe.keystore --force \
 		--out=./release/$1-${archs[i]}-$2.apk\
 		./download/$1.apk

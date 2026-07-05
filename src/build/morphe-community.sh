@@ -40,12 +40,6 @@ piko_dl(){
 	dl_gh "piko" "crimera" "$tag"
 }
 
-brosssh_dl(){
-	dl_gh "morphe-cli" "MorpheApp" "latest"
-	morphe_universal_dl
-	dl_gh "morphe-patches" "brosssh" "$tag"
-}
-
 binarymend_dl(){
 	dl_gh "morphe-cli" "MorpheApp" "latest"
 	morphe_universal_dl
@@ -116,21 +110,6 @@ strava() {
 	release_exists && return 0
 
 	community_patch "strava-arm64-v8a" "derevanced"
-}
-
-komoot() {
-	APP_NAME="komoot"
-	VARIANT="brosssh"
-	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
-	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
-
-	brosssh_dl
-	get_patches_key "komoot"
-	get_apk "de.komoot.android" "komoot-arm64-v8a" "bundle" "universal" "120-640dpi" "Android 8.0+"
-
-	release_exists && return 0
-
-	community_patch "komoot-arm64-v8a" "brosssh"
 }
 
 fotmob() {
@@ -205,9 +184,6 @@ case "$1" in
 		;;
 	strava)
 		strava
-		;;
-	komoot)
-		komoot
 		;;
 	fotmob)
 		fotmob

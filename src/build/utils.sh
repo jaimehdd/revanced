@@ -348,13 +348,13 @@ detect_version() {
 
 _fs_get() {
 	local url=$1
-	local max_retries=5
+	local max_retries=3
 	local attempt
 	for attempt in $(seq 1 $max_retries); do
 		local response
 		response=$(curl -s -X POST 'http://localhost:8191/v1' \
 			-H 'Content-Type: application/json' \
-			-d "{\"cmd\":\"request.get\",\"url\":\"$url\",\"maxTimeout\":60000}")
+			-d "{\"cmd\":\"request.get\",\"url\":\"$url\",\"maxTimeout\":15000}")
 		local status
 		status=$(echo "$response" | jq -r '.status // empty')
 		if [[ "$status" == "ok" ]]; then
@@ -365,10 +365,54 @@ _fs_get() {
 			return 0
 		fi
 		yellow_log "[!] FlareSolverr attempt $attempt/$max_retries failed: $url"
-		sleep 10
+		sleep 5
 	done
 	red_log "[-] FlareSolverr failed after $max_retries attempts: $url"
 	return 1
+}
+
+_cfb_get() {
+	local url=$1
+	local max_retries=3
+	local attempt
+
+	for attempt in $(seq 1 $max_retries); do
+		local response_file
+		rm -f /tmp/cfb_response_headers.txt
+		response_file=$(mktemp)
+		local http_code
+		http_code=$(curl -s -o "$response_file" -w '%{http_code}' \
+			-D /tmp/cfb_response_headers.txt \
+			-G --data-urlencode "url=$url" \
+			--max-time 120 \
+			"http://localhost:8000/html")
+		if [[ "$http_code" == "200" ]]; then
+			html=$(cat "$response_file")
+			if [[ -n "$html" ]]; then
+				export FS_COOKIES
+				FS_COOKIES=$(grep -i '^x-cf-bypasser-cookies:' /tmp/cfb_response_headers.txt 2>/dev/null | cut -d':' -f2- | xargs)
+				local cfb_ua
+				cfb_ua=$(grep -i '^x-cf-bypasser-user-agent:' /tmp/cfb_response_headers.txt 2>/dev/null | cut -d':' -f2- | xargs)
+				[[ -n "$cfb_ua" ]] && user_agent="$cfb_ua"
+				rm -f "$response_file" /tmp/cfb_response_headers.txt
+				return 0
+			fi
+		else
+			yellow_log "[!] CFB attempt $attempt/$max_retries: HTTP $http_code: $url"
+		fi
+	done
+	return 1
+}
+
+_FFS_FAILED=0
+
+_cf_get() {
+	if [[ "$_FFS_FAILED" -eq 0 ]]; then
+		_fs_get "$@" && return 0
+		yellow_log "[!] FlareSolverr failed, falling back to CFB"
+		_FFS_FAILED=1
+	fi
+	_cfb_get "$@"
 }
 
 get_apk() {
@@ -414,7 +458,7 @@ get_apk() {
 			version_href="${version_href/$slug_ver/$target_ver}"
 		fi
 	else
-		_fs_get "$list_url" || return 1
+		_cf_get "$list_url" || return 1
 
 		version_href=$(echo "$html" | $pup 'h5.appRowTitle a.fontBlack json{}' | \
 			jq -r '.[] | select(.text | test("(?i)beta|alpha") | not) | .href' | head -1)
@@ -439,7 +483,7 @@ get_apk() {
 
 	echo "$base_url$version_href"
 
-	_fs_get "$base_url$version_href" || return 1
+	_cf_get "$base_url$version_href" || return 1
 
 	if [[ "$html" == *"Page Not Found"* ]] || [[ "$html" == *"404 Whoops"* ]]; then
 		yellow_log "[!] Version page not found, searching uploads pages..."
@@ -450,7 +494,7 @@ get_apk() {
 			if [[ $page_num -gt 1 ]]; then
 				page_url="${list_url%%\?*}/page/$page_num/?${list_url#*\?}"
 			fi
-			_fs_get "$page_url" || return 1
+			_cf_get "$page_url" || return 1
 			if [[ -n "$target_ver_dot" ]]; then
 				version_href=$(echo "$html" | $pup 'h5.appRowTitle a.fontBlack json{}' | \
 					jq -r --arg v "$target_ver_dot" '.[] | select(.text | contains($v)) | .href' | head -1)
@@ -465,7 +509,7 @@ get_apk() {
 			return 1
 		fi
 		echo "$base_url$version_href"
-		_fs_get "$base_url$version_href" || return 1
+		_cf_get "$base_url$version_href" || return 1
 	fi
 
 	# If compatible version lookup was empty, derive app version from selected release URL slug.
@@ -535,7 +579,7 @@ get_apk() {
 		base_apk="$apk_name.apk"
 	fi
 
-	_fs_get "$base_url$variant_href" || return 1
+	_cf_get "$base_url$variant_href" || return 1
 
 	local dl_btn_href
 	local all_dl_btns
@@ -554,7 +598,7 @@ get_apk() {
 	fi
 	dl_btn_href=$(echo "$dl_btn_href" | sed 's/&amp;/\&/g')
 
-	_fs_get "$base_url$dl_btn_href" || return 1
+	_cf_get "$base_url$dl_btn_href" || return 1
 
 	local final_href
 	final_href=$(echo "$html" | $pup 'a#download-link attr{href}' | head -1)
@@ -628,7 +672,7 @@ get_apkpure() {
 	green_log "[+] Downloading $apk_name from APKPure (type=$pkg_type)"
 	echo "$dl_page_url"
 
-	_fs_get "$dl_page_url" || return 1
+	_cf_get "$dl_page_url" || return 1
 
 	if [[ -z "$version" ]]; then
 		version=$(echo "$html" | $pup 'h2 text{}' | grep -oP '\d+(\.\d+)+' | head -1)

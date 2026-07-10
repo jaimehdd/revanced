@@ -49,6 +49,18 @@ runs:
           fi
           sleep 2
         done
+    - name: Start CloudflareBypassForScraping
+      shell: bash
+      run: |
+        docker run -d --name cloudflarebypass -p 8000:8000 ghcr.io/sarperavci/cloudflarebypassforscraping:latest
+        echo "[*] Waiting for CloudflareBypassForScraping to start..."
+        for i in $(seq 1 30); do
+          if curl -s http://localhost:8000/ > /dev/null 2>&1; then
+            echo "[+] CloudflareBypassForScraping is ready."
+            break
+          fi
+          sleep 2
+        done
     - name: Set up Python
       if: inputs.install_python_deps == 'true'
       uses: actions/setup-python@v6

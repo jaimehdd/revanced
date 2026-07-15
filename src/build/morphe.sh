@@ -7,10 +7,10 @@ use_beta="${use_beta:-false}"
 morphe_dl(){
 	if [ "$use_beta" = true ]; then
 		dl_gh "morphe-patches" "MorpheApp" "prerelease"
-		dl_gh "morphe-cli" "MorpheApp" "prerelease"
+		dl_gh "morphe-desktop" "MorpheApp" "prerelease"
 	else
 		dl_gh "morphe-patches" "MorpheApp" "latest"
-		dl_gh "morphe-cli" "MorpheApp" "prerelease"
+		dl_gh "morphe-desktop" "MorpheApp" "prerelease"
 	fi
 }
 

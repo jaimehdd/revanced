@@ -7,7 +7,7 @@ wget -q -O ./pup.zip https://github.com/ericchiang/pup/releases/download/v0.4.0/
 unzip "./pup.zip" -d "./" > /dev/null 2>&1
 pup="./pup"
 #Setup APKEditor for install combine split apks
-wget -q -O ./APKEditor.jar https://github.com/REAndroid/APKEditor/releases/download/V1.4.8/APKEditor-1.4.8.jar
+wget -q -O ./APKEditor.jar https://github.com/REAndroid/APKEditor/releases/download/V1.4.9/APKEditor-1.4.9.jar
 APKEditor="./APKEditor.jar"
 #Find lastest user_agent
 user_agent=$(wget -qO- https://www.whatismybrowser.com/guides/the-latest-user-agent/firefox | tr '\n' ' ' | sed 's#</tr>#\n#g' | grep 'Firefox (Standard)' | sed -n 's/.*<span class="code">\([^<]*Android[^<]*\)<\/span>.*/\1/p') \
@@ -205,77 +205,23 @@ get_patches_key() {
 	includeLinesFound=false
 
 	local patchDir="src/patches/$1"
-	local cliMode=""
-	local patch_name options line1 line2 num
+	local patch_name line1 line2
 
 	sed -i 's/\r$//' "$patchDir/include-patches"
 	sed -i 's/\r$//' "$patchDir/exclude-patches"
 
-	if compgen -G "morphe-cli-*.jar" > /dev/null; then
-		cliMode="morphe"
-	elif compgen -G "revanced-cli-*.jar" > /dev/null; then
-		if [[ $(ls revanced-cli-*.jar | head -n1) =~ revanced-cli-([0-9]+) ]]; then
-			num=${BASH_REMATCH[1]}
-			if [ "$num" -ge 5 ]; then
-				cliMode="revanced_new"
-			else
-				cliMode="revanced_old"
-			fi
-		else
-			cliMode="revanced_old"
-		fi
-	fi
+	while IFS= read -r line1 || [[ -n "$line1" ]]; do
+		[[ -z "$line1" ]] && continue
+		excludePatches+=" -d \"$line1\""
+		excludeLinesFound=true
+	done < "$patchDir/exclude-patches"
 
-	if [[ "$cliMode" == "morphe" ]]; then
-		while IFS= read -r line1 || [[ -n "$line1" ]]; do
-			[[ -z "$line1" ]] && continue
-			excludePatches+=" -d \"$line1\""
-			excludeLinesFound=true
-		done < "$patchDir/exclude-patches"
-
-		while IFS= read -r line2 || [[ -n "$line2" ]]; do
-			[[ -z "$line2" ]] && continue
-			patch_name="${line2%%|*}"
-			if [[ "${separate_morphe_universal_patches:-false}" == "true" && "$patch_name" == "Disable Play Store updates" ]]; then
-				detachPlayStoreUpdates=true
-				continue
-			fi
-			includePatches+=" -e \"$patch_name\""
-			includeLinesFound=true
-		done < "$patchDir/include-patches"
-
-	elif [[ "$cliMode" == "revanced_new" ]]; then
-		while IFS= read -r line1 || [[ -n "$line1" ]]; do
-			[[ -z "$line1" ]] && continue
-			excludePatches+=" -d \"$line1\""
-			excludeLinesFound=true
-		done < "$patchDir/exclude-patches"
-
-		while IFS= read -r line2 || [[ -n "$line2" ]]; do
-			[[ -z "$line2" ]] && continue
-			if [[ "$line2" == *"|"* ]]; then
-				patch_name="${line2%%|*}"
-				options="${line2#*|}"
-				includePatches+=" -e \"${patch_name}\" ${options}"
-			else
-				includePatches+=" -e \"$line2\""
-			fi
-			includeLinesFound=true
-		done < "$patchDir/include-patches"
-
-	elif [[ "$cliMode" == "revanced_old" ]]; then
-		while IFS= read -r line1 || [[ -n "$line1" ]]; do
-			[[ -z "$line1" ]] && continue
-			excludePatches+=" -e \"$line1\""
-			excludeLinesFound=true
-		done < "$patchDir/exclude-patches"
-
-		while IFS= read -r line2 || [[ -n "$line2" ]]; do
-			[[ -z "$line2" ]] && continue
-			includePatches+=" -i \"$line2\""
-			includeLinesFound=true
-		done < "$patchDir/include-patches"
-	fi
+	while IFS= read -r line2 || [[ -n "$line2" ]]; do
+		[[ -z "$line2" ]] && continue
+		patch_name="${line2%%|*}"
+		includePatches+=" -e \"$patch_name\""
+		includeLinesFound=true
+	done < "$patchDir/include-patches"
 
 	if [ "$excludeLinesFound" = false ]; then
 		excludePatches=""
@@ -315,34 +261,18 @@ morphe_patches_args() {
 
 detect_version() {
 	if [ -z "$version" ] && [ "$lock_version" != "1" ]; then
-	  for spec in "revanced-cli-|5|*.rvp" "morphe-cli-|1|*.mpp"; do
-		IFS="|" read -r jar_prefix min_major patch_glob <<<"$spec"
+	  local jar_prefix="morphe-desktop-" patch_glob="*.mpp"
 
-		if [[ $(ls "${jar_prefix}"*.jar 2>/dev/null) =~ ${jar_prefix}([0-9]+) ]]; then
-		  num=${BASH_REMATCH[1]}
-
-		  if [ "$num" -ge "$min_major" ]; then
-			if [[ "$jar_prefix" == "morphe-cli-" ]]; then
-			  list_patches_flags="list-patches --with-packages --with-versions --with-options --patches"
-			elif [ "$num" -ge 6 ]; then
-			  list_patches_flags="list-patches --packages --versions --options -bp"
-			else
-			  list_patches_flags="list-patches --with-packages --with-versions"
-			fi
-			version=$(java -jar *cli*.jar $list_patches_flags $patch_glob | awk -v pkg="$1" '
-			  BEGIN { found = 0; printing = 0 }
-			  /^Index:/ { if (printing) exit; found = 0 }
-			  /Package name: / { if ($3 == pkg) found = 1 }
-			  /Compatible versions:/ { if (found) printing = 1; next }
-			  printing && $1 ~ /^[0-9]+\./ { print $1 }
-			' | sort -V | tail -n1)
-		  else
-			version=$(jq -r '[.. | objects | select(.name == "'"$1"'" and .versions != null) | .versions[]] | reverse | .[0] // ""' *.json 2>/dev/null | uniq)
-		  fi
-		fi
-
-		[ -n "$version" ] && break
-	  done
+	  if [[ $(ls "${jar_prefix}"*.jar 2>/dev/null) =~ ${jar_prefix}([0-9]+) ]]; then
+	    list_patches_flags="list-patches --with-packages --with-versions --with-options --patches"
+	    version=$(java -jar "${jar_prefix}"*.jar $list_patches_flags $patch_glob | awk -v pkg="$1" '
+		  BEGIN { found = 0; printing = 0 }
+		  /^Index:/ { if (printing) exit; found = 0 }
+		  /Package name: / { if ($3 == pkg) found = 1 }
+		  /Compatible versions:/ { if (found) printing = 1; next }
+		  printing && $1 ~ /^[0-9]+\./ { print $1 }
+		' | sort -V | tail -n1)
+	  fi
 	fi
 }
 
@@ -421,7 +351,7 @@ get_apk() {
 	local base_url="https://www.apkmirror.com"
 	local html=""
 
-	local apps_json="./src/build/apps.json"
+	local apps_json="./src/build/helper/apps.json"
 	local list_url example_url
 	list_url=$(jq -r --arg pkg "$pkg_name" '.apkmirror[$pkg].list_url // empty' "$apps_json")
 	example_url=$(jq -r --arg pkg "$pkg_name" '.apkmirror[$pkg].example_url // empty' "$apps_json")
@@ -642,7 +572,7 @@ get_apkpure() {
 	local pkg_name=$1 apk_name=$2 pkg_type=${3:-apk}
 	local html=""
 
-	local apps_json="./src/build/apps.json"
+	local apps_json="./src/build/helper/apps.json"
 	local base_download_url
 	base_download_url=$(jq -r --arg pkg "$pkg_name" '.apkpure[$pkg].download_url // empty' "$apps_json")
 
@@ -791,45 +721,72 @@ get_apk_chplay() {
 	fi
 }
 
+# Download files from Telegram channel/group
+# Required secret in github setting TDL_BACKUP base64 backup file from https://docs.iyear.me/tdl/more/cli/tdl_backup/
+# You must login your telegram (recommend use clone account) before backup https://docs.iyear.me/tdl/getting-started/quick-start/#login
+telegram_dl() {
+	local chat_id="$1" num_posts="$2" file_pattern="$3" out_name="$4"
+
+	if [[ ! -f "./tdl" ]]; then
+		green_log "[+] Downloading tdl from iyear"
+		local tdl_url
+		tdl_url=$(wget -qO- "https://api.github.com/repos/iyear/tdl/releases/latest" \
+			| jq -r '.assets[] | select(.name | test("Linux_64bit\\.tar\\.gz$")) | .browser_download_url')
+		wget -q -O ./tdl.tar.gz "$tdl_url"
+		if [[ ! -f "./tdl.tar.gz" ]]; then
+			red_log "[-] Failed to download tdl"
+			return 1
+		fi
+		tar -xzf ./tdl.tar.gz tdl
+		rm -f ./tdl.tar.gz
+		chmod +x ./tdl
+	fi
+
+	echo "$TDL_BACKUP" | base64 -d > ./backup.tdl
+	./tdl recover --file ./backup.tdl > /dev/null 2>&1
+	rm -f ./backup.tdl
+
+	local ext="${file_pattern##*.}"
+	local filter="Media.Name endsWith '.$ext'"
+
+	green_log "[+] Downloading from Telegram chat $chat_id last $num_posts posts matching '$file_pattern'"
+
+	./tdl chat export -c "$chat_id" -T last -i "$num_posts" -f "$filter" -o ./tg_export.json > /dev/null 2>&1
+	if [[ ! -f "./tg_export.json" ]]; then
+		red_log "[-] Failed to export messages from Telegram"
+		return 1
+	fi
+
+	jq '.messages = [.messages[0]]' ./tg_export.json > ./tg_export_one.json
+	mv ./tg_export_one.json ./tg_export.json
+
+	local tmp_dir="./tg_tmp_$$"
+	mkdir -p "$tmp_dir"
+	./tdl dl -f ./tg_export.json -d "$tmp_dir" > /dev/null 2>&1
+
+	local dl_file
+	dl_file=$(find "$tmp_dir" -type f | head -1)
+	if [[ -n "$dl_file" ]]; then
+		green_log "[+] Downloaded: $(basename "$dl_file")"
+		mv "$dl_file" "./download/$out_name"
+		rm -rf "$tmp_dir" ./tg_export.json
+	else
+		red_log "[-] Telegram download failed"
+		rm -rf "$tmp_dir" ./tg_export.json
+		return 1
+	fi
+}
+
 #################################################
 
-# Patching apps with Revanced CLI:
+# Patching apps with CLI:
 patch() {
 	green_log "[+] Patching $1:"
 	if [ -f "./download/$1.apk" ]; then
-		local p b m ks a pu opt force
-		if [ "$3" = inotia ]; then
-			p="patch " b="-p *.rvp" m="" a="" ks=" --keystore=./src/_ks.keystore" pu="--purge" opt="--legacy-options=./src/options/$2.json" force=" --force"
-			echo "Patching with Revanced-cli inotia"
-		elif [ "$3" = morphe ]; then
-			p="patch " b="$(morphe_patches_args "-p")" m="" a="" ks=" --keystore=./src/morphe.keystore" pu="" opt="--options-file ./src/options/$2.json" force=" --force --continue-on-error"
-			echo "Patching with Morphe"
-		else
-			if [[ $(ls revanced-cli-*.jar) =~ revanced-cli-([0-9]+) ]]; then
-				num=${BASH_REMATCH[1]}
-				if [ $num -eq 6 ]; then
-					p="patch " b="-bp *.rvp" m="" a="" ks=" --keystore=./src/ks.keystore" pu="--purge" opt="" force=" --force"
-					echo "Patching with Revanced-cli version 6+"
-				elif [ $num -eq 5 ]; then
-					p="patch " b="-p *.rvp" m="" a="" ks=" --keystore=./src/ks.keystore" pu="--purge" opt="" force=" --force"
-					echo "Patching with Revanced-cli version 5"
-				elif [ $num -eq 4 ]; then
-					p="patch " b="--patch-bundle *patch*.jar" m="--merge *integration*.apk " a="" ks=" --keystore=./src/ks.keystore" pu="--purge" opt="--options=./src/options/$2.json "
-					echo "Patching with Revanced-cli version 4"
-				elif [ $num -eq 3 ]; then
-					p="patch " b="--patch-bundle *patch*.jar" m="--merge *integration*.apk " a="" ks=" --keystore=./src/_ks.keystore" pu="--purge" opt="--options=./src/options/$2.json "
-					echo "Patching with Revanced-cli version 3"
-				elif [ $num -eq 2 ]; then
-					p="" b="--bundle *patch*.jar" m="--merge *integration*.apk " a="--apk " ks=" --keystore=./src/_ks.keystore" pu="--clean" opt="--options=./src/options/$2.json " force=" --experimental"
-					echo "Patching with Revanced-cli version 2"
-				fi
-			fi
-		fi
-		if [[ "$3" = inotia || "$3" = morphe ]]; then
-			unset CI GITHUB_ACTION GITHUB_ACTIONS GITHUB_ACTOR GITHUB_ENV GITHUB_EVENT_NAME GITHUB_EVENT_PATH GITHUB_HEAD_REF GITHUB_JOB GITHUB_REF GITHUB_REPOSITORY GITHUB_RUN_ID GITHUB_RUN_NUMBER GITHUB_SHA GITHUB_WORKFLOW GITHUB_WORKSPACE RUN_ID RUN_NUMBER
-		fi
-		eval java -jar *cli*.jar $p$b $m$opt --out=./release/$1-$2.apk$excludePatches$includePatches$ks $pu$force $a./download/$1.apk
-  		unset version
+		echo "Patching with Morphe"
+		unset CI GITHUB_ACTION GITHUB_ACTIONS GITHUB_ACTOR GITHUB_ENV GITHUB_EVENT_NAME GITHUB_EVENT_PATH GITHUB_HEAD_REF GITHUB_JOB GITHUB_REF GITHUB_REPOSITORY GITHUB_RUN_ID GITHUB_RUN_NUMBER GITHUB_SHA GITHUB_WORKFLOW GITHUB_WORKSPACE RUN_ID RUN_NUMBER
+		eval java -jar morphe-desktop-*.jar patch -p *.mpp --options-file ./src/options/$2.json --out=./release/$1-$2.apk$excludePatches$includePatches --keystore=./src/morphe.keystore --force --continue-on-error ./download/$1.apk
+		unset version
 		unset lock_version
 		unset excludePatches
 		unset includePatches
@@ -935,11 +892,11 @@ apk_editor() {
 split_arch() {
 	green_log "[+] Splitting $1 to ${archs[i]}:"
 	if [ -f "./download/$1.apk" ]; then
-		eval java -jar *cli*.jar patch \
-		$(morphe_patches_args "-p") $excludePatches$includePatches --options-file ./src/options/$2.json \
+		eval java -jar morphe-desktop-*.jar patch \
+		-p *.mpp $excludePatches$includePatches --options-file ./src/options/$2.json \
 		--striplibs ${archs[i]} \
 		--keystore=./src/morphe.keystore --force \
-		--out=./release/$1-${archs[i]}-$2.apk\
+		--out=./release/$1-${archs[i]}-$2.apk \
 		./download/$1.apk
 	else
 		red_log "[-] Not found $1.apk"

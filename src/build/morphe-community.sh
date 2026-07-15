@@ -29,25 +29,25 @@ community_patch() {
 }
 
 derevanced_dl(){
-	dl_gh "morphe-cli" "MorpheApp" "latest"
+	dl_gh "morphe-desktop" "MorpheApp" "latest"
 	morphe_universal_dl
 	dl_gh "De-Vanced" "RookieEnough" "$tag"
 }
 
 piko_dl(){
-	dl_gh "morphe-cli" "MorpheApp" "latest"
+	dl_gh "morphe-desktop" "MorpheApp" "latest"
 	morphe_universal_dl
 	dl_gh "piko" "crimera" "$tag"
 }
 
 binarymend_dl(){
-	dl_gh "morphe-cli" "MorpheApp" "latest"
+	dl_gh "morphe-desktop" "MorpheApp" "latest"
 	morphe_universal_dl
 	dl_gh "morphe-patches" "binarymend" "$tag"
 }
 
 hoo-dles_dl(){
-	dl_gh "morphe-cli" "MorpheApp" "latest"
+	dl_gh "morphe-desktop" "MorpheApp" "latest"
 	morphe_universal_dl
 	dl_gh "morphe-patches" "hoo-dles" "$tag"
 }

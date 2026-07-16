@@ -810,7 +810,7 @@ morphe_disable_play_store_updates() {
 	fi
 
 	green_log "[+] Disabling Play Store updates for $1:"
-	if eval java -jar *cli*.jar patch $patches_args --exclusive -e "\"Disable Play Store updates\"" \
+	if eval java -jar morphe-desktop-*.jar patch $patches_args --exclusive -e "\"Disable Play Store updates\"" \
 		--out="$output_apk" --keystore=./src/morphe.keystore --force "$input_apk"; then
 		mv "$output_apk" "$input_apk"
 	else

@@ -58,6 +58,12 @@ hoo-dles_dl(){
 	dl_gh "morphe-patches" "hoo-dles" "$tag"
 }
 
+hooman_dl(){
+	dl_gh "morphe-desktop" "MorpheApp" "latest"
+	morphe_universal_dl
+	dl_gh "hoomans-morphe-patches" "arandomhooman" "$tag"
+}
+
 photos() {
 	APP_NAME="google-photos"
 	VARIANT="drv"
@@ -178,6 +184,66 @@ adguard() {
 	community_patch "adguard" "rushi"
 }
 
+cashew() {
+	APP_NAME="cashew"
+	VARIANT="rushi"
+	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
+
+	rushi_dl
+	get_patches_key "cashew"
+	get_apk "com.budget.tracker_app" "cashew" "apk"
+
+	release_exists && return 0
+
+	community_patch "cashew" "rushi"
+}
+
+money-manager() {
+	APP_NAME="money-manager"
+	VARIANT="hooman"
+	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
+
+	hooman_dl
+	get_patches_key "money-manager"
+	get_apk "com.realbyteapps.moneymanagerfree" "money-manager" "apk"
+
+	release_exists && return 0
+
+	community_patch "money-manager" "hooman"
+}
+
+poweramp() {
+	APP_NAME="poweramp"
+	VARIANT="hooman"
+	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
+
+	hooman_dl
+	get_patches_key "poweramp"
+	get_apk "com.maxmpz.audioplayer" "poweramp" "bundle"
+
+	release_exists && return 0
+
+	community_patch "poweramp" "hooman"
+}
+
+symfonium() {
+	APP_NAME="symfonium"
+	VARIANT="hooman"
+	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
+
+	hooman_dl
+	get_patches_key "symfonium"
+	get_apk "app.symfonik.music.player" "symfonium" "bundle"
+
+	release_exists && return 0
+
+	community_patch "symfonium" "hooman"
+}
+
 case "$1" in
 	messenger)
 		messenger
@@ -202,5 +268,17 @@ case "$1" in
 		;;
 	adguard)
 		adguard
+		;;
+	cashew)
+		cashew
+		;;
+	money-manager)
+		money-manager
+		;;
+	poweramp)
+		poweramp
+		;;
+	symfonium)
+		symfonium
 		;;
 esac

@@ -47,6 +47,10 @@ jobs:
         id: check-hoo-dles
         if: steps.check-gh.outputs.internet_error == '0'
         run: bash src/etc/ci.sh hoo-dles/morphe-patches latest windy.*hoo-dles.*apk
+      - name: Check new patch hooman
+        id: check-hooman
+        if: steps.check-gh.outputs.internet_error == '0'
+        run: bash src/etc/ci.sh arandomhooman/hoomans-morphe-patches latest "(money-manager|poweramp|symfonium).*hooman.*apk"
       - name: Combine check outputs
         id: combine-community
         if: steps.check-gh.outputs.internet_error == '0'
@@ -55,7 +59,8 @@ jobs:
              [ "${{ steps.check-piko.outputs.new_patch }}" = "1" ] || \
              [ "${{ steps.check-brosssh.outputs.new_patch }}" = "1" ] || \
              [ "${{ steps.check-binarymend.outputs.new_patch }}" = "1" ] || \
-             [ "${{ steps.check-hoo-dles.outputs.new_patch }}" = "1" ]; then
+             [ "${{ steps.check-hoo-dles.outputs.new_patch }}" = "1" ] || \
+             [ "${{ steps.check-hooman.outputs.new_patch }}" = "1" ]; then
              echo "new_patch=1" >> $GITHUB_OUTPUT
           else
              echo "new_patch=0" >> $GITHUB_OUTPUT

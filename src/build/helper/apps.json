@@ -147,6 +147,22 @@
     "com.flyersoft.moonreader": {
       "list_url": "https://www.apkmirror.com/uploads/?appcategory=moon-reader",
       "example_url": "https://www.apkmirror.com/apk/moon/moon-reader/moon-reader-9-3-release/"
+    },
+    "com.budget.tracker_app": {
+      "list_url": "https://www.apkmirror.com/uploads/?appcategory=cashew-expense-budget-tracker",
+      "example_url": "https://www.apkmirror.com/apk/dapper-app-developer/cashew-expense-budget-tracker/cashew-expense-budget-tracker-6-6-11-release/"
+    },
+    "com.realbyteapps.moneymanagerfree": {
+      "list_url": "https://www.apkmirror.com/uploads/?appcategory=money-manager-expense-budget",
+      "example_url": "https://www.apkmirror.com/apk/realbyte-inc/money-manager-expense-budget/money-manager-expense-budget-4-12-1-gf-release/"
+    },
+    "com.maxmpz.audioplayer": {
+      "list_url": "https://www.apkmirror.com/uploads/?appcategory=poweramp",
+      "example_url": "https://www.apkmirror.com/apk/max-mp/poweramp/poweramp-music-player-build-1024-bundle-play-release/"
+    },
+    "app.symfonik.music.player": {
+      "list_url": "https://www.apkmirror.com/uploads/?appcategory=symfonium-music-player-cast",
+      "example_url": "https://www.apkmirror.com/apk/tolriq/symfonium-music-player-cast/symfonium-music-player-cast-14-1-0-release/"
     }
   }
 }

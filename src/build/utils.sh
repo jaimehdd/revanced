@@ -785,7 +785,7 @@ patch() {
 	if [ -f "./download/$1.apk" ]; then
 		echo "Patching with Morphe"
 		unset CI GITHUB_ACTION GITHUB_ACTIONS GITHUB_ACTOR GITHUB_ENV GITHUB_EVENT_NAME GITHUB_EVENT_PATH GITHUB_HEAD_REF GITHUB_JOB GITHUB_REF GITHUB_REPOSITORY GITHUB_RUN_ID GITHUB_RUN_NUMBER GITHUB_SHA GITHUB_WORKFLOW GITHUB_WORKSPACE RUN_ID RUN_NUMBER
-		eval java -jar morphe-desktop-*.jar patch -p *.mpp --options-file ./src/options/$2.json --out=./release/$1-$2.apk$excludePatches$includePatches --keystore=./src/morphe.keystore --purge --force --continue-on-error ./download/$1.apk
+		eval java -jar morphe-desktop-*.jar patch -p *.mpp --options-file ./src/options/$2.json --out=./release/$1-$2.apk$excludePatches$includePatches --keystore=./src/morphe.keystore --force --continue-on-error ./download/$1.apk
 		unset version
 		unset lock_version
 		unset excludePatches
@@ -811,7 +811,7 @@ morphe_disable_play_store_updates() {
 
 	green_log "[+] Disabling Play Store updates for $1:"
 	if eval java -jar morphe-desktop-*.jar patch $patches_args --exclusive -e "\"Disable Play Store updates\"" \
-		--out="$output_apk" --keystore=./src/morphe.keystore --purge --force "$input_apk"; then
+		--out="$output_apk" --keystore=./src/morphe.keystore --force "$input_apk"; then
 		mv "$output_apk" "$input_apk"
 	else
 		red_log "[-] Failed to disable Play Store updates for $1"
@@ -894,7 +894,7 @@ split_arch() {
 	if [ -f "./download/$1.apk" ]; then
 		eval java -jar morphe-desktop-*.jar patch \
 		-p *.mpp $excludePatches$includePatches --options-file ./src/options/$2.json \
-		--striplibs ${archs[i]} --purge \
+		--striplibs ${archs[i]} \
 		--keystore=./src/morphe.keystore --force \
 		--out=./release/$1-${archs[i]}-$2.apk \
 		./download/$1.apk

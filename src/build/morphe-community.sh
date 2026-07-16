@@ -34,6 +34,12 @@ derevanced_dl(){
 	dl_gh "De-Vanced" "RookieEnough" "$tag"
 }
 
+rushi_dl(){
+	dl_gh "morphe-desktop" "MorpheApp" "latest"
+	morphe_universal_dl
+	dl_gh "morphe-patches" "rushiranpise" "$tag"
+}
+
 piko_dl(){
 	dl_gh "morphe-desktop" "MorpheApp" "latest"
 	morphe_universal_dl
@@ -99,17 +105,17 @@ messenger() {
 
 strava() {
 	APP_NAME="strava"
-	VARIANT="drv"
+	VARIANT="rushi"
 	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
 	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
 
-	derevanced_dl
+	rushi_dl
 	get_patches_key "strava"
 	get_apk_chplay "com.strava" "strava-arm64-v8a" "bundle"
 
 	release_exists && return 0
 
-	community_patch "strava-arm64-v8a" "derevanced"
+	community_patch "strava-arm64-v8a" "rushi"
 }
 
 fotmob() {
@@ -159,17 +165,17 @@ moonreader() {
 
 adguard() {
 	APP_NAME="adguard"
-	VARIANT="hoo-dles"
+	VARIANT="rushi"
 	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
 	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
 
-	hoo-dles_dl
+	rushi_dl
 	get_patches_key "adguard"
 	get_apk "com.adguard.android" "adguard" "apk"
 
 	release_exists && return 0
 
-	community_patch "adguard" "hoo-dles"
+	community_patch "adguard" "rushi"
 }
 
 case "$1" in

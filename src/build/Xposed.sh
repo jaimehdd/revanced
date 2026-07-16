@@ -24,14 +24,14 @@ xposed_morphe_universal_dl() {
 
 xposed_dl() {
 	NPatch_dl
+	xposed_morphe_universal_dl
 	if [ "$use_beta" = true ]; then
 		dl_gh "morphe-desktop" "MorpheApp" "prerelease"
 		dl_gh "NexAlloy" "gnadgnaoh" "prerelease"
 	else
 		dl_gh "morphe-desktop" "MorpheApp" "latest"
-		dl_gh "NexAlloy" "gnadgnaoh" "v5.0"
+		dl_gh "NexAlloy" "gnadgnaoh" "v6.0"
 	fi
-	xposed_morphe_universal_dl
 }
 
 xposed_disable_play_store_updates() {

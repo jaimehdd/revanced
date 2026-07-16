@@ -50,6 +50,11 @@ set_patch_version_from_asset_name() {
 		# mpp files: patches-X.Y.Z.mpp (Morphe)
 		detected_patch_version=${asset_name#"patches-"}
 		detected_patch_version=${detected_patch_version%.mpp}
+	elif [[ $asset_name == *"NexAlloy-"* ]] && [[ $asset_name == *.apk ]]; then
+		# NexAlloy apk assets (e.g. NexAlloy-nonroot-release-v6.0.apk)
+		detected_patch_version=${asset_name#NexAlloy-*-*-}
+		detected_patch_version=${detected_patch_version%.apk}
+		detected_patch_version=${detected_patch_version#v}
 	fi
 
 	if [[ -n "$detected_patch_version" ]]; then

@@ -219,6 +219,10 @@ get_patches_key() {
 	while IFS= read -r line2 || [[ -n "$line2" ]]; do
 		[[ -z "$line2" ]] && continue
 		patch_name="${line2%%|*}"
+		if [[ "${separate_morphe_universal_patches:-false}" == "true" && "$patch_name" == "Disable Play Store updates" ]]; then
+			detachPlayStoreUpdates=true
+			continue
+		fi
 		includePatches+=" -e \"$patch_name\""
 		includeLinesFound=true
 	done < "$patchDir/include-patches"

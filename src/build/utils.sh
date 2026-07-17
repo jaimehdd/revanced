@@ -285,8 +285,12 @@ detect_version() {
 		    }
 		    ver = $0
 		    gsub(/^[[:space:]-]*|[[:space:]]*$/, "", ver)
-		    if (ver != "") {
+		    split(ver, parts, " ")
+		    ver = parts[1]
+		    if (ver ~ /^[0-9]+\./) {
 		      print ver
+		    } else if (match(ver, /[0-9]+(\.[0-9]+)*/)) {
+		      print substr(ver, RSTART, RLENGTH)
 		    }
 		  }
 		' | sort -V | tail -n1)

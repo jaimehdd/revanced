@@ -222,7 +222,7 @@ poweramp() {
 
 	hooman_dl
 	get_patches_key "poweramp"
-	get_apk "com.maxmpz.audioplayer" "poweramp" "bundle"
+	get_apk_chplay "com.maxmpz.audioplayer" "poweramp" "bundle"
 
 	release_exists && return 0
 

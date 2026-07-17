@@ -30,6 +30,22 @@ yellow_log() {
     echo -e "\e[33m$1\e[0m"
 }
 
+export_app_version() {
+	local app_version
+	app_version=$(echo "$1" | awk '{
+		ver = $1
+		if (ver ~ /^[0-9]+\./) {
+			print ver
+		} else if (match(ver, /[0-9]+(\.[0-9]+)*/)) {
+			print substr(ver, RSTART, RLENGTH)
+		} else {
+			print ver
+		}
+	}')
+	echo "APP_VERSION=$app_version" >> $GITHUB_ENV
+	green_log "[+] APP_VERSION: ${app_version:-unknown}"
+}
+
 set_patch_version_from_asset_name() {
 	local asset_name="$1"
 	local detected_patch_version=""
@@ -286,11 +302,11 @@ detect_version() {
 		    ver = $0
 		    gsub(/^[[:space:]-]*|[[:space:]]*$/, "", ver)
 		    split(ver, parts, " ")
-		    ver = parts[1]
-		    if (ver ~ /^[0-9]+\./) {
+		    first_word = parts[1]
+		    if (first_word ~ /^[0-9]+\./) {
+		      print first_word
+		    } else {
 		      print ver
-		    } else if (match(ver, /[0-9]+(\.[0-9]+)*/)) {
-		      print substr(ver, RSTART, RLENGTH)
 		    }
 		  }
 		' | sort -V | tail -n1)
@@ -478,8 +494,7 @@ get_apk() {
 	fi
 
 	export version
-	echo "APP_VERSION=$version" >> $GITHUB_ENV
-	green_log "[+] APP_VERSION: ${version:-unknown}"
+	export_app_version "$version"
 
 	local type_badge="APK"
 	[[ "$pkg_type" == "bundle" || "$pkg_type" == "bundle_extract" ]] && type_badge="BUNDLE"
@@ -635,7 +650,7 @@ get_apkpure() {
 		version=$(echo "$html" | $pup 'h2 text{}' | grep -oP '\d+(\.\d+)+' | head -1)
 	fi
 	green_log "[+] Version: $version"
-	echo "APP_VERSION=$version" >> $GITHUB_ENV
+	export_app_version "$version"
 
 	local download_url
 	download_url=$(echo "$html" | $pup 'a#download_link attr{href}' | head -1)
@@ -728,8 +743,7 @@ get_apk_chplay() {
 	if [[ -n "$version_name" ]]; then
 		version="$version_name"
 		export version
-		echo "APP_VERSION=$version" >> $GITHUB_ENV
-		green_log "[+] APP_VERSION: $version"
+		export_app_version "$version"
 	fi
 
 	green_log "[+] Successfully downloaded $apk_name (${dl_size} bytes)"

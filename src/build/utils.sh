@@ -279,7 +279,16 @@ detect_version() {
 		  /^Index:/ { if (printing) exit; found = 0 }
 		  /Package name: / { if ($3 == pkg) found = 1 }
 		  /Compatible versions:/ { if (found) printing = 1; next }
-		  printing && $1 ~ /^[0-9]+\./ { print $1 }
+		  printing {
+		    if ($0 ~ /:/) {
+		      exit
+		    }
+		    ver = $0
+		    gsub(/^[[:space:]-]*|[[:space:]]*$/, "", ver)
+		    if (ver != "") {
+		      print ver
+		    }
+		  }
 		' | sort -V | tail -n1)
 	  fi
 	fi
@@ -391,9 +400,11 @@ get_apk() {
 		version_href="${example_url#$base_url}"
 		local slug_ver
 		slug_ver=$(echo "$version_href" | grep -oP '\d+(-\d+)+' | tail -1)
+		[[ -z "$slug_ver" ]] && slug_ver=$(echo "$version_href" | grep -oP '\d+(-\d+)*' | tail -1)
 		local target_ver
-		target_ver=$(echo "$version" | tr '.' '-' | grep -oP '\d+(-\d+)+')
-		if [[ -n "$slug_ver" ]]; then
+		target_ver=$(echo "$version" | tr '.' '-' | grep -oP '\d+(-\d+)+' | tail -1)
+		[[ -z "$target_ver" ]] && target_ver=$(echo "$version" | tr '.' '-' | grep -oP '\d+(-\d+)*' | tail -1)
+		if [[ -n "$slug_ver" && -n "$target_ver" ]]; then
 			version_href="${version_href/$slug_ver/$target_ver}"
 		fi
 	else
@@ -412,9 +423,11 @@ get_apk() {
 		if [[ -n "$version" ]]; then
 			local slug_ver
 			slug_ver=$(echo "$version_href" | grep -oP '\d+(-\d+)+' | tail -1)
+			[[ -z "$slug_ver" ]] && slug_ver=$(echo "$version_href" | grep -oP '\d+(-\d+)*' | tail -1)
 			local target_ver
-			target_ver=$(echo "$version" | tr '.' '-' | grep -oP '\d+(-\d+)+')
-			if [[ -n "$slug_ver" ]]; then
+			target_ver=$(echo "$version" | tr '.' '-' | grep -oP '\d+(-\d+)+' | tail -1)
+			[[ -z "$target_ver" ]] && target_ver=$(echo "$version" | tr '.' '-' | grep -oP '\d+(-\d+)*' | tail -1)
+			if [[ -n "$slug_ver" && -n "$target_ver" ]]; then
 				version_href="${version_href/$slug_ver/$target_ver}"
 			fi
 		fi
@@ -454,6 +467,7 @@ get_apk() {
 	# If compatible version lookup was empty, derive app version from selected release URL slug.
 	if [[ -z "$version" ]]; then
 		version_slug=$(echo "$version_href" | grep -oP '\d+(-\d+)+' | tail -1)
+		[[ -z "$version_slug" ]] && version_slug=$(echo "$version_href" | grep -oP '\d+(-\d+)*' | tail -1)
 		if [[ -n "$version_slug" ]]; then
 			version=${version_slug//-/.}
 		fi

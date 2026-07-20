@@ -63,7 +63,7 @@ runs:
         done
     - name: Set up Python
       if: inputs.install_python_deps == 'true'
-      uses: actions/setup-python@v6
+      uses: actions/setup-python@v7
       with:
         python-version: '3.x'
     - name: Install Python dependencies

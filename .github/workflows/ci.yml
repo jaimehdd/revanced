@@ -19,7 +19,7 @@ jobs:
       repository: ${{ github.repository }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@v6.1.0
       - name: Check github connection
         id: check-gh
         run: bash src/etc/connection.sh

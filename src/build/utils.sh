@@ -503,7 +503,16 @@ get_apk() {
 	vtable_html=$(echo "$html" | $pup 'div.variants-table')
 	rows=$(echo "$vtable_html" | tr '\n' ' ' | sed 's/<div class="table-row/\n<div class="table-row/g')
 
-	local dpi_fallback=("120-640dpi" "120-480dpi" "480-640dpi" "480dpi")
+	local dpi_fallback=()
+	[[ -n "$dpi" ]] && dpi_fallback+=("$dpi")
+	dpi_fallback+=("480-640dpi" "640dpi" "320-640dpi" "160-640dpi" "120-640dpi" "120-480dpi" "320-480dpi" "480dpi" "nodpi" "")
+
+	local arch_attempts=("$arch")
+	[[ -n "$arch" && "$arch" != "universal" ]] && arch_attempts+=("universal" "")
+
+	local minver_attempts=("$minver")
+	[[ -n "$minver" ]] && minver_attempts+=("")
+
 	local type_attempts=("$type_badge")
 	if [[ "$type_badge" == "BUNDLE" ]]; then
 		type_attempts+=("APK")
@@ -513,29 +522,37 @@ get_apk() {
 
 	local matched_type=""
 	for try_type in "${type_attempts[@]}"; do
-		local filtered_rows
-		filtered_rows=$(echo "$rows" | grep -iP "apkm-badge[^>]*>\s*$try_type\s*<")
-		[[ -n "$arch" ]] && filtered_rows=$(echo "$filtered_rows" | grep -i "$arch")
-		[[ -n "$minver" ]] && filtered_rows=$(echo "$filtered_rows" | grep -i "$minver")
+		for try_arch in "${arch_attempts[@]}"; do
+			for try_minver in "${minver_attempts[@]}"; do
+				local candidate_rows
+				candidate_rows=$(echo "$rows" | grep -iP "apkm-badge[^>]*>\s*$try_type\s*<")
+				[[ -n "$try_arch" ]] && candidate_rows=$(echo "$candidate_rows" | grep -i "$try_arch")
+				[[ -n "$try_minver" ]] && candidate_rows=$(echo "$candidate_rows" | grep -i "$try_minver")
 
-		if [[ -n "$dpi" ]]; then
-			local dpi_filtered
-			dpi_filtered=$(echo "$filtered_rows" | grep -i "$dpi")
-			if [[ -z "$dpi_filtered" ]]; then
+				if [[ -z "$candidate_rows" ]]; then
+					continue
+				fi
+
 				for fb_dpi in "${dpi_fallback[@]}"; do
-					dpi_filtered=$(echo "$filtered_rows" | grep -i "$fb_dpi")
-					[[ -n "$dpi_filtered" ]] && { yellow_log "[!] DPI fallback: $dpi -> $fb_dpi"; break; }
-				done
-			fi
-			filtered_rows="$dpi_filtered"
-		fi
+					local dpi_filtered
+					if [[ -n "$fb_dpi" ]]; then
+						dpi_filtered=$(echo "$candidate_rows" | grep -i "$fb_dpi")
+					else
+						dpi_filtered="$candidate_rows"
+					fi
 
-		variant_href=$(echo "$filtered_rows" | grep -oP 'accent_color[^>]*href="\K[^"]+' | head -1)
-		if [[ -n "$variant_href" ]]; then
-			matched_type="$try_type"
-			[[ "$try_type" != "$type_badge" ]] && yellow_log "[!] Type fallback: $type_badge -> $try_type"
-			break
-		fi
+					variant_href=$(echo "$dpi_filtered" | grep -oP 'accent_color[^>]*href="\K[^"]+' | head -1)
+					if [[ -n "$variant_href" ]]; then
+						matched_type="$try_type"
+						[[ "$try_type" != "$type_badge" ]] && yellow_log "[!] Type fallback: $type_badge -> $try_type"
+						[[ "$try_arch" != "$arch" ]] && yellow_log "[!] Arch fallback: ${arch:-any} -> ${try_arch:-any}"
+						[[ "$try_minver" != "$minver" ]] && yellow_log "[!] MinVer fallback: ${minver:-any} -> ${try_minver:-any}"
+						[[ -n "$dpi" && "$fb_dpi" != "$dpi" ]] && yellow_log "[!] DPI fallback: ${dpi} -> ${fb_dpi:-any}"
+						break 4
+					fi
+				done
+			done
+		done
 	done
 
 	if [[ -z "$variant_href" ]]; then

@@ -3,7 +3,7 @@
 source ./src/build/utils.sh
 
 NPatch_dl(){
-	dl_gh "NPatch" "7723mod" "latest"
+	dl_gh "NPatch" "7723mod" "v1.0.5"
 }
 
 use_beta="${use_beta:-false}"
@@ -49,7 +49,7 @@ facebook() {
 	echo "patch_version=1" >> $GITHUB_ENV
 
 	xposed_dl
-	version="567.1.0.52.74"
+	version="572.0.0.38.71"
 	get_apk "com.facebook.katana" "facebook-arm64-v8a" "bundle" "arm64-v8a" "nodpi" "Android 11+"
 
 	release_exists && return 0

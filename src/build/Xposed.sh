@@ -30,7 +30,7 @@ xposed_dl() {
 		dl_gh "NexAlloy" "gnadgnaoh" "prerelease"
 	else
 		dl_gh "morphe-desktop" "MorpheApp" "latest"
-		dl_gh "NexAlloy" "gnadgnaoh" "v6.0"
+		dl_gh "NexAlloy" "gnadgnaoh" "latest"
 	fi
 }
 

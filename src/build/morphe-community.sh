@@ -64,6 +64,12 @@ hooman_dl(){
 	dl_gh "hoomans-morphe-patches" "arandomhooman" "$tag"
 }
 
+entree_dl(){
+	dl_gh "morphe-desktop" "MorpheApp" "latest"
+	morphe_universal_dl
+	dl_gh "Morning-Entree-Patches" "Entree3k" "$tag"
+}
+
 photos() {
 	APP_NAME="google-photos"
 	VARIANT="drv"
@@ -245,6 +251,21 @@ symfonium() {
 	community_patch "symfonium" "hooman"
 }
 
+homeworkout() {
+	APP_NAME="homeworkout"
+	VARIANT="entree"
+	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
+
+	entree_dl
+	get_patches_key "homeworkout"
+	get_apk_chplay "homeworkout.homeworkouts.noequipment" "homeworkout" "apk"
+
+	release_exists && return 0
+
+	community_patch "homeworkout" "entree"
+}
+
 case "$1" in
 	messenger)
 		messenger
@@ -281,5 +302,8 @@ case "$1" in
 		;;
 	symfonium)
 		symfonium
+		;;
+	homeworkout)
+		homeworkout
 		;;
 esac

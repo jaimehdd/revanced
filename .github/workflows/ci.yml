@@ -51,6 +51,10 @@ jobs:
         id: check-hooman
         if: steps.check-gh.outputs.internet_error == '0'
         run: bash src/etc/ci.sh arandomhooman/hoomans-morphe-patches latest "(money-manager|poweramp|symfonium).*hooman.*apk"
+      - name: Check new patch Entree3k
+        id: check-entree
+        if: steps.check-gh.outputs.internet_error == '0'
+        run: bash src/etc/ci.sh Entree3k/Morning-Entree-Patches latest homeworkout.*entree.*apk
       - name: Combine check outputs
         id: combine-community
         if: steps.check-gh.outputs.internet_error == '0'
@@ -60,7 +64,8 @@ jobs:
              [ "${{ steps.check-brosssh.outputs.new_patch }}" = "1" ] || \
              [ "${{ steps.check-binarymend.outputs.new_patch }}" = "1" ] || \
              [ "${{ steps.check-hoo-dles.outputs.new_patch }}" = "1" ] || \
-             [ "${{ steps.check-hooman.outputs.new_patch }}" = "1" ]; then
+             [ "${{ steps.check-hooman.outputs.new_patch }}" = "1" ] || \
+             [ "${{ steps.check-entree.outputs.new_patch }}" = "1" ]; then
              echo "new_patch=1" >> $GITHUB_OUTPUT
           else
              echo "new_patch=0" >> $GITHUB_OUTPUT

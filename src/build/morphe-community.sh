@@ -64,10 +64,10 @@ hooman_dl(){
 	dl_gh "hoomans-morphe-patches" "arandomhooman" "$tag"
 }
 
-entree_dl(){
+logm1lo_dl(){
 	dl_gh "morphe-desktop" "MorpheApp" "latest"
 	morphe_universal_dl
-	dl_gh "Morning-Entree-Patches" "Entree3k" "$tag"
+	dl_gh "logm1lo-patches" "logm1lo" "$tag"
 }
 
 photos() {
@@ -251,19 +251,19 @@ symfonium() {
 	community_patch "symfonium" "hooman"
 }
 
-homeworkout() {
-	APP_NAME="homeworkout"
-	VARIANT="entree"
+calistree() {
+	APP_NAME="calistree"
+	VARIANT="logm1lo"
 	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
 	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
 
-	entree_dl
-	get_patches_key "homeworkout"
-	get_apk_chplay "homeworkout.homeworkouts.noequipment" "homeworkout" "apk"
+	logm1lo_dl
+	get_patches_key "calistree"
+	get_apk_chplay "com.calistree.calistree" "calistree" "apk"
 
 	release_exists && return 0
 
-	community_patch "homeworkout" "entree"
+	community_patch "calistree" "logm1lo"
 }
 
 case "$1" in
@@ -303,7 +303,7 @@ case "$1" in
 	symfonium)
 		symfonium
 		;;
-	homeworkout)
-		homeworkout
+	calistree)
+		calistree
 		;;
 esac

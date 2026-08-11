@@ -30,7 +30,7 @@ xposed_dl() {
 		dl_gh "NexAlloy" "gnadgnaoh" "prerelease"
 	else
 		dl_gh "morphe-desktop" "MorpheApp" "latest"
-		dl_gh "NexAlloy" "gnadgnaoh" "v1.2"
+		dl_gh "NexAlloy" "gnadgnaoh" "latest"
 	fi
 }
 
@@ -49,13 +49,13 @@ facebook() {
 	echo "patch_version=1" >> $GITHUB_ENV
 
 	xposed_dl
-	version="573.0.0.37.74"
+	version="572.0.0.38.71"
 	get_apk "com.facebook.katana" "facebook-arm64-v8a" "bundle" "arm64-v8a" "nodpi" "Android 11+"
 
 	release_exists && return 0
 
 	xposed_disable_play_store_updates "facebook-arm64-v8a"
-	npatch "facebook-arm64-v8a" "NexAlloy*.apk" "gnadgnaoh" "--injectdex --sigbypasslv 3"
+	npatch "facebook-arm64-v8a" "NexAlloy-nonroot-release*.apk" "gnadgnaoh" "--injectdex --sigbypasslv 3"
 }
 
 messenger() {
@@ -71,7 +71,7 @@ messenger() {
 	release_exists && return 0
 
 	xposed_disable_play_store_updates "messenger-arm64-v8a"
-	npatch "messenger-arm64-v8a" "NexAlloy*.apk" "gnadgnaoh" "--injectdex --sigbypasslv 3"
+	npatch "messenger-arm64-v8a" "NexAlloy-nonroot-release*.apk" "gnadgnaoh" "--injectdex --sigbypasslv 3"
 }
 
 instagram() {
@@ -87,7 +87,7 @@ instagram() {
 	release_exists && return 0
 
 	xposed_disable_play_store_updates "instagram-arm64-v8a"
-	npatch "instagram-arm64-v8a" "NexAlloy*.apk" "gnadgnaoh" "--injectdex --sigbypasslv 3"
+	npatch "instagram-arm64-v8a" "NexAlloy-nonroot-release*.apk" "gnadgnaoh" "--injectdex --sigbypasslv 3"
 }
 
 case "$1" in

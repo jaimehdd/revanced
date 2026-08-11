@@ -259,7 +259,7 @@ calistree() {
 
 	logm1lo_dl
 	get_patches_key "calistree"
-	get_apk_chplay "com.calistree.calistree" "calistree" "apk"
+	get_apkpure "com.calistree.calistree" "calistree" "apk"
 
 	release_exists && return 0
 

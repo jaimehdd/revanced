@@ -164,5 +164,10 @@
       "list_url": "https://www.apkmirror.com/uploads/?appcategory=symfonium-music-player-cast",
       "example_url": "https://www.apkmirror.com/apk/tolriq/symfonium-music-player-cast/symfonium-music-player-cast-14-1-0-release/"
     }
+  },
+  "apkpure": {
+    "com.calistree.calistree": {
+      "download_url": "https://apkpure.com/calistree-calisthenics-workout/com.calistree.calistree/download"
+    }
   }
 }

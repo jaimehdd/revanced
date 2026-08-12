@@ -58,6 +58,18 @@ hoo-dles_dl(){
 	dl_gh "morphe-patches" "hoo-dles" "$tag"
 }
 
+hooman_dl(){
+	dl_gh "morphe-desktop" "MorpheApp" "latest"
+	morphe_universal_dl
+	dl_gh "hoomans-morphe-patches" "arandomhooman" "$tag"
+}
+
+logm1lo_dl(){
+	dl_gh "morphe-desktop" "MorpheApp" "latest"
+	morphe_universal_dl
+	dl_gh "logm1lo-patches" "logm1lo" "$tag"
+}
+
 photos() {
 	APP_NAME="google-photos"
 	VARIANT="drv"
@@ -101,6 +113,21 @@ messenger() {
 	release_exists && return 0
 
 	community_patch "messenger-arm64-v8a" "derevanced"
+}
+
+strava() {
+	APP_NAME="strava"
+	VARIANT="rushi"
+	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
+
+	rushi_dl
+	get_patches_key "strava"
+	get_apk_chplay "com.strava" "strava-arm64-v8a" "bundle"
+
+	release_exists && return 0
+
+	community_patch "strava-arm64-v8a" "rushi"
 }
 
 fotmob() {
@@ -163,6 +190,82 @@ adguard() {
 	community_patch "adguard" "rushi"
 }
 
+cashew() {
+	APP_NAME="cashew"
+	VARIANT="rushi"
+	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
+
+	rushi_dl
+	get_patches_key "cashew"
+	get_apk "com.budget.tracker_app" "cashew" "apk"
+
+	release_exists && return 0
+
+	community_patch "cashew" "rushi"
+}
+
+money-manager() {
+	APP_NAME="money-manager"
+	VARIANT="hooman"
+	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
+
+	hooman_dl
+	get_patches_key "money-manager"
+	get_apk "com.realbyteapps.moneymanagerfree" "money-manager" "apk"
+
+	release_exists && return 0
+
+	community_patch "money-manager" "hooman"
+}
+
+poweramp() {
+	APP_NAME="poweramp"
+	VARIANT="hooman"
+	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
+
+	hooman_dl
+	get_patches_key "poweramp"
+	version="build-1024-bundle-play"
+	get_apk "com.maxmpz.audioplayer" "poweramp" "bundle"
+
+	release_exists && return 0
+
+	community_patch "poweramp" "hooman"
+}
+
+symfonium() {
+	APP_NAME="symfonium"
+	VARIANT="hooman"
+	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
+
+	hooman_dl
+	get_patches_key "symfonium"
+	get_apk "app.symfonik.music.player" "symfonium" "bundle"
+
+	release_exists && return 0
+
+	community_patch "symfonium" "hooman"
+}
+
+calistree() {
+	APP_NAME="calistree"
+	VARIANT="logm1lo"
+	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
+
+	logm1lo_dl
+	get_patches_key "calistree"
+	get_apkpure "com.calistree.calistree" "calistree" "apk"
+
+	release_exists && return 0
+
+	community_patch "calistree" "logm1lo"
+}
+
 case "$1" in
 	messenger)
 		messenger
@@ -172,6 +275,9 @@ case "$1" in
 		;;
 	instagram-piko)
 		instagram-piko
+		;;
+	strava)
+		strava
 		;;
 	fotmob)
 		fotmob
@@ -184,5 +290,20 @@ case "$1" in
 		;;
 	adguard)
 		adguard
+		;;
+	cashew)
+		cashew
+		;;
+	money-manager)
+		money-manager
+		;;
+	poweramp)
+		poweramp
+		;;
+	symfonium)
+		symfonium
+		;;
+	calistree)
+		calistree
 		;;
 esac

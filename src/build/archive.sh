@@ -70,6 +70,12 @@ logm1lo_dl(){
 	dl_gh "logm1lo-patches" "logm1lo" "$tag"
 }
 
+entree_dl(){
+	dl_gh "morphe-desktop" "MorpheApp" "latest"
+	morphe_universal_dl
+	dl_gh "Morning-Entree-Patches" "Entree3k" "$tag"
+}
+
 photos() {
 	APP_NAME="google-photos"
 	VARIANT="drv"
@@ -266,6 +272,21 @@ calistree() {
 	community_patch "calistree" "logm1lo"
 }
 
+homeworkout() {
+	APP_NAME="homeworkout"
+	VARIANT="entree"
+	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
+
+	entree_dl
+	get_patches_key "homeworkout"
+	get_apk_chplay "homeworkout.homeworkouts.noequipment" "homeworkout" "apk"
+
+	release_exists && return 0
+
+	community_patch "homeworkout" "entree"
+}
+
 case "$1" in
 	messenger)
 		messenger
@@ -305,5 +326,8 @@ case "$1" in
 		;;
 	calistree)
 		calistree
+		;;
+	homeworkout)
+		homeworkout
 		;;
 esac

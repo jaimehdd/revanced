@@ -177,7 +177,7 @@ homeworkout() {
 
 	entree_dl
 	get_patches_key "homeworkout"
-	get_apkpure "homeworkout.homeworkouts.noequipment" "homeworkout" "apk"
+	get_apk_chplay "homeworkout.homeworkouts.noequipment" "homeworkout" "apk"
 
 	release_exists && return 0
 

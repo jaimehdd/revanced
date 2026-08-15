@@ -72,7 +72,7 @@ photos() {
 
 	derevanced_dl
 	get_patches_key "gg-photos"
-	get_apk "com.google.android.apps.photos" "gg-photos-arm64-v8a" "bundle" "arm64-v8a" "320-640dpi" "Android 12L+"
+	get_apk "com.google.android.apps.photos" "gg-photos-arm64-v8a" "apk"
 
 	release_exists && return 0
 

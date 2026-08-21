@@ -30,7 +30,7 @@ xposed_dl() {
 		dl_gh "NexAlloy" "gnadgnaoh" "prerelease"
 	else
 		dl_gh "morphe-desktop" "MorpheApp" "latest"
-		dl_gh "NexAlloy" "gnadgnaoh" "latest"
+		dl_gh "NexAlloy" "gnadgnaoh" "v2.2"
 	fi
 }
 
@@ -49,13 +49,13 @@ facebook() {
 	echo "patch_version=1" >> $GITHUB_ENV
 
 	xposed_dl
-	version="573.0.0.37.74"
+	version="575.0.0.45.73"
 	get_apk "com.facebook.katana" "facebook-arm64-v8a" "bundle" "arm64-v8a" "nodpi" "Android 11+"
 
 	release_exists && return 0
 
 	xposed_disable_play_store_updates "facebook-arm64-v8a"
-	npatch "facebook-arm64-v8a" "NexAlloy-nonroot-release*.apk" "gnadgnaoh" "--injectdex --sigbypasslv 3"
+	npatch "facebook-arm64-v8a" "NexAlloy*release*.apk" "gnadgnaoh" "--injectdex --sigbypasslv 3"
 }
 
 messenger() {

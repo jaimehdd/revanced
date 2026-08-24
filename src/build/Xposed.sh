@@ -30,7 +30,7 @@ xposed_dl() {
 		dl_gh "NexAlloy" "gnadgnaoh" "prerelease"
 	else
 		dl_gh "morphe-desktop" "MorpheApp" "latest"
-		dl_gh "NexAlloy" "gnadgnaoh" "v2.2"
+		dl_gh "NexAlloy" "gnadgnaoh" "latest"
 	fi
 }
 
@@ -55,7 +55,7 @@ facebook() {
 	release_exists && return 0
 
 	xposed_disable_play_store_updates "facebook-arm64-v8a"
-	npatch "facebook-arm64-v8a" "NexAlloy*release*.apk" "gnadgnaoh" "--injectdex --sigbypasslv 3"
+	npatch "facebook-arm64-v8a" "NexAlloy-nonroot*.apk" "gnadgnaoh" "--injectdex --sigbypasslv 3"
 }
 
 messenger() {

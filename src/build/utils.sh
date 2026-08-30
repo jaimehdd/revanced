@@ -866,6 +866,11 @@ get_apk_uptodown() {
 		fi
 	fi
 
+	if [[ ! -f "./download/$apk_name.apk" && ! -f "./download/$base_apk" ]]; then
+		red_log "[-] Failed to obtain $apk_name from Uptodown"
+		return 1
+	fi
+
 	green_log "[+] Successfully obtained $apk_name from Uptodown"
 }
 

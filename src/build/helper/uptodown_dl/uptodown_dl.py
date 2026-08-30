@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Uptodown APK / XAPK Downloader
+Uptodown APK / XAPK Downloader with Playwright Turnstile Bypass
 Adapted from: https://github.com/RookieEnough/Morphe-AutoBuilds
 """
 
@@ -11,7 +11,6 @@ import os
 import re
 import sys
 import time
-from urllib.parse import urlparse
 
 # Configure logging
 logging.basicConfig(
@@ -23,7 +22,7 @@ logger = logging.getLogger("uptodown_dl")
 
 
 def get_session():
-    """Return a requests session, preferring curl_cffi for Cloudflare TLS impersonation if available."""
+    """Return a requests session, preferring curl_cffi for TLS impersonation if available."""
     try:
         from curl_cffi import requests as cffi_requests
         logger.debug("Using curl_cffi with Chrome impersonation")
@@ -32,10 +31,10 @@ def get_session():
         import requests
         s = requests.Session()
         s.headers.update({
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
             "Accept-Language": "en-US,en;q=0.9",
-            "Sec-Ch-Ua": '"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"',
+            "Sec-Ch-Ua": '"Chromium";v="122", "Google Chrome";v="122"',
             "Sec-Ch-Ua-Mobile": "?0",
             "Sec-Ch-Ua-Platform": '"Windows"',
             "Upgrade-Insecure-Requests": "1"
@@ -82,6 +81,116 @@ def generate_possible_uptodown_names(app_name="", package=""):
             clean_names.append(n.lower())
 
     return list(dict.fromkeys(clean_names))
+
+
+def resolve_with_playwright(version_url, output_path):
+    """Launch headless Chromium via Playwright to solve Turnstile, click download, and get the APK file."""
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError:
+        logger.warning("[Playwright] playwright module is not installed. Install with: pip install playwright && playwright install chromium")
+        return None
+
+    logger.info(f"[Playwright] Launching Chromium to solve Turnstile for: {version_url}")
+    resolved_download_url = None
+    captured_version = None
+    saved_file = False
+
+    with sync_playwright() as p:
+        browser = p.chromium.launch(
+            headless=True,
+            args=[
+                "--no-sandbox",
+                "--disable-setuid-sandbox",
+                "--disable-dev-shm-usage",
+                "--disable-blink-features=AutomationControlled"
+            ]
+        )
+        context = browser.new_context(
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+            viewport={"width": 1280, "height": 800}
+        )
+        page = context.new_page()
+
+        # Intercept AJAX /download-url response
+        def handle_response(response):
+            nonlocal resolved_download_url
+            if "download-url" in response.url:
+                try:
+                    data = response.json()
+                    dl = data.get("data", {}).get("downloadURL") or data.get("downloadURL")
+                    if dl:
+                        logger.info(f"[Playwright] Intercepted direct download URL from AJAX: {dl}")
+                        resolved_download_url = dl
+                except Exception:
+                    pass
+
+        page.on("response", handle_response)
+
+        # Intercept browser download events
+        download_event = None
+        def handle_download(dl):
+            nonlocal download_event, resolved_download_url
+            logger.info(f"[Playwright] Download event triggered from: {dl.url}")
+            resolved_download_url = dl.url
+            download_event = dl
+
+        page.on("download", handle_download)
+
+        try:
+            page.goto(version_url, wait_until="domcontentloaded", timeout=45000)
+            page.wait_for_timeout(2000)
+
+            # Capture version text from UI if present
+            try:
+                v_elem = page.query_selector(".version")
+                if v_elem:
+                    captured_version = v_elem.inner_text().strip()
+            except Exception:
+                pass
+
+            # Click download button
+            btn = page.wait_for_selector("#detail-download-button", timeout=15000)
+            if btn:
+                logger.info("[Playwright] Clicking #detail-download-button to trigger Turnstile resolution...")
+                btn.click()
+            else:
+                logger.warning("[Playwright] #detail-download-button selector not found")
+
+            # Wait for Turnstile solving and download resolution (up to 30 seconds)
+            for _ in range(30):
+                if resolved_download_url or download_event:
+                    break
+                page.wait_for_timeout(1000)
+
+            if download_event:
+                logger.info(f"[Playwright] Saving browser download stream to: {output_path}")
+                os.makedirs(os.path.dirname(os.path.abspath(output_path)), exist_ok=True)
+                download_event.save_as(output_path)
+                saved_file = True
+
+        except Exception as e:
+            logger.warning(f"[Playwright] Page interaction error: {e}")
+        finally:
+            browser.close()
+
+    if saved_file and os.path.isfile(output_path):
+        return {
+            "success": True,
+            "downloadUrl": resolved_download_url or "browser_stream",
+            "version": captured_version,
+            "savedViaBrowser": True
+        }
+
+    if resolved_download_url:
+        return {
+            "success": True,
+            "downloadUrl": resolved_download_url,
+            "version": captured_version,
+            "savedViaBrowser": False
+        }
+
+    return None
 
 
 def find_app_version_and_download(session, base_url, target_version=None):
@@ -177,7 +286,7 @@ def find_app_version_and_download(session, base_url, target_version=None):
             btn = re.search(r'<button[^>]+id=[\"\x27]detail-download-button[^\"]*[\"\x27][^>]*>', vhtml)
             btn_str = btn.group(0) if btn else ""
 
-    # Extract direct download link
+    # Check for direct download link in static HTML
     download_url = None
     if btn:
         m_du = re.search(r'data-url=[\"\x27]([^\"]+)[\"\x27]', btn_str)
@@ -190,16 +299,11 @@ def find_app_version_and_download(session, base_url, target_version=None):
             download_url = m_dw.group(0)
 
     if not download_url:
-        # Fallback: check download-link or post-download
         m_dl = re.search(r'<a[^>]+id=[\"\x27]download-link[\"\x27][^>]+href=[\"\x27]([^\"]+)[\"\x27]', vhtml)
         if m_dl:
             download_url = m_dl.group(1)
             if download_url.startswith("/"):
                 download_url = f"https://dw.uptodown.com{download_url}"
-
-    if not download_url:
-        logger.warning(f"Could not extract direct download URL from {version_url}")
-        return None
 
     return {
         "version": resolved_version,
@@ -216,7 +320,7 @@ def download_file(session, download_url, referer, output_path):
     os.makedirs(os.path.dirname(os.path.abspath(output_path)), exist_ok=True)
 
     headers = {"Referer": referer}
-    resp = session.get(download_url, headers=headers, stream=True, timeout=60)
+    resp = session.get(download_url, headers=headers, stream=True, timeout=120)
     resp.raise_for_status()
 
     total_size = int(resp.headers.get("content-length", 0))
@@ -234,10 +338,10 @@ def download_file(session, download_url, referer, output_path):
 
 def main():
     parser = argparse.ArgumentParser(description="Download APK/XAPK from Uptodown")
-    parser.add_argument("target", help="Android package name (e.g. com.google.android.youtube) or app slug (e.g. youtube)")
+    parser.add_argument("target", help="Android package name (e.g. com.strava) or app slug (e.g. strava)")
     parser.add_argument("output_path", help="Output destination path")
     parser.add_argument("--version", "-v", help="Target version to download (optional)")
-    parser.add_argument("--url", "-u", help="Direct Uptodown app base URL (e.g. https://youtube.en.uptodown.com/android)")
+    parser.add_argument("--url", "-u", help="Direct Uptodown app base URL (e.g. https://strava.en.uptodown.com/android)")
     parser.add_argument("--pkg-type", default="apk", choices=["apk", "bundle", "bundle_extract"], help="Package type")
     args = parser.parse_args()
 
@@ -267,27 +371,62 @@ def main():
             continue
 
     if not result_info:
-        err = f"Could not find or resolve download for '{args.target}' on Uptodown"
+        err = f"Could not find version info for '{args.target}' on Uptodown"
         logger.error(err)
         print(json.dumps({"success": False, "error": err}))
         sys.exit(1)
 
-    try:
-        size = download_file(session, result_info["downloadUrl"], result_info["referer"], args.output_path)
+    output_path = args.output_path
+    version_name = result_info.get("version")
+    is_split = result_info.get("isSplit", False)
+    kind_file = result_info.get("kindFile", "apk")
+    download_url = result_info.get("downloadUrl")
+    referer = result_info.get("referer")
+
+    # 1. If direct download URL is available in static HTML, download directly
+    if download_url:
+        try:
+            size = download_file(session, download_url, referer, output_path)
+            output_json = {
+                "success": True,
+                "version": version_name,
+                "versionName": version_name,
+                "isSplit": is_split,
+                "size": size,
+                "kindFile": kind_file,
+                "outputPath": output_path
+            }
+            print(json.dumps(output_json))
+            sys.exit(0)
+        except Exception as e:
+            logger.warning(f"Static download failed: {e}. Attempting Playwright...")
+
+    # 2. Turnstile bypass via Playwright headless browser
+    pw_result = resolve_with_playwright(referer, output_path)
+    if pw_result and pw_result.get("success"):
+        if pw_result.get("savedViaBrowser") and os.path.isfile(output_path):
+            size = os.path.getsize(output_path)
+        elif pw_result.get("downloadUrl") and pw_result.get("downloadUrl") != "browser_stream":
+            size = download_file(session, pw_result["downloadUrl"], referer, output_path)
+        else:
+            size = os.path.getsize(output_path) if os.path.isfile(output_path) else 0
+
         output_json = {
             "success": True,
-            "version": result_info["version"],
-            "versionName": result_info["version"],
-            "isSplit": result_info["isSplit"],
+            "version": version_name or pw_result.get("version"),
+            "versionName": version_name or pw_result.get("version"),
+            "isSplit": is_split,
             "size": size,
-            "kindFile": result_info["kindFile"],
-            "outputPath": args.output_path
+            "kindFile": kind_file,
+            "outputPath": output_path
         }
         print(json.dumps(output_json))
-    except Exception as e:
-        logger.error(f"Download failed: {e}")
-        print(json.dumps({"success": False, "error": str(e)}))
-        sys.exit(1)
+        sys.exit(0)
+
+    err = f"Could not resolve Turnstile download link for '{args.target}'"
+    logger.error(err)
+    print(json.dumps({"success": False, "error": err}))
+    sys.exit(1)
 
 
 if __name__ == "__main__":

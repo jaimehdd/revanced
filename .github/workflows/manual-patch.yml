@@ -95,8 +95,9 @@ jobs:
         uses: ./.github/actions/preparing
         with:
           install_python_deps: 'true'
+          install_playwright: 'true'
           install_usque: 'true'
-          python_requirements: 'src/build/helper/ggplay_dl/requirements.txt'
+          python_requirements: 'src/build/helper/uptodown_dl/requirements.txt'
       - name: Check github connection
         id: check-gh-derv
         run: bash src/etc/connection.sh

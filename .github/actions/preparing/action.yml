@@ -12,6 +12,10 @@ inputs:
     description: 'Install Python dependencies for Google Play downloader'
     required: false
     default: 'false'
+  install_playwright:
+    description: 'Install Playwright and Chromium browser'
+    required: false
+    default: 'false'
   python_requirements:
     description: 'Path to Python requirements.txt file'
     required: false
@@ -70,6 +74,12 @@ runs:
       if: inputs.install_python_deps == 'true'
       shell: bash
       run: pip install -r ${{ inputs.python_requirements }}
+    - name: Install Playwright and Chromium
+      if: inputs.install_playwright == 'true'
+      shell: bash
+      run: |
+        pip install playwright
+        playwright install --with-deps chromium
     - name: Install Bouncy Castle provider for BKS keystore
       if: inputs.install_bouncy_castle == 'true'
       shell: bash

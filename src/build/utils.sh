@@ -749,7 +749,8 @@ get_apk_uptodown() {
 		exit_code=$?
 
 		local json_result
-		json_result=$(echo "$result" | grep '^{')
+		json_result=$(echo "$result" | grep -E '^\{.*\}$' | tail -1)
+		[[ -z "$json_result" ]] && json_result=$(echo "$result" | grep '^{' | tail -1)
 
 		if [[ $exit_code -eq 0 && -n "$json_result" ]]; then
 			local success

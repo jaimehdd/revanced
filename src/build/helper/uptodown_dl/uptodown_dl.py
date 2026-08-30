@@ -12,8 +12,9 @@ import re
 import sys
 import time
 
-# Configure logging
+# Configure logging to sys.stderr so stdout remains pure JSON
 logging.basicConfig(
+    stream=sys.stderr,
     level=logging.INFO,
     format='%(asctime)s [%(levelname)s] %(message)s',
     datefmt='%H:%M:%S'
@@ -88,10 +89,10 @@ def resolve_with_playwright(version_url, output_path):
     try:
         from playwright.sync_api import sync_playwright
     except ImportError:
-        logger.warning("[Playwright] playwright module is not installed. Install with: pip install playwright && playwright install chromium")
+        logger.warning("[Playwright] playwright is not installed. Ensure playwright and chromium are installed in CI.")
         return None
 
-    logger.info(f"[Playwright] Launching Chromium to solve Turnstile for: {version_url}")
+    logger.info(f"[Playwright] Launching Chromium for Turnstile resolution on: {version_url}")
     resolved_download_url = None
     captured_version = None
     saved_file = False
@@ -103,14 +104,24 @@ def resolve_with_playwright(version_url, output_path):
                 "--no-sandbox",
                 "--disable-setuid-sandbox",
                 "--disable-dev-shm-usage",
-                "--disable-blink-features=AutomationControlled"
+                "--disable-blink-features=AutomationControlled",
+                "--disable-infobars",
+                "--window-size=1280,800"
             ]
         )
         context = browser.new_context(
             user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
-            viewport={"width": 1280, "height": 800}
+            viewport={"width": 1280, "height": 800},
+            accept_downloads=True
         )
         page = context.new_page()
+
+        # Stealth: mask navigator.webdriver
+        page.add_init_script("""
+            Object.defineProperty(navigator, 'webdriver', {
+                get: () => undefined
+            });
+        """)
 
         # Intercept AJAX /download-url response
         def handle_response(response):
@@ -120,10 +131,10 @@ def resolve_with_playwright(version_url, output_path):
                     data = response.json()
                     dl = data.get("data", {}).get("downloadURL") or data.get("downloadURL")
                     if dl:
-                        logger.info(f"[Playwright] Intercepted direct download URL from AJAX: {dl}")
+                        logger.info(f"[Playwright] Intercepted direct download URL from AJAX response: {dl}")
                         resolved_download_url = dl
-                except Exception:
-                    pass
+                except Exception as e:
+                    logger.debug(f"[Playwright] Error parsing response JSON: {e}")
 
         page.on("response", handle_response)
 
@@ -131,7 +142,7 @@ def resolve_with_playwright(version_url, output_path):
         download_event = None
         def handle_download(dl):
             nonlocal download_event, resolved_download_url
-            logger.info(f"[Playwright] Download event triggered from: {dl.url}")
+            logger.info(f"[Playwright] Download event triggered: {dl.url}")
             resolved_download_url = dl.url
             download_event = dl
 
@@ -141,7 +152,19 @@ def resolve_with_playwright(version_url, output_path):
             page.goto(version_url, wait_until="domcontentloaded", timeout=45000)
             page.wait_for_timeout(2000)
 
-            # Capture version text from UI if present
+            # Dismiss cookie consent dialog if present
+            try:
+                for selector in ["#didomi-notice-agree-button", "button:has-text('Accept')", "button:has-text('Agree')", ".qc-cmp2-summary-buttons button"]:
+                    cookie_btn = page.query_selector(selector)
+                    if cookie_btn and cookie_btn.is_visible():
+                        logger.info(f"[Playwright] Dismissing cookie banner ({selector})...")
+                        cookie_btn.click()
+                        page.wait_for_timeout(1000)
+                        break
+            except Exception:
+                pass
+
+            # Capture version text from UI
             try:
                 v_elem = page.query_selector(".version")
                 if v_elem:
@@ -149,17 +172,20 @@ def resolve_with_playwright(version_url, output_path):
             except Exception:
                 pass
 
-            # Click download button
-            btn = page.wait_for_selector("#detail-download-button", timeout=15000)
-            if btn:
-                logger.info("[Playwright] Clicking #detail-download-button to trigger Turnstile resolution...")
-                btn.click()
-            else:
-                logger.warning("[Playwright] #detail-download-button selector not found")
+            # Trigger download button click via evaluate to bypass any overlay blocking
+            logger.info("[Playwright] Triggering #detail-download-button click...")
+            page.evaluate("""
+                const btn = document.getElementById('detail-download-button');
+                if (btn) {
+                    btn.scrollIntoView();
+                    btn.click();
+                }
+            """)
 
-            # Wait for Turnstile solving and download resolution (up to 30 seconds)
-            for _ in range(30):
+            # Wait for Turnstile solving and download URL extraction (up to 30 seconds)
+            for i in range(30):
                 if resolved_download_url or download_event:
+                    logger.info(f"[Playwright] Successfully obtained download trigger after {i+1}s")
                     break
                 page.wait_for_timeout(1000)
 
@@ -170,7 +196,7 @@ def resolve_with_playwright(version_url, output_path):
                 saved_file = True
 
         except Exception as e:
-            logger.warning(f"[Playwright] Page interaction error: {e}")
+            logger.warning(f"[Playwright] Page interaction exception: {e}")
         finally:
             browser.close()
 
@@ -242,7 +268,6 @@ def find_app_version_and_download(session, base_url, target_version=None):
                     matched_entry = entry
                     break
             else:
-                # Select first latest stable entry
                 matched_entry = entry
                 break
 
@@ -274,7 +299,6 @@ def find_app_version_and_download(session, base_url, target_version=None):
     btn_str = btn.group(0) if btn else ""
 
     # BYPASS LOGIC:
-    # If the app is an XAPK or deeplink is enabled, loading version_url downloads the Uptodown App Store installer.
     # Appending "-x" forces data-only-xapk="1" and serves the actual APK/XAPK file.
     is_xapk = kind_file == "xapk" or "download-link-deeplink" in btn_str or "xapk" in btn_str.lower()
     if is_xapk:
@@ -286,7 +310,7 @@ def find_app_version_and_download(session, base_url, target_version=None):
             btn = re.search(r'<button[^>]+id=[\"\x27]detail-download-button[^\"]*[\"\x27][^>]*>', vhtml)
             btn_str = btn.group(0) if btn else ""
 
-    # Check for direct download link in static HTML
+    # Check for direct download link in static HTML if available
     download_url = None
     if btn:
         m_du = re.search(r'data-url=[\"\x27]([^\"]+)[\"\x27]', btn_str)
@@ -399,7 +423,7 @@ def main():
             print(json.dumps(output_json))
             sys.exit(0)
         except Exception as e:
-            logger.warning(f"Static download failed: {e}. Attempting Playwright...")
+            logger.warning(f"Static download failed: {e}. Attempting Playwright Turnstile resolution...")
 
     # 2. Turnstile bypass via Playwright headless browser
     pw_result = resolve_with_playwright(referer, output_path)
@@ -423,7 +447,7 @@ def main():
         print(json.dumps(output_json))
         sys.exit(0)
 
-    err = f"Could not resolve Turnstile download link for '{args.target}'"
+    err = f"Could not resolve Turnstile download link for '{args.target}' on Uptodown"
     logger.error(err)
     print(json.dumps({"success": False, "error": err}))
     sys.exit(1)

@@ -169,5 +169,46 @@
     "com.calistree.calistree": {
       "download_url": "https://apkpure.com/calistree-calisthenics-workout/com.calistree.calistree/download"
     }
+  },
+  "uptodown": {
+    "com.google.android.youtube": {
+      "url": "https://youtube.en.uptodown.com/android"
+    },
+    "com.google.android.apps.youtube.music": {
+      "url": "https://youtube-music.en.uptodown.com/android"
+    },
+    "com.reddit.frontpage": {
+      "url": "https://reddit.en.uptodown.com/android"
+    },
+    "com.instagram.android": {
+      "url": "https://instagram.en.uptodown.com/android"
+    },
+    "com.facebook.katana": {
+      "url": "https://facebook.en.uptodown.com/android"
+    },
+    "com.facebook.orca": {
+      "url": "https://facebook-messenger.en.uptodown.com/android"
+    },
+    "com.spotify.music": {
+      "url": "https://spotify.en.uptodown.com/android"
+    },
+    "com.twitter.android": {
+      "url": "https://twitter.en.uptodown.com/android"
+    },
+    "com.discord": {
+      "url": "https://discord.en.uptodown.com/android"
+    },
+    "org.videolan.vlc": {
+      "url": "https://vlc.en.uptodown.com/android"
+    },
+    "com.microblink.photomath": {
+      "url": "https://photomath.en.uptodown.com/android"
+    },
+    "com.strava": {
+      "url": "https://strava.en.uptodown.com/android"
+    },
+    "homeworkout.homeworkouts.noequipment": {
+      "url": "https://leap-fitness-group-home-workout.en.uptodown.com/android"
+    }
   }
 }

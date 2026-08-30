@@ -714,6 +714,161 @@ get_apkpure() {
 	fi
 }
 
+# Download APK from Uptodown (bypasses Uptodown App Store wrapper using -x endpoint)
+get_apk_uptodown() {
+	local pkg_name=$1 apk_name=$2 pkg_type=${3:-apk}
+	local html=""
+
+	local apps_json="./src/build/helper/apps.json"
+	local helper_script="./src/build/helper/uptodown_dl/uptodown_dl.py"
+	local base_url=""
+
+	if [[ -f "$apps_json" ]]; then
+		base_url=$(jq -r --arg pkg "$pkg_name" '.uptodown[$pkg].url // empty' "$apps_json" 2>/dev/null)
+	fi
+
+	detect_version "$pkg_name"
+	version=$(printf '%s\n' "$version" "$prefer_version" | sort -V | tail -n1)
+	unset prefer_version
+	export version
+
+	green_log "[+] Downloading $apk_name from Uptodown [$pkg_name] (type=$pkg_type target_ver=${version:-latest})"
+
+	local base_apk="$apk_name.apk"
+	local is_split=false
+	local downloaded=false
+
+	# 1. Try via Python helper (curl_cffi / requests with slug generator adapted from Morphe-AutoBuilds)
+	if [[ -f "$helper_script" ]]; then
+		local py_args=("$pkg_name" "./download/$base_apk" "--pkg-type" "$pkg_type")
+		[[ -n "$version" ]] && py_args+=("--version" "$version")
+		[[ -n "$base_url" ]] && py_args+=("--url" "$base_url")
+
+		local result exit_code
+		result=$(python3 "$helper_script" "${py_args[@]}" 2>&1)
+		exit_code=$?
+
+		local json_result
+		json_result=$(echo "$result" | grep '^{')
+
+		if [[ $exit_code -eq 0 && -n "$json_result" ]]; then
+			local success
+			success=$(echo "$json_result" | jq -r '.success // false' 2>/dev/null)
+			if [[ "$success" == "true" ]]; then
+				local dl_size
+				dl_size=$(echo "$json_result" | jq -r '.size // 0' 2>/dev/null)
+				is_split=$(echo "$json_result" | jq -r '.isSplit // false' 2>/dev/null)
+				local version_name
+				version_name=$(echo "$json_result" | jq -r '.versionName // empty' 2>/dev/null)
+				if [[ -n "$version_name" ]]; then
+					version="$version_name"
+					export version
+					export_app_version "$version"
+				fi
+				green_log "[+] Downloaded $apk_name via Uptodown helper (${dl_size} bytes)"
+				downloaded=true
+			fi
+		fi
+	fi
+
+	# 2. Fallback to FlareSolverr / CFB shell scraping pipeline if helper failed
+	if [[ "$downloaded" == "false" ]]; then
+		if [[ -z "$base_url" ]]; then
+			# Generate candidate URL from package name or app slug
+			local slug="${pkg_name#com.}"
+			slug="${slug#google.android.}"
+			slug="${slug#android.}"
+			slug="${slug//./-}"
+			base_url="https://${slug}.en.uptodown.com/android"
+		fi
+		base_url="${base_url%/}"
+
+		_cf_get "$base_url/versions" || return 1
+
+		local data_code
+		data_code=$(echo "$html" | grep -oP 'id="detail-app-name"[^>]*data-code="\K\d+' | head -1)
+		[[ -z "$data_code" ]] && data_code=$(echo "$html" | grep -oP 'data-code="\K\d+(?="[^>]*id="detail-app-name")' | head -1)
+
+		local version_url="" kind_file="apk"
+		if [[ -n "$data_code" ]]; then
+			local api_resp
+			api_resp=$(wget -qO- --header="User-Agent: $user_agent" "$base_url/apps/$data_code/versions/1" 2>/dev/null)
+			if [[ -n "$api_resp" ]]; then
+				if [[ -n "$version" ]]; then
+					version_url=$(echo "$api_resp" | jq -r --arg v "$version" '.data[] | select(.version == $v) | "\(.versionURL.url)/\(.versionURL.extraURL)/\(.versionURL.versionID)"' | head -1)
+					kind_file=$(echo "$api_resp" | jq -r --arg v "$version" '.data[] | select(.version == $v) | .kindFile' | head -1)
+				fi
+				if [[ -z "$version_url" ]]; then
+					version_url=$(echo "$api_resp" | jq -r '.data[0] | "\(.versionURL.url)/\(.versionURL.extraURL)/\(.versionURL.versionID)"' | head -1)
+					kind_file=$(echo "$api_resp" | jq -r '.data[0].kindFile // "apk"' | head -1)
+					version=$(echo "$api_resp" | jq -r '.data[0].version' | head -1)
+				fi
+			fi
+		fi
+
+		[[ -z "$version_url" ]] && version_url="$base_url/download"
+
+		# Apply the -x bypass for XAPKs / version pages to avoid the Uptodown App Store wrapper
+		if [[ "$kind_file" == "xapk" || "$version_url" =~ /download/[0-9]+$ ]]; then
+			version_url="${version_url}-x"
+			is_split=true
+		fi
+
+		green_log "[+] Target Uptodown download page: $version_url"
+		_cf_get "$version_url" || return 1
+
+		if [[ -z "$version" ]]; then
+			version=$(echo "$html" | grep -oP 'class="version">\K[^<]+' | head -1)
+		fi
+		export_app_version "$version"
+
+		local download_url
+		download_url=$(echo "$html" | grep -oP 'https://dw\.uptodown\.com/dwn/[^"'\''\s<>]+' | head -1)
+		if [[ -z "$download_url" ]]; then
+			local data_url
+			data_url=$(echo "$html" | grep -oP 'id="detail-download-button"[^>]*data-url="\K[^"]+' | head -1)
+			[[ -n "$data_url" ]] && download_url="https://dw.uptodown.com/dwn/$data_url"
+		fi
+
+		if [[ -z "$download_url" ]]; then
+			red_log "[-] Could not extract direct download URL from Uptodown"
+			return 1
+		fi
+
+		local cookie_args=()
+		[[ -n "$FS_COOKIES" ]] && cookie_args=(--header "Cookie: $FS_COOKIES")
+
+		wget -nv -O "./download/$base_apk" \
+			--header="User-Agent: $user_agent" \
+			--referer="$version_url" \
+			"${cookie_args[@]}" \
+			--timeout=120 \
+			"$download_url"
+
+		if [[ ! -f "./download/$base_apk" ]]; then
+			red_log "[-] Failed to download $apk_name from Uptodown"
+			return 1
+		fi
+	fi
+
+	# 3. Handle XAPK / Split APK bundles merging
+	if [[ "$is_split" == "true" || "$pkg_type" == "bundle" || "$pkg_type" == "bundle_extract" ]]; then
+		if unzip -l "./download/$base_apk" 2>/dev/null | grep -q '\.apk$'; then
+			if [[ "$pkg_type" == "bundle_extract" ]]; then
+				unzip "./download/$base_apk" -d "./download/$apk_name" > /dev/null 2>&1
+			else
+				green_log "[+] Merge splits apk to standalone apk"
+				java -jar $APKEditor m -i "./download/$base_apk" -o "./download/$apk_name.apk.merged" > /dev/null 2>&1
+				if [[ -f "./download/$apk_name.apk.merged" ]]; then
+					mv "./download/$apk_name.apk.merged" "./download/$apk_name.apk"
+				fi
+			fi
+		fi
+	fi
+
+	green_log "[+] Successfully obtained $apk_name from Uptodown"
+}
+
 # Download APK from Google Play Store via AuroraStore anonymous auth
 get_apk_chplay() {
 	local pkg_name=$1 apk_name=$2

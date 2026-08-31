@@ -170,33 +170,33 @@ adguard() {
 }
 
 strava() {
-	APP_NAME="strava"
-	VARIANT="rushi"
-	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
-	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
+	# APP_NAME="strava"
+	# VARIANT="rushi"
+	# echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+	# echo "VARIANT=$VARIANT" >> $GITHUB_ENV
 
-	rushi_dl
-	get_patches_key "strava"
-	get_apk_uptodown "com.strava" "strava-arm64-v8a" "bundle"
+	# rushi_dl
+	# get_patches_key "strava"
+	# get_apk_uptodown "com.strava" "strava-arm64-v8a" "bundle"
 
-	release_exists && return 0
+	# release_exists && return 0
 
-	community_patch "strava-arm64-v8a" "rushi"
+	# community_patch "strava-arm64-v8a" "rushi"
 }
 
 homeworkout() {
-	APP_NAME="homeworkout"
-	VARIANT="rushi"
-	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
-	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
+	# APP_NAME="homeworkout"
+	# VARIANT="rushi"
+	# echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+	# echo "VARIANT=$VARIANT" >> $GITHUB_ENV
 
-	rushi_dl
-	get_patches_key "homeworkout"
-	get_apk_uptodown "homeworkout.homeworkouts.noequipment" "homeworkout" "apk"
+	# rushi_dl
+	# get_patches_key "homeworkout"
+	# get_apk_uptodown "homeworkout.homeworkouts.noequipment" "homeworkout" "apk"
 
-	release_exists && return 0
+	# release_exists && return 0
 
-	community_patch "homeworkout" "rushi"
+	# community_patch "homeworkout" "rushi"
 }
 
 case "$1" in

@@ -170,8 +170,8 @@ adguard() {
 }
 
 strava() {
-	# APP_NAME="strava"
-	# VARIANT="rushi"
+	APP_NAME="strava"
+	VARIANT="rushi"
 	# echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
 	# echo "VARIANT=$VARIANT" >> $GITHUB_ENV
 
@@ -185,8 +185,8 @@ strava() {
 }
 
 homeworkout() {
-	# APP_NAME="homeworkout"
-	# VARIANT="rushi"
+	APP_NAME="homeworkout"
+	VARIANT="rushi"
 	# echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
 	# echo "VARIANT=$VARIANT" >> $GITHUB_ENV
 

@@ -1,5 +1,9 @@
 {
   "apkmirror": {
+    "com.brave.browser": {
+      "list_url": "https://www.apkmirror.com/uploads/?appcategory=brave-browser",
+      "example_url": "https://www.apkmirror.com/apk/brave-software/brave-browser/brave-private-web-browser-1-94-117-release/"
+    },
     "de.komoot.android": {
       "list_url": "https://www.apkmirror.com/uploads/?appcategory=komoot-cycling-hiking-mountain-biking-maps",
       "example_url": "https://www.apkmirror.com/apk/komoot-gmbh/komoot-cycling-hiking-mountain-biking-maps/komoot-hike-bike-run-2026-21-2-release/"

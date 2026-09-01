@@ -64,6 +64,12 @@ entree_dl(){
 	dl_gh "Morning-Entree-Patches" "Entree3k" "$tag"
 }
 
+kveld_dl(){
+	dl_gh "morphe-desktop" "MorpheApp" "latest"
+	morphe_universal_dl
+	dl_gh "kveld-morphe-patches" "kveld9" "$tag"
+}
+
 ######################
 ####### rushi ########
 ######################
@@ -80,6 +86,96 @@ photos() {
 	release_exists && return 0
 
 	community_patch "gg-photos-arm64-v8a" "rushi"
+}
+
+messenger() {
+	APP_NAME="messenger"
+	VARIANT="rushi"
+	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
+
+	rushi_dl
+	get_patches_key "messenger"
+	get_apk "com.facebook.orca" "messenger-arm64-v8a" "apk" "arm64-v8a" "nodpi" "Android 9.0+"
+
+	release_exists && return 0
+
+	community_patch "messenger-arm64-v8a" "rushi"
+}
+
+adguard() {
+	APP_NAME="adguard"
+	VARIANT="rushi"
+	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
+
+	rushi_dl
+	get_patches_key "adguard"
+	get_apk "com.adguard.android" "adguard" "apk"
+
+	release_exists && return 0
+
+	community_patch "adguard" "rushi"
+}
+
+windy() {
+	APP_NAME="windy"
+	VARIANT="rushi"
+	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
+
+	rushi_dl
+	get_patches_key "windy"
+	get_apk "com.windyty.android" "windy-arm64-v8a" "bundle" "universal" "120-640dpi" "Android 12L+"
+
+	release_exists && return 0
+
+	community_patch "windy-arm64-v8a" "rushi"
+}
+
+komoot() {
+	APP_NAME="komoot"
+	VARIANT="rushi"
+	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
+
+	rushi_dl
+	get_patches_key "komoot"
+	get_apk "de.komoot.android" "komoot-arm64-v8a" "bundle"
+
+	release_exists && return 0
+
+	community_patch "komoot-arm64-v8a" "rushi"
+}
+
+strava() {
+	APP_NAME="strava"
+	VARIANT="rushi"
+	# echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+	# echo "VARIANT=$VARIANT" >> $GITHUB_ENV
+
+	# rushi_dl
+	# get_patches_key "strava"
+	# get_apk_uptodown "com.strava" "strava-arm64-v8a" "bundle"
+
+	# release_exists && return 0
+
+	# community_patch "strava-arm64-v8a" "rushi"
+}
+
+homeworkout() {
+	APP_NAME="homeworkout"
+	VARIANT="rushi"
+	# echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+	# echo "VARIANT=$VARIANT" >> $GITHUB_ENV
+
+	# rushi_dl
+	# get_patches_key "homeworkout"
+	# get_apk_uptodown "homeworkout.homeworkouts.noequipment" "homeworkout" "apk"
+
+	# release_exists && return 0
+
+	# community_patch "homeworkout" "rushi"
 }
 
 ######################
@@ -137,96 +233,21 @@ moonreader() {
 }
 
 ######################
-####### rushi ########
+####### kveld ########
 ######################
-adguard() {
-	APP_NAME="adguard"
-	VARIANT="rushi"
+brave() {
+	APP_NAME="brave"
+	VARIANT="kveld"
 	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
 	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
 
-	rushi_dl
-	get_patches_key "adguard"
-	get_apk "com.adguard.android" "adguard" "apk"
+	kveld_dl
+	get_patches_key "brave"
+	get_apk "com.brave.browser" "brave-arm64-v8a" "bundle" "arm64-v8a"
 
 	release_exists && return 0
 
-	community_patch "adguard" "rushi"
-}
-
-windy() {
-	APP_NAME="windy"
-	VARIANT="rushi"
-	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
-	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
-
-	rushi_dl
-	get_patches_key "windy"
-	get_apk "com.windyty.android" "windy-arm64-v8a" "bundle" "universal" "120-640dpi" "Android 12L+"
-
-	release_exists && return 0
-
-	community_patch "windy-arm64-v8a" "rushi"
-}
-
-messenger() {
-	APP_NAME="messenger"
-	VARIANT="rushi"
-	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
-	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
-
-	rushi_dl
-	get_patches_key "messenger"
-	get_apk "com.facebook.orca" "messenger-arm64-v8a" "apk" "arm64-v8a" "nodpi" "Android 9.0+"
-
-	release_exists && return 0
-
-	community_patch "messenger-arm64-v8a" "rushi"
-}
-
-strava() {
-	APP_NAME="strava"
-	VARIANT="rushi"
-	# echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
-	# echo "VARIANT=$VARIANT" >> $GITHUB_ENV
-
-	# rushi_dl
-	# get_patches_key "strava"
-	# get_apk_uptodown "com.strava" "strava-arm64-v8a" "bundle"
-
-	# release_exists && return 0
-
-	# community_patch "strava-arm64-v8a" "rushi"
-}
-
-komoot() {
-	APP_NAME="komoot"
-	VARIANT="rushi"
-	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
-	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
-
-	rushi_dl
-	get_patches_key "komoot"
-	get_apk "de.komoot.android" "komoot-arm64-v8a" "bundle"
-
-	release_exists && return 0
-
-	community_patch "komoot-arm64-v8a" "rushi"
-}
-
-homeworkout() {
-	APP_NAME="homeworkout"
-	VARIANT="rushi"
-	# echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
-	# echo "VARIANT=$VARIANT" >> $GITHUB_ENV
-
-	# rushi_dl
-	# get_patches_key "homeworkout"
-	# get_apk_uptodown "homeworkout.homeworkouts.noequipment" "homeworkout" "apk"
-
-	# release_exists && return 0
-
-	# community_patch "homeworkout" "rushi"
+	community_patch "brave-arm64-v8a" "kveld"
 }
 
 case "$1" in
@@ -259,5 +280,8 @@ case "$1" in
 		;;
 	homeworkout)
 		homeworkout
+		;;
+	brave)
+		brave
 		;;
 esac

@@ -64,21 +64,27 @@ entree_dl(){
 	dl_gh "Morning-Entree-Patches" "Entree3k" "$tag"
 }
 
+######################
+####### rushi ########
+######################
 photos() {
 	APP_NAME="google-photos"
-	VARIANT="drv"
+	VARIANT="rushi"
 	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
 	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
 
-	derevanced_dl
+	rushi_dl
 	get_patches_key "gg-photos"
 	get_apk "com.google.android.apps.photos" "gg-photos-arm64-v8a" "apk"
 
 	release_exists && return 0
 
-	community_patch "gg-photos-arm64-v8a" "derevanced"
+	community_patch "gg-photos-arm64-v8a" "rushi"
 }
 
+######################
+######## Piko ########
+######################
 instagram-piko() {
 	APP_NAME="instagram"
 	VARIANT="piko"
@@ -94,21 +100,9 @@ instagram-piko() {
 	community_patch "instagram-arm64-v8a" "piko"
 }
 
-messenger() {
-	APP_NAME="messenger"
-	VARIANT="drv"
-	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
-	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
-
-	derevanced_dl
-	get_patches_key "messenger"
-	get_apk "com.facebook.orca" "messenger-arm64-v8a" "apk" "arm64-v8a" "nodpi" "Android 9.0+"
-
-	release_exists && return 0
-
-	community_patch "messenger-arm64-v8a" "derevanced"
-}
-
+######################
+####### hoo-dles #####
+######################
 fotmob() {
 	APP_NAME="fotmob"
 	VARIANT="hoo-dles"
@@ -124,21 +118,9 @@ fotmob() {
 	community_patch "fotmob-arm64-v8a" "hoo-dles"
 }
 
-windy() {
-	APP_NAME="windy"
-	VARIANT="hoo-dles"
-	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
-	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
-
-	hoo-dles_dl
-	get_patches_key "windy"
-	get_apk "com.windyty.android" "windy-arm64-v8a" "bundle" "universal" "120-640dpi" "Android 12L+"
-
-	release_exists && return 0
-
-	community_patch "windy-arm64-v8a" "hoo-dles"
-}
-
+######################
+##### binarymend #####
+######################
 moonreader() {
 	APP_NAME="moonreader"
 	VARIANT="binarymend"
@@ -154,6 +136,9 @@ moonreader() {
 	community_patch "moonreader-arm64-v8a" "binarymend"
 }
 
+######################
+####### rushi ########
+######################
 adguard() {
 	APP_NAME="adguard"
 	VARIANT="rushi"
@@ -169,6 +154,36 @@ adguard() {
 	community_patch "adguard" "rushi"
 }
 
+windy() {
+	APP_NAME="windy"
+	VARIANT="rushi"
+	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
+
+	rushi_dl
+	get_patches_key "windy"
+	get_apk "com.windyty.android" "windy-arm64-v8a" "bundle" "universal" "120-640dpi" "Android 12L+"
+
+	release_exists && return 0
+
+	community_patch "windy-arm64-v8a" "rushi"
+}
+
+messenger() {
+	APP_NAME="messenger"
+	VARIANT="rushi"
+	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
+
+	rushi_dl
+	get_patches_key "messenger"
+	get_apk "com.facebook.orca" "messenger-arm64-v8a" "apk" "arm64-v8a" "nodpi" "Android 9.0+"
+
+	release_exists && return 0
+
+	community_patch "messenger-arm64-v8a" "rushi"
+}
+
 strava() {
 	APP_NAME="strava"
 	VARIANT="rushi"
@@ -182,6 +197,21 @@ strava() {
 	# release_exists && return 0
 
 	# community_patch "strava-arm64-v8a" "rushi"
+}
+
+komoot() {
+	APP_NAME="komoot"
+	VARIANT="rushi"
+	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
+
+	rushi_dl
+	get_patches_key "komoot"
+	get_apk "de.komoot.android" "komoot-arm64-v8a" "bundle"
+
+	release_exists && return 0
+
+	community_patch "komoot-arm64-v8a" "rushi"
 }
 
 homeworkout() {
@@ -223,6 +253,9 @@ case "$1" in
 		;;
 	adguard)
 		adguard
+		;;
+	komoot)
+		komoot
 		;;
 	homeworkout)
 		homeworkout

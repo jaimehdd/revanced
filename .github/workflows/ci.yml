@@ -27,18 +27,10 @@ jobs:
         id: check-morphe
         if: steps.check-gh.outputs.internet_error == '0'
         run: bash src/etc/ci.sh MorpheApp/morphe-patches latest youtube.*morphe.*apk
-      - name: Check new patch De-Vanced
-        id: check-derv
-        if: steps.check-gh.outputs.internet_error == '0'
-        run: bash src/etc/ci.sh RookieEnough/De-Vanced latest gg-photos.*drv.*apk
       - name: Check new patch Piko
         id: check-piko
         if: steps.check-gh.outputs.internet_error == '0'
         run: bash src/etc/ci.sh crimera/piko latest instagram.*piko.*apk
-      - name: Check new patch Brosssh
-        id: check-brosssh
-        if: steps.check-gh.outputs.internet_error == '0'
-        run: bash src/etc/ci.sh brosssh/morphe-patches latest komoot.*brosssh.*apk
       - name: Check new patch Binarymend
         id: check-binarymend
         if: steps.check-gh.outputs.internet_error == '0'
@@ -46,25 +38,20 @@ jobs:
       - name: Check new patch hoo-dles
         id: check-hoo-dles
         if: steps.check-gh.outputs.internet_error == '0'
-        run: bash src/etc/ci.sh hoo-dles/morphe-patches latest windy.*hoo-dles.*apk
+        run: bash src/etc/ci.sh hoo-dles/morphe-patches latest fotmob.*hoo-dles.*apk
       - name: Check new patch hooman
         id: check-hooman
         if: steps.check-gh.outputs.internet_error == '0'
         run: bash src/etc/ci.sh arandomhooman/hoomans-morphe-patches latest "(money-manager|poweramp|symfonium).*hooman.*apk"
-      - name: Check new patch logm1lo
-        id: check-logm1lo
-        if: steps.check-gh.outputs.internet_error == '0'
-        run: bash src/etc/ci.sh logm1lo/logm1lo-patches latest calistree.*logm1lo.*apk
       - name: Check new patch Rushi
         id: check-rushi
         if: steps.check-gh.outputs.internet_error == '0'
-        run: bash src/etc/ci.sh rushiranpise/morphe-patches latest "(adguard|strava|homeworkout).*rushi.*apk"
+        run: bash src/etc/ci.sh rushiranpise/morphe-patches latest "(adguard|strava|homeworkout|windy|messenger|komoot|gg-photos).*rushi.*apk"
       - name: Combine check outputs
         id: combine-community
         if: steps.check-gh.outputs.internet_error == '0'
         run: |
-          if [ "${{ steps.check-derv.outputs.new_patch }}" = "1" ] || \
-             [ "${{ steps.check-piko.outputs.new_patch }}" = "1" ] || \
+          if [ "${{ steps.check-piko.outputs.new_patch }}" = "1" ] || \
              [ "${{ steps.check-brosssh.outputs.new_patch }}" = "1" ] || \
              [ "${{ steps.check-binarymend.outputs.new_patch }}" = "1" ] || \
              [ "${{ steps.check-hoo-dles.outputs.new_patch }}" = "1" ] || \

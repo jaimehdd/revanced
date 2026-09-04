@@ -70,6 +70,12 @@ kveld_dl(){
 	dl_gh "kveld-morphe-patches" "kveld9" "$tag"
 }
 
+hooman_dl(){
+	dl_gh "morphe-desktop" "MorpheApp" "latest"
+	morphe_universal_dl
+	dl_gh "hoomans-morphe-patches" "arandomhooman" "$tag"
+}
+
 ######################
 ####### rushi ########
 ######################
@@ -250,6 +256,39 @@ brave() {
 	# community_patch "brave-arm64-v8a" "kveld"
 }
 
+######################
+###### hooman ########
+######################
+poweramp() {
+	APP_NAME="poweramp"
+	VARIANT="hooman"
+	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
+
+	hooman_dl
+	get_patches_key "poweramp"
+	get_apk "com.maxmpz.audioplayer" "poweramp" "bundle"
+
+	release_exists && return 0
+
+	community_patch "poweramp" "hooman"
+}
+
+symfonium() {
+	APP_NAME="symfonium"
+	VARIANT="hooman"
+	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
+
+	hooman_dl
+	get_patches_key "symfonium"
+	get_apk "app.symfonik.music.player" "symfonium" "bundle"
+
+	release_exists && return 0
+
+	community_patch "symfonium" "hooman"
+}
+
 case "$1" in
 	messenger)
 		messenger
@@ -283,5 +322,11 @@ case "$1" in
 		;;
 	brave)
 		brave
+		;;
+	poweramp)
+		poweramp
+		;;
+	symfonium)
+		symfonium
 		;;
 esac

@@ -244,16 +244,16 @@ moonreader() {
 brave() {
 	APP_NAME="brave"
 	VARIANT="kveld"
-	# echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
-	# echo "VARIANT=$VARIANT" >> $GITHUB_ENV
+	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
 
-	# kveld_dl
-	# get_patches_key "brave"
-	# get_apk "com.brave.browser" "brave-arm64-v8a" "bundle" "arm64-v8a"
+	kveld_dl
+	get_patches_key "brave"
+	get_apk "com.brave.browser" "brave-arm64-v8a" "bundle" "arm64-v8a"
 
-	# release_exists && return 0
+	release_exists && return 0
 
-	# community_patch "brave-arm64-v8a" "kveld"
+	community_patch "brave-arm64-v8a" "kveld"
 }
 
 ######################

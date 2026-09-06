@@ -62,22 +62,6 @@ facebook() {
 	lspatch "facebook-arm64-v8a" "NexAlloy-nonroot*.apk" "gnadgnaoh"
 }
 
-messenger() {
-	APP_NAME="messenger"
-	VARIANT="xposed"
-	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
-	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
-	echo "patch_version=1" >> $GITHUB_ENV
-
-	xposed_dl
-	get_apk "com.facebook.orca" "messenger-arm64-v8a" "apk" "arm64-v8a" "nodpi" "Android 9.0+"
-
-	release_exists && return 0
-
-	xposed_disable_play_store_updates "messenger-arm64-v8a"
-	lspatch "messenger-arm64-v8a" "NexAlloy-nonroot*.apk" "gnadgnaoh"
-}
-
 instagram() {
 	APP_NAME="instagram"
 	VARIANT="xposed"
@@ -98,9 +82,6 @@ case "$1" in
     facebook)
         facebook
         ;;
-	messenger)
-		messenger
-		;;
     instagram)
         instagram
         ;;

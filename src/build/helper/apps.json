@@ -1,5 +1,9 @@
 {
   "apkmirror": {
+    "com.zhiliaoapp.musically": {
+      "list_url": "https://www.apkmirror.com/uploads/?appcategory=tik-tok-including-musical-ly",
+      "example_url": "https://www.apkmirror.com/apk/tiktok-pte-ltd/tik-tok-including-musical-ly/tik-tok-including-musical-ly-46-2-3-release/"
+    },
     "com.brave.browser": {
       "list_url": "https://www.apkmirror.com/uploads/?appcategory=brave-browser",
       "example_url": "https://www.apkmirror.com/apk/brave-software/brave-browser/brave-private-web-browser-1-94-117-release/"
@@ -213,6 +217,9 @@
     },
     "homeworkout.homeworkouts.noequipment": {
       "url": "https://leap-fitness-group-home-workout.en.uptodown.com/android"
+    },
+    "com.zhiliaoapp.musically": {
+      "url": "https://tiktok.en.uptodown.com/android"
     }
   }
 }

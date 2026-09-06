@@ -76,6 +76,18 @@ hooman_dl(){
 	dl_gh "hoomans-morphe-patches" "arandomhooman" "$tag"
 }
 
+tiktok_dl(){
+	dl_gh "morphe-desktop" "MorpheApp" "latest"
+	morphe_universal_dl
+	dl_gh "tiktok-patches-for-morphe" "icysymmetra" "$tag"
+}
+
+adobo_dl(){
+	dl_gh "morphe-desktop" "MorpheApp" "latest"
+	morphe_universal_dl
+	dl_gh "adobo" "jkennethcarino" "$tag"
+}
+
 ######################
 ####### rushi ########
 ######################
@@ -282,11 +294,48 @@ symfonium() {
 
 	hooman_dl
 	get_patches_key "symfonium"
-	get_apk "app.symfonik.music.player" "symfonium" "bundle"
+	get_apk "app.symfonik.music.player" "symfonium-arm64-v8a" "bundle" "arm64-v8a"
 
 	release_exists && return 0
 
-	community_patch "symfonium" "hooman"
+	community_patch "symfonium-arm64-v8a" "hooman"
+}
+
+######################
+#### icysymmetra #####
+######################
+tiktok() {
+	APP_NAME="tiktok"
+	VARIANT="icysymmetra"
+	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
+
+	tiktok_dl
+	get_patches_key "tiktok"
+	get_apk "com.zhiliaoapp.musically" "tiktok-arm64-v8a" "bundle" "arm64-v8a" || \
+	get_apk_uptodown "com.zhiliaoapp.musically" "tiktok-arm64-v8a" "apk"
+
+	release_exists && return 0
+
+	community_patch "tiktok-arm64-v8a" "icysymmetra"
+}
+
+######################
+####### adobo ########
+######################
+reddit-adobo() {
+	APP_NAME="reddit"
+	VARIANT="adobo"
+	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
+
+	adobo_dl
+	get_patches_key "reddit-adobo"
+	get_apk "com.reddit.frontpage" "reddit-arm64-v8a" "bundle" "arm64-v8a"
+
+	release_exists && return 0
+
+	community_patch "reddit-arm64-v8a" "adobo"
 }
 
 case "$1" in
@@ -328,5 +377,11 @@ case "$1" in
 		;;
 	symfonium)
 		symfonium
+		;;
+	tiktok)
+		tiktok
+		;;
+	reddit-adobo)
+		reddit-adobo
 		;;
 esac

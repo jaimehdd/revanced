@@ -51,6 +51,14 @@ jobs:
         id: check-dh6k
         if: steps.check-gh.outputs.internet_error == '0'
         run: bash src/etc/ci.sh dh6k/morphe-patches latest brave.*dh6k.*apk
+      - name: Check new patch TikTok
+        id: check-tiktok
+        if: steps.check-gh.outputs.internet_error == '0'
+        run: bash src/etc/ci.sh icysymmetra/tiktok-patches-for-morphe latest tiktok.*icysymmetra.*apk
+      - name: Check new patch Adobo
+        id: check-adobo
+        if: steps.check-gh.outputs.internet_error == '0'
+        run: bash src/etc/ci.sh jkennethcarino/adobo latest reddit.*adobo.*apk
       - name: Combine check outputs
         id: combine-community
         if: steps.check-gh.outputs.internet_error == '0'
@@ -62,7 +70,9 @@ jobs:
              [ "${{ steps.check-rushi.outputs.new_patch }}" = "1" ] || \
              [ "${{ steps.check-hooman.outputs.new_patch }}" = "1" ] || \
              [ "${{ steps.check-logm1lo.outputs.new_patch }}" = "1" ] || \
-             [ "${{ steps.check-dh6k.outputs.new_patch }}" = "1" ]; then
+             [ "${{ steps.check-dh6k.outputs.new_patch }}" = "1" ] || \
+             [ "${{ steps.check-tiktok.outputs.new_patch }}" = "1" ] || \
+             [ "${{ steps.check-adobo.outputs.new_patch }}" = "1" ]; then
              echo "new_patch=1" >> $GITHUB_OUTPUT
           else
              echo "new_patch=0" >> $GITHUB_OUTPUT

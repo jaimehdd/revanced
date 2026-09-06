@@ -331,10 +331,13 @@ reddit-adobo() {
 
 	adobo_dl
 	get_patches_key "reddit-adobo"
-	get_apk "com.reddit.frontpage" "reddit-arm64-v8a" "bundle" "arm64-v8a"
+	get_apk "com.reddit.frontpage" "reddit" "bundle_extract"
 
 	release_exists && return 0
 
+	# Patch Arm64-v8a:
+	split_editor "reddit" "reddit-arm64-v8a" "exclude" "split_config.armeabi_v7a split_config.x86_64 split_config.mdpi split_config.ldpi split_config.hdpi split_config.xhdpi split_config.xxhdpi split_config.tvdpi"
+	get_patches_key "reddit-adobo"
 	community_patch "reddit-arm64-v8a" "adobo"
 }
 

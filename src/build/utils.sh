@@ -233,12 +233,14 @@ get_patches_key() {
 
 	while IFS= read -r line1 || [[ -n "$line1" ]]; do
 		[[ -z "$line1" ]] && continue
+		[[ "$line1" =~ ^[[:space:]]*# ]] && continue
 		excludePatches+=" -d \"$line1\""
 		excludeLinesFound=true
 	done < "$patchDir/exclude-patches"
 
 	while IFS= read -r line2 || [[ -n "$line2" ]]; do
 		[[ -z "$line2" ]] && continue
+		[[ "$line2" =~ ^[[:space:]]*# ]] && continue
 		patch_name="${line2%%|*}"
 		if [[ "${separate_morphe_universal_patches:-false}" == "true" && "$patch_name" == "Disable Play Store updates" ]]; then
 			detachPlayStoreUpdates=true

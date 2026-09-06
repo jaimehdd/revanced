@@ -64,10 +64,10 @@ entree_dl(){
 	dl_gh "Morning-Entree-Patches" "Entree3k" "$tag"
 }
 
-kveld_dl(){
+dh6k_dl(){
 	dl_gh "morphe-desktop" "MorpheApp" "latest"
 	morphe_universal_dl
-	dl_gh "kveld-morphe-patches" "kveld9" "$tag"
+	dl_gh "morphe-patches" "dh6k" "$tag"
 }
 
 hooman_dl(){
@@ -239,21 +239,21 @@ moonreader() {
 }
 
 ######################
-####### kveld ########
+####### dh6k #########
 ######################
 brave() {
 	APP_NAME="brave"
-	VARIANT="kveld"
+	VARIANT="dh6k"
 	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
 	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
 
-	kveld_dl
+	dh6k_dl
 	get_patches_key "brave"
 	get_apk "com.brave.browser" "brave-arm64-v8a" "bundle" "arm64-v8a"
 
 	release_exists && return 0
 
-	community_patch "brave-arm64-v8a" "kveld"
+	community_patch "brave-arm64-v8a" "dh6k"
 }
 
 ######################

@@ -47,10 +47,10 @@ jobs:
         id: check-rushi
         if: steps.check-gh.outputs.internet_error == '0'
         run: bash src/etc/ci.sh rushiranpise/morphe-patches latest "(adguard|strava|homeworkout|windy|messenger|komoot|gg-photos).*rushi.*apk"
-      - name: Check new patch kveld
-        id: check-kveld
+      - name: Check new patch dh6k
+        id: check-dh6k
         if: steps.check-gh.outputs.internet_error == '0'
-        run: bash src/etc/ci.sh kveld9/kveld-morphe-patches latest brave.*kveld.*apk
+        run: bash src/etc/ci.sh dh6k/morphe-patches latest brave.*dh6k.*apk
       - name: Combine check outputs
         id: combine-community
         if: steps.check-gh.outputs.internet_error == '0'
@@ -62,7 +62,7 @@ jobs:
              [ "${{ steps.check-rushi.outputs.new_patch }}" = "1" ] || \
              [ "${{ steps.check-hooman.outputs.new_patch }}" = "1" ] || \
              [ "${{ steps.check-logm1lo.outputs.new_patch }}" = "1" ] || \
-             [ "${{ steps.check-kveld.outputs.new_patch }}" = "1" ]; then
+             [ "${{ steps.check-dh6k.outputs.new_patch }}" = "1" ]; then
              echo "new_patch=1" >> $GITHUB_OUTPUT
           else
              echo "new_patch=0" >> $GITHUB_OUTPUT

@@ -1,1 +1,12 @@
 Change package name
+Disable post detail swipe
+Hide Ask button from search bar
+Disable home feed swipe
+Disable home feed auto-refresh
+Disable home feed refresh on back to exit
+Remove screenshot detection
+Hide community highlights
+Hide share count
+Hide awards
+Deactivate Firebase Analytics
+Spoof Advertising ID

@@ -1078,8 +1078,11 @@ npatch() {
 			red_log "[-] Module not found: $2"
 			return 1
 		fi
-		java -jar jar*.jar ./download/$1.apk -k ./src/fiorenmas.ks "fiorenmas" "morphe" "fiorenmas" $4 -m "$module" -o ./release/
-		mv ./release/$1-*-npatched.apk ./release/$1-$3-npatched.apk
+		if ! java -jar jar*.jar ./download/$1.apk -k ./src/fiorenmas.ks "fiorenmas" "morphe" "fiorenmas" $4 -m "$module" -o ./release/; then
+			red_log "[-] NPatch failed for $1"
+			exit 1
+		fi
+		mv ./release/$1-*-npatched.apk ./release/$1-$3.apk
 		unset version
 		unset lock_version
 	else

@@ -2,12 +2,12 @@
 # Xposed build
 source ./src/build/utils.sh
 
-LSPatch_dl(){
-	dl_gh "LSPatch" "JingMatrix" "latest"
+NPatch_dl(){
+	dl_gh "NPatch" "7723mod" "latest"
 }
 
-NPatch_dl() {
-	LSPatch_dl
+patch_dl(){
+	dl_gh "NexAlloy" "gnadgnaoh" "v1.0"
 }
 
 use_beta="${use_beta:-false}"
@@ -27,14 +27,14 @@ xposed_morphe_universal_dl() {
 }
 
 xposed_dl() {
-	LSPatch_dl
+	NPatch_dl
 	xposed_morphe_universal_dl
 	if [ "$use_beta" = true ]; then
 		dl_gh "morphe-desktop" "MorpheApp" "prerelease"
 		dl_gh "NexAlloy" "gnadgnaoh" "prerelease"
 	else
 		dl_gh "morphe-desktop" "MorpheApp" "latest"
-		dl_gh "NexAlloy" "gnadgnaoh" "latest"
+		patch_dl
 	fi
 }
 
@@ -53,13 +53,13 @@ facebook() {
 	echo "patch_version=1" >> $GITHUB_ENV
 
 	xposed_dl
-	version="576.0.0.42.73"
-	get_apk "com.facebook.katana" "facebook-arm64-v8a" "bundle" "arm64-v8a" "120-640dpi" "Android 11+"
+	version="577.0.0.50.72"
+	get_apk "com.facebook.katana" "facebook-arm64-v8a" "bundle" "arm64-v8a" "160-640dpi" "Android 11+"
 
 	release_exists && return 0
 
 	xposed_disable_play_store_updates "facebook-arm64-v8a"
-	lspatch "facebook-arm64-v8a" "NexAlloy-nonroot*.apk" "gnadgnaoh"
+	npatch "facebook-arm64-v8a" "NexAlloy-nonroot*.apk" "gnadgnaoh" "--sigbypasslv 3"
 }
 
 instagram() {
@@ -75,7 +75,7 @@ instagram() {
 	release_exists && return 0
 
 	xposed_disable_play_store_updates "instagram-arm64-v8a"
-	lspatch "instagram-arm64-v8a" "NexAlloy-nonroot*.apk" "gnadgnaoh"
+	npatch "instagram-arm64-v8a" "NexAlloy-nonroot*.apk" "gnadgnaoh" "--sigbypasslv 3"
 }
 
 case "$1" in

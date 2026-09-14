@@ -1,4 +1,3 @@
-Change package name
 Disable post detail swipe
 Hide Ask button from search bar
 Disable home feed swipe
@@ -9,4 +8,4 @@ Hide community highlights
 Hide share count
 Hide awards
 Deactivate Firebase Analytics
-Spoof Advertising ID
+Disable Play Store updates

@@ -337,8 +337,13 @@ reddit-adobo() {
 
 	# Patch Arm64-v8a:
 	split_editor "reddit" "reddit-arm64-v8a" "exclude" "split_config.armeabi_v7a split_config.x86_64 split_config.mdpi split_config.ldpi split_config.hdpi split_config.xhdpi split_config.xxhdpi split_config.tvdpi"
+	for patches_file in morphe-universal-*.mpp.disabled; do
+		[ -e "$patches_file" ] || continue
+		mv "$patches_file" "${patches_file%.disabled}"
+	done
+	separate_morphe_universal_patches=false
 	get_patches_key "reddit-adobo"
-	community_patch "reddit-arm64-v8a" "adobo"
+	patch "reddit-arm64-v8a" "adobo" "morphe"
 }
 
 case "$1" in

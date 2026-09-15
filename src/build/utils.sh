@@ -221,34 +221,78 @@ dl_gl() {
 get_patches_key() {
 	excludePatches=""
 	includePatches=""
+	morpheExcludePatches=""
+	morpheIncludePatches=""
+	communityExcludePatches=""
+	communityIncludePatches=""
 	detachPlayStoreUpdates=false
 	excludeLinesFound=false
 	includeLinesFound=false
 
 	local patchDir="src/patches/$1"
-	local patch_name line1 line2
+	local patch_name line1 line2 current_section
 
-	sed -i 's/\r$//' "$patchDir/include-patches"
-	sed -i 's/\r$//' "$patchDir/exclude-patches"
+	[ -f "$patchDir/include-patches" ] && sed -i 's/\r$//' "$patchDir/include-patches"
+	[ -f "$patchDir/exclude-patches" ] && sed -i 's/\r$//' "$patchDir/exclude-patches"
 
-	while IFS= read -r line1 || [[ -n "$line1" ]]; do
-		[[ -z "$line1" ]] && continue
-		[[ "$line1" =~ ^[[:space:]]*# ]] && continue
-		excludePatches+=" -d \"$line1\""
-		excludeLinesFound=true
-	done < "$patchDir/exclude-patches"
+	# Parse exclude-patches
+	current_section="default"
+	if [ -f "$patchDir/exclude-patches" ]; then
+		while IFS= read -r line1 || [[ -n "$line1" ]]; do
+			[[ -z "$line1" ]] && continue
+			if [[ "$line1" =~ ^[[:space:]]*#[[:space:]]*\[?([Mm]orphe|[Uu]niversal) ]]; then
+				current_section="morphe"
+				continue
+			elif [[ "$line1" =~ ^[[:space:]]*#[[:space:]]*\[?([Aa]dobo|[Cc]ommunity|[Pp]iko|[Rr]ushi|[Bb]inarymend|[Hh]oo-dles|[Hh]ooman|[Dd]h6k|[Tt]ik[Tt]ok) ]]; then
+				current_section="community"
+				continue
+			elif [[ "$line1" =~ ^[[:space:]]*# ]]; then
+				continue
+			fi
 
-	while IFS= read -r line2 || [[ -n "$line2" ]]; do
-		[[ -z "$line2" ]] && continue
-		[[ "$line2" =~ ^[[:space:]]*# ]] && continue
-		patch_name="${line2%%|*}"
-		if [[ "${separate_morphe_universal_patches:-false}" == "true" && "$patch_name" == "Disable Play Store updates" ]]; then
-			detachPlayStoreUpdates=true
-			continue
-		fi
-		includePatches+=" -e \"$patch_name\""
-		includeLinesFound=true
-	done < "$patchDir/include-patches"
+			excludeLinesFound=true
+			if [ "$current_section" = "morphe" ]; then
+				morpheExcludePatches+=" -d \"$line1\""
+			elif [ "$current_section" = "community" ]; then
+				communityExcludePatches+=" -d \"$line1\""
+			else
+				excludePatches+=" -d \"$line1\""
+			fi
+		done < "$patchDir/exclude-patches"
+	fi
+
+	# Parse include-patches
+	current_section="default"
+	if [ -f "$patchDir/include-patches" ]; then
+		while IFS= read -r line2 || [[ -n "$line2" ]]; do
+			[[ -z "$line2" ]] && continue
+			if [[ "$line2" =~ ^[[:space:]]*#[[:space:]]*\[?([Mm]orphe|[Uu]niversal) ]]; then
+				current_section="morphe"
+				continue
+			elif [[ "$line2" =~ ^[[:space:]]*#[[:space:]]*\[?([Aa]dobo|[Cc]ommunity|[Pp]iko|[Rr]ushi|[Bb]inarymend|[Hh]oo-dles|[Hh]ooman|[Dd]h6k|[Tt]ik[Tt]ok) ]]; then
+				current_section="community"
+				continue
+			elif [[ "$line2" =~ ^[[:space:]]*# ]]; then
+				continue
+			fi
+
+			patch_name="${line2%%|*}"
+			includeLinesFound=true
+
+			if [[ "${separate_morphe_universal_patches:-false}" == "true" && "$patch_name" == "Disable Play Store updates" ]]; then
+				detachPlayStoreUpdates=true
+				continue
+			fi
+
+			if [ "$current_section" = "morphe" ]; then
+				morpheIncludePatches+=" -e \"$patch_name\""
+			elif [ "$current_section" = "community" ]; then
+				communityIncludePatches+=" -e \"$patch_name\""
+			else
+				includePatches+=" -e \"$patch_name\""
+			fi
+		done < "$patchDir/include-patches"
+	fi
 
 	if [ "$excludeLinesFound" = false ]; then
 		excludePatches=""
@@ -259,6 +303,10 @@ get_patches_key() {
 
 	export excludePatches
 	export includePatches
+	export morpheExcludePatches
+	export morpheIncludePatches
+	export communityExcludePatches
+	export communityIncludePatches
 	export detachPlayStoreUpdates
 }
 
@@ -282,6 +330,11 @@ morphe_patches_args() {
 	for patches_file in $pattern; do
 		[ -e "$patches_file" ] || continue
 		args+=" $option \"$patches_file\""
+		if [[ "$patches_file" =~ morphe-universal ]]; then
+			args+="$morpheExcludePatches$morpheIncludePatches"
+		else
+			args+="$communityExcludePatches$communityIncludePatches"
+		fi
 	done
 	printf '%s' "$args"
 }
@@ -1011,6 +1064,10 @@ patch() {
 		unset lock_version
 		unset excludePatches
 		unset includePatches
+		unset morpheExcludePatches
+		unset morpheIncludePatches
+		unset communityExcludePatches
+		unset communityIncludePatches
 	else
 		red_log "[-] Not found $1.apk"
 		exit 1

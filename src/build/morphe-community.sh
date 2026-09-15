@@ -343,45 +343,7 @@ reddit-adobo() {
 	done
 	separate_morphe_universal_patches=false
 	get_patches_key "reddit-adobo"
-
-	# Strip "Disable Play Store updates" from includePatches so Adobo bundle does not throw a missing-patch warning
-	includePatches="${includePatches//-e \"Disable Play Store updates\"/}"
-
-	local morphe_universal_args=""
-	for f in morphe-universal-*.mpp; do
-		[ -e "$f" ] || continue
-		morphe_universal_args+="-p \"$f\" -e \"Disable Play Store updates\""
-		morphe_universal_args+=" -d \"Hide ads\" -d \"Sanitize sharing links\" -d \"Open links directly\" -d \"Open links externally\""
-		morphe_universal_args+=" -d \"Hide Ask button\" -d \"Disable screenshot popup\" -d \"Show view count\" -d \"Disable modern home\""
-		morphe_universal_args+=" -d \"Custom font\" -d \"Force system font\" -d \"Hide navigation buttons\" -d \"Hide sidebar components\""
-		morphe_universal_args+=" -d \"Remove subreddit dialog\" -d \"Hide Trending shelves\" -d \"App icon\" -d \"Spoof signature\""
-		break
-	done
-
-	local adobo_args=""
-	for f in patches-*.mpp; do
-		[ -e "$f" ] || continue
-		adobo_args+="-p \"$f\"$excludePatches$includePatches"
-		break
-	done
-
-	green_log "[+] Patching reddit-arm64-v8a with Morphe (single-pass, Adobo + Morphe Universal):"
-	if [ -f "./download/reddit-arm64-v8a.apk" ]; then
-		unset CI GITHUB_ACTION GITHUB_ACTIONS GITHUB_ACTOR GITHUB_ENV GITHUB_EVENT_NAME GITHUB_EVENT_PATH GITHUB_HEAD_REF GITHUB_JOB GITHUB_REF GITHUB_REPOSITORY GITHUB_RUN_ID GITHUB_RUN_NUMBER GITHUB_SHA GITHUB_WORKFLOW GITHUB_WORKSPACE RUN_ID RUN_NUMBER
-		eval java -jar morphe-desktop-*.jar patch \
-			$morphe_universal_args \
-			$adobo_args \
-			--options-file ./src/options/adobo.json \
-			--out=./release/reddit-arm64-v8a-adobo.apk \
-			--keystore=./src/morphe.keystore --force --continue-on-error ./download/reddit-arm64-v8a.apk
-		unset version
-		unset lock_version
-		unset excludePatches
-		unset includePatches
-	else
-		red_log "[-] Not found reddit-arm64-v8a.apk"
-		exit 1
-	fi
+	patch "reddit-arm64-v8a" "adobo" "morphe"
 }
 
 case "$1" in

@@ -88,6 +88,32 @@ adobo_dl(){
 	dl_gh "adobo" "jkennethcarino" "$tag"
 }
 
+andrew_dl(){
+	dl_gh "morphe-desktop" "MorpheApp" "latest"
+	morphe_universal_dl
+	dl_gh "morphe-patches" "andrewliang25" "$tag"
+}
+
+######################
+####### andrew #######
+######################
+facebook-andrew() {
+	APP_NAME="facebook"
+	VARIANT="andrew"
+	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
+
+	andrew_dl
+	get_patches_key "facebook-andrew"
+	version="577.0.0.50.72"
+	get_apk "com.facebook.katana" "facebook-arm64-v8a" "bundle" "arm64-v8a" "160-640dpi" "Android 11+"
+
+	release_exists && return 0
+
+	detachPlayStoreUpdates=true
+	community_patch "facebook-arm64-v8a" "andrew"
+}
+
 ######################
 ####### rushi ########
 ######################
@@ -391,5 +417,8 @@ case "$1" in
 		;;
 	reddit-adobo)
 		reddit-adobo
+		;;
+	facebook-andrew)
+		facebook-andrew
 		;;
 esac

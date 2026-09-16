@@ -59,6 +59,10 @@ jobs:
         id: check-adobo
         if: steps.check-gh.outputs.internet_error == '0'
         run: bash src/etc/ci.sh jkennethcarino/adobo latest reddit.*adobo.*apk
+      - name: Check new patch Andrew
+        id: check-andrew
+        if: steps.check-gh.outputs.internet_error == '0'
+        run: bash src/etc/ci.sh andrewliang25/morphe-patches latest facebook.*andrew.*apk
       - name: Combine check outputs
         id: combine-community
         if: steps.check-gh.outputs.internet_error == '0'
@@ -72,7 +76,8 @@ jobs:
              [ "${{ steps.check-logm1lo.outputs.new_patch }}" = "1" ] || \
              [ "${{ steps.check-dh6k.outputs.new_patch }}" = "1" ] || \
              [ "${{ steps.check-tiktok.outputs.new_patch }}" = "1" ] || \
-             [ "${{ steps.check-adobo.outputs.new_patch }}" = "1" ]; then
+             [ "${{ steps.check-adobo.outputs.new_patch }}" = "1" ] || \
+             [ "${{ steps.check-andrew.outputs.new_patch }}" = "1" ]; then
              echo "new_patch=1" >> $GITHUB_OUTPUT
           else
              echo "new_patch=0" >> $GITHUB_OUTPUT

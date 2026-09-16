@@ -45,6 +45,32 @@ xposed_disable_play_store_updates() {
 	mv "./release/$1-$variant.apk" "./download/$1.apk"
 }
 
+xposed_facebook_dl() {
+	dl_gh "morphe-patches" "andrewliang25" "$tag"
+}
+
+xposed_facebook_prepatch() {
+	local input_apk="./download/$1.apk"
+	local prepatch_apk="./download/$1-prepatched.apk"
+	local patches_args
+
+	get_patches_key "facebook-xposed"
+	patches_args="$(morphe_patches_args "-p" "patches-*.mpp")"
+
+	if [ -n "$patches_args" ]; then
+		green_log "[+] Applying Morphe background patches to $1:"
+		if eval java -jar morphe-desktop-*.jar patch $patches_args --options-file ./src/options/andrew.json \
+			--out="$prepatch_apk"$communityExcludePatches$communityIncludePatches \
+			--keystore=./src/morphe.keystore --force --continue-on-error "$input_apk"; then
+			mv "$prepatch_apk" "$input_apk"
+		else
+			red_log "[-] Warning: Failed to apply Morphe background patches for $1, continuing with original APK"
+		fi
+	fi
+
+	xposed_disable_play_store_updates "$1"
+}
+
 facebook() {
 	APP_NAME="facebook"
 	VARIANT="xposed"
@@ -53,12 +79,13 @@ facebook() {
 	echo "patch_version=1" >> $GITHUB_ENV
 
 	xposed_dl
+	xposed_facebook_dl
 	version="577.0.0.50.72"
 	get_apk "com.facebook.katana" "facebook-arm64-v8a" "bundle" "arm64-v8a" "160-640dpi" "Android 11+"
 
 	release_exists && return 0
 
-	xposed_disable_play_store_updates "facebook-arm64-v8a"
+	xposed_facebook_prepatch "facebook-arm64-v8a"
 	npatch "facebook-arm64-v8a" "NexAlloy-nonroot*.apk" "gnadgnaoh" "--sigbypasslv 3"
 }
 

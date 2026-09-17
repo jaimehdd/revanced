@@ -46,7 +46,7 @@ jobs:
       - name: Check new patch Rushi
         id: check-rushi
         if: steps.check-gh.outputs.internet_error == '0'
-        run: bash src/etc/ci.sh rushiranpise/morphe-patches latest "(adguard|strava|homeworkout|windy|messenger|komoot|gg-photos).*rushi.*apk"
+        run: bash src/etc/ci.sh rushiranpise/morphe-patches latest "(adguard|strava|homeworkout|windy|messenger|messenger-clone|komoot|gg-photos).*rushi.*apk"
       - name: Check new patch dh6k
         id: check-dh6k
         if: steps.check-gh.outputs.internet_error == '0'

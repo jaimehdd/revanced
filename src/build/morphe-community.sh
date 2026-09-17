@@ -132,6 +132,21 @@ photos() {
 	community_patch "gg-photos-arm64-v8a" "rushi"
 }
 
+messenger-clone() {
+	APP_NAME="messenger-clone"
+	VARIANT="rushi"
+	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
+
+	rushi_dl
+	get_patches_key "messenger-clone"
+	get_apk "com.facebook.orca" "messenger-clone-arm64-v8a" "apk" "arm64-v8a" "nodpi" "Android 9.0+"
+
+	release_exists && return 0
+
+	community_patch "messenger-clone-arm64-v8a" "rushi"
+}
+
 messenger() {
 	APP_NAME="messenger"
 	VARIANT="rushi"
@@ -140,6 +155,22 @@ messenger() {
 
 	rushi_dl
 	get_patches_key "messenger"
+
+	local latest_vc
+	latest_vc=$(get_apkmirror_version_code "com.facebook.orca" "arm64-v8a" "nodpi")
+	if [[ -n "$latest_vc" ]]; then
+		green_log "[+] Using latest APKMirror versionCode ($latest_vc) for Spoof package version"
+		if [[ "$includePatches" == *"Spoof package version"* ]]; then
+			includePatches="${includePatches/-e \"Spoof package version\"/-e \"Spoof package version\" -O messengerVersionCode=$latest_vc}"
+		elif [[ "$communityIncludePatches" == *"Spoof package version"* ]]; then
+			communityIncludePatches="${communityIncludePatches/-e \"Spoof package version\"/-e \"Spoof package version\" -O messengerVersionCode=$latest_vc}"
+		else
+			includePatches+=" -e \"Spoof package version\" -O messengerVersionCode=$latest_vc"
+		fi
+	else
+		yellow_log "[!] Could not fetch latest versionCode from APKMirror, using patch default"
+	fi
+
 	get_apk "com.facebook.orca" "messenger-arm64-v8a" "apk" "arm64-v8a" "nodpi" "Android 9.0+"
 
 	release_exists && return 0
@@ -375,6 +406,9 @@ reddit-adobo() {
 case "$1" in
 	messenger)
 		messenger
+		;;
+	messenger-clone)
+		messenger-clone
 		;;
 	photos)
 		photos

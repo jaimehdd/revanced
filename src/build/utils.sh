@@ -232,8 +232,12 @@ get_patches_key() {
 	local patchDir="src/patches/$1"
 	local patch_name line1 line2 current_section
 
-	[ -f "$patchDir/include-patches" ] && sed -i 's/\r$//' "$patchDir/include-patches"
-	[ -f "$patchDir/exclude-patches" ] && sed -i 's/\r$//' "$patchDir/exclude-patches"
+	if [ -f "$patchDir/include-patches" ]; then
+		sed -i '' 's/\r$//' "$patchDir/include-patches" 2>/dev/null || sed -i 's/\r$//' "$patchDir/include-patches" 2>/dev/null || true
+	fi
+	if [ -f "$patchDir/exclude-patches" ]; then
+		sed -i '' 's/\r$//' "$patchDir/exclude-patches" 2>/dev/null || sed -i 's/\r$//' "$patchDir/exclude-patches" 2>/dev/null || true
+	fi
 
 	# Parse exclude-patches
 	current_section="default"
@@ -277,6 +281,21 @@ get_patches_key() {
 			fi
 
 			patch_name="${line2%%|*}"
+			local patch_opts=""
+			if [[ "$line2" == *"|"* ]]; then
+				local raw_opts="${line2#*|}"
+				local opt
+				IFS=',' read -ra opt_pairs <<< "$raw_opts"
+				for opt in "${opt_pairs[@]}"; do
+					opt=$(echo "$opt" | xargs)
+					[[ -z "$opt" ]] && continue
+					if [[ "$opt" =~ ^-O ]]; then
+						patch_opts+=" $opt"
+					else
+						patch_opts+=" -O $opt"
+					fi
+				done
+			fi
 			includeLinesFound=true
 
 			if [[ "${separate_morphe_universal_patches:-false}" == "true" && "$patch_name" == "Disable Play Store updates" ]]; then
@@ -285,11 +304,11 @@ get_patches_key() {
 			fi
 
 			if [ "$current_section" = "morphe" ]; then
-				morpheIncludePatches+=" -e \"$patch_name\""
+				morpheIncludePatches+=" -e \"$patch_name\"$patch_opts"
 			elif [ "$current_section" = "community" ]; then
-				communityIncludePatches+=" -e \"$patch_name\""
+				communityIncludePatches+=" -e \"$patch_name\"$patch_opts"
 			else
-				includePatches+=" -e \"$patch_name\""
+				includePatches+=" -e \"$patch_name\"$patch_opts"
 			fi
 		done < "$patchDir/include-patches"
 	fi
@@ -436,6 +455,58 @@ _cf_get() {
 		_FFS_FAILED=1
 	fi
 	_cfb_get "$@"
+}
+
+get_apkmirror_version_code() {
+	local pkg_name=$1
+	local arch=${2:-arm64-v8a}
+	local dpi=${3:-nodpi}
+	local version_code=""
+
+	# Primary method: Query official APKMirror API endpoint (fast, bypasses Cloudflare)
+	local api_res
+	api_res=$(curl -s --connect-timeout 10 --max-time 15 -X POST 'https://www.apkmirror.com/wp-json/apkm/v1/app_exists/' \
+		-H 'Authorization: Basic YXBpLWFwa3VwZGF0ZXI6cm01cmNmcnVVakt5MDRzTXB5TVBKWFc4' \
+		-H 'Content-Type: application/json' \
+		-H 'User-Agent: APKUpdater-v3.0.3' \
+		-d "{\"pnames\":[\"$pkg_name\"],\"exclude\":[\"alpha\",\"beta\"]}" 2>/dev/null)
+
+	if [[ -n "$api_res" ]]; then
+		version_code=$(echo "$api_res" | jq -r --arg pkg "$pkg_name" --arg arch "$arch" --arg dpi "$dpi" '
+			.data[]? | select(.pname == $pkg) |
+			(
+				([.apks[]? | select((.arches[]? == $arch) and (.dpis[]? == $dpi)) | .version_code | tonumber] | max) //
+				([.apks[]? | select(.arches[]? == $arch) | .version_code | tonumber] | max) //
+				([.apks[]?.version_code | tonumber] | max)
+			) // empty
+		' 2>/dev/null)
+	fi
+
+	# Fallback: if API did not return version code, scrape release page from APKMirror
+	if [[ -z "$version_code" ]]; then
+		local apps_json="./src/build/helper/apps.json"
+		local list_url
+		list_url=$(jq -r --arg pkg "$pkg_name" '.apkmirror[$pkg].list_url // empty' "$apps_json")
+		if [[ -n "$list_url" ]]; then
+			_cf_get "$list_url" 2>/dev/null || true
+			local version_href
+			version_href=$(echo "$html" | $pup 'h5.appRowTitle a.fontBlack json{}' 2>/dev/null | \
+				jq -r '.[] | select(.text | test("(?i)beta|alpha") | not) | .href' 2>/dev/null | head -1)
+			[[ -z "$version_href" ]] && \
+				version_href=$(echo "$html" | $pup 'h5.appRowTitle a.fontBlack attr{href}' 2>/dev/null | head -1)
+
+			if [[ -n "$version_href" ]]; then
+				_cf_get "https://www.apkmirror.com$version_href" 2>/dev/null || true
+				local vtable_html rows
+				vtable_html=$(echo "$html" | $pup 'div.variants-table' 2>/dev/null)
+				rows=$(echo "$vtable_html" | tr '\n' ' ' | sed 's/<div class="table-row/\n<div class="table-row/g')
+				version_code=$(echo "$rows" | grep -i "$arch" | grep -oP '\b\d{8,10}\b' | head -1)
+				[[ -z "$version_code" ]] && version_code=$(echo "$rows" | grep -oP '\b\d{8,10}\b' | head -1)
+			fi
+		fi
+	fi
+
+	printf '%s' "$version_code"
 }
 
 get_apk() {

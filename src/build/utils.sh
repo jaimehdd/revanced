@@ -1182,7 +1182,10 @@ lspatch() {
 			red_log "[-] Module not found: $2"
 			return 1
 		fi
-		java -jar lspatch-*-release.jar ./download/$1.apk -k ./src/lspatch-signing.p12 "morphe" "fiorenmas" "morphe" -m "$module" -o ./release/
+		if ! java -jar lspatch-*-release.jar ./download/$1.apk -k ./src/lspatch-signing.p12 "morphe" "fiorenmas" "morphe" $4 -m "$module" -o ./release/; then
+			red_log "[-] LSPatch failed for $1"
+			exit 1
+		fi
 		mv ./release/$1-*-lspatched.apk ./release/$1-$3.apk
 		unset version
 		unset lock_version

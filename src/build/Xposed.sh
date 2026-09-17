@@ -2,8 +2,8 @@
 # Xposed build
 source ./src/build/utils.sh
 
-NPatch_dl(){
-	dl_gh "NPatch" "7723mod" "latest"
+LSPatch_dl(){
+	dl_gh "LSPatch" "JingMatrix" "latest"
 }
 
 patch_dl(){
@@ -27,7 +27,7 @@ xposed_morphe_universal_dl() {
 }
 
 xposed_dl() {
-	NPatch_dl
+	LSPatch_dl
 	xposed_morphe_universal_dl
 	if [ "$use_beta" = true ]; then
 		dl_gh "morphe-desktop" "MorpheApp" "prerelease"
@@ -86,7 +86,7 @@ facebook() {
 	release_exists && return 0
 
 	xposed_facebook_prepatch "facebook-arm64-v8a"
-	npatch "facebook-arm64-v8a" "NexAlloy-nonroot*.apk" "gnadgnaoh" "--sigbypasslv 3"
+	lspatch "facebook-arm64-v8a" "NexAlloy-nonroot*.apk" "gnadgnaoh" "--injectdex --sigbypasslv 3"
 }
 
 instagram() {
@@ -102,7 +102,7 @@ instagram() {
 	release_exists && return 0
 
 	xposed_disable_play_store_updates "instagram-arm64-v8a"
-	npatch "instagram-arm64-v8a" "NexAlloy-nonroot*.apk" "gnadgnaoh" "--sigbypasslv 3"
+	lspatch "instagram-arm64-v8a" "NexAlloy-nonroot*.apk" "gnadgnaoh" "--injectdex --sigbypasslv 3"
 }
 
 case "$1" in

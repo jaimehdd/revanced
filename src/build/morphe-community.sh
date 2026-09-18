@@ -140,6 +140,16 @@ messenger-clone() {
 
 	rushi_dl
 	get_patches_key "messenger-clone"
+
+	local clone_pkg="app.morphe.messenger.orca"
+	if [[ "$includePatches" =~ messengerPackageName=([^[:space:],]+) ]]; then
+		clone_pkg="${BASH_REMATCH[1]}"
+	fi
+
+	if [[ "$includePatches" != *"Spoof app signature"* && "$communityIncludePatches" != *"Spoof app signature"* ]]; then
+		includePatches+=" -e \"Spoof app signature\" -O packageName=$clone_pkg"
+	fi
+
 	get_apk "com.facebook.orca" "messenger-clone-arm64-v8a" "apk" "arm64-v8a" "nodpi" "Android 9.0+"
 
 	release_exists && return 0

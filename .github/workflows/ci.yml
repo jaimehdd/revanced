@@ -85,7 +85,7 @@ jobs:
       - name: Check new patch Xposed
         id: check-xposed
         if: steps.check-gh.outputs.internet_error == '0'
-        run: bash src/etc/ci.sh gnadgnaoh/NexAlloy latest facebook.*xposed.*apk
+        run: bash src/etc/ci.sh gnadgnaoh/NexAlloy latest "(facebook|instagram).*xposed.*apk"
       - name: Re-run workflow if github connection not stable
         if: always() && steps.check-morphe.outcome == 'skipped' && env.retry_count < env.max_retries
         uses: actions/github-script@v9

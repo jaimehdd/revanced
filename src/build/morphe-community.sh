@@ -385,7 +385,7 @@ tiktok() {
 
 	hushfeed_dl
 	get_patches_key "tiktok"
-	get_apk "com.zhiliaoapp.musically" "tiktok-arm64-v8a" "bundle" "arm64-v8a" || \
+	get_apk "com.zhiliaoapp.musically" "tiktok-arm64-v8a" "apk" "arm64-v8a" || \
 	get_apk_uptodown "com.zhiliaoapp.musically" "tiktok-arm64-v8a" "apk"
 
 	release_exists && return 0

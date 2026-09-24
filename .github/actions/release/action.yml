@@ -19,14 +19,91 @@ runs:
       if: env.has_files == 'true'
       shell: bash
       run: |
-        echo "
-        **Change log** :point_down:
-        [Morphe](https://github.com/MorpheApp/morphe-patches/releases)
-        [De-ReVanced](https://github.com/RookieEnough/De-ReVanced/releases)
-        [hoo-dles](https://github.com/hoo-dles/morphe-patches/releases)
-        [brosssh](https://github.com/brosssh/morphe-patches/releases)
-        [piko](https://github.com/crimera/piko/releases)
-        "> ${{ github.workspace }}-CHANGELOG.txt
+        changelog_file="${{ github.workspace }}-CHANGELOG.txt"
+        {
+          echo "### 📦 Build Details"
+          echo "* **App**: \`${APP_NAME:-unknown}\`"
+          echo "* **Variant**: \`${VARIANT:-unknown}\`"
+          echo "* **Target Version**: \`${APP_VERSION:-unknown}\`"
+          echo "* **Patch Version**: \`${patch_version:-unknown}\`"
+          echo ""
+          echo "### 🔗 Upstream Changelogs & Sources :point_down:"
+          case "${VARIANT}" in
+            morphe)
+              echo "* **Morphe Patches**: [MorpheApp/morphe-patches](https://github.com/MorpheApp/morphe-patches/releases)"
+              echo "* **Morphe Desktop / Patcher**: [MorpheApp/morphe-desktop](https://github.com/MorpheApp/morphe-desktop/releases)"
+              ;;
+            adobo)
+              echo "* **Adobo Patches**: [jkennethcarino/adobo](https://github.com/jkennethcarino/adobo/releases)"
+              echo "* **Morphe Base Engine & Patches**: [MorpheApp/morphe-patches](https://github.com/MorpheApp/morphe-patches/releases)"
+              ;;
+            andrew)
+              echo "* **Andrew Patches**: [andrewliang25/morphe-patches](https://github.com/andrewliang25/morphe-patches/releases)"
+              echo "* **Morphe Base Engine & Patches**: [MorpheApp/morphe-patches](https://github.com/MorpheApp/morphe-patches/releases)"
+              ;;
+            xposed)
+              echo "* **NexAlloy Xposed Module**: [gnadgnaoh/NexAlloy](https://github.com/gnadgnaoh/NexAlloy/releases)"
+              if [ "${APP_NAME}" = "facebook" ]; then
+                echo "* **Andrew Pre-patch Layer**: [andrewliang25/morphe-patches](https://github.com/andrewliang25/morphe-patches/releases)"
+              fi
+              echo "* **LSPatch Injector**: [JingMatrix/LSPatch](https://github.com/JingMatrix/LSPatch/releases)"
+              echo "* **Morphe Base Engine & Patches**: [MorpheApp/morphe-patches](https://github.com/MorpheApp/morphe-patches/releases)"
+              ;;
+            rushi)
+              echo "* **Rushi Patches**: [rushiranpise/morphe-patches](https://github.com/rushiranpise/morphe-patches/releases)"
+              echo "* **Morphe Base Engine & Patches**: [MorpheApp/morphe-patches](https://github.com/MorpheApp/morphe-patches/releases)"
+              ;;
+            piko)
+              echo "* **Piko Patches**: [crimera/piko](https://github.com/crimera/piko/releases)"
+              echo "* **Morphe Base Engine & Patches**: [MorpheApp/morphe-patches](https://github.com/MorpheApp/morphe-patches/releases)"
+              ;;
+            hoo-dles)
+              echo "* **hoo-dles Patches**: [hoo-dles/morphe-patches](https://github.com/hoo-dles/morphe-patches/releases)"
+              echo "* **Morphe Base Engine & Patches**: [MorpheApp/morphe-patches](https://github.com/MorpheApp/morphe-patches/releases)"
+              ;;
+            binarymend)
+              echo "* **Binarymend Patches**: [binarymend/morphe-patches](https://github.com/binarymend/morphe-patches/releases)"
+              echo "* **Morphe Base Engine & Patches**: [MorpheApp/morphe-patches](https://github.com/MorpheApp/morphe-patches/releases)"
+              ;;
+            dh6k)
+              echo "* **dh6k Patches**: [dh6k/morphe-patches](https://github.com/dh6k/morphe-patches/releases)"
+              echo "* **Morphe Base Engine & Patches**: [MorpheApp/morphe-patches](https://github.com/MorpheApp/morphe-patches/releases)"
+              ;;
+            hooman)
+              echo "* **Hooman Patches**: [arandomhooman/hoomans-morphe-patches](https://github.com/arandomhooman/hoomans-morphe-patches/releases)"
+              echo "* **Morphe Base Engine & Patches**: [MorpheApp/morphe-patches](https://github.com/MorpheApp/morphe-patches/releases)"
+              ;;
+            icysymmetra)
+              echo "* **IcySymmetra TikTok Patches**: [icysymmetra/tiktok-patches-for-morphe](https://github.com/icysymmetra/tiktok-patches-for-morphe/releases)"
+              echo "* **Morphe Base Engine & Patches**: [MorpheApp/morphe-patches](https://github.com/MorpheApp/morphe-patches/releases)"
+              ;;
+            *)
+              echo "* **Morphe Patches**: [MorpheApp/morphe-patches](https://github.com/MorpheApp/morphe-patches/releases)"
+              ;;
+          esac
+          echo ""
+          echo "---"
+          echo "<details>"
+          echo "<summary><b>All Active Patch Repositories</b></summary>"
+          echo ""
+          echo "| Provider | Repository | Focus / Target Apps |"
+          echo "| :--- | :--- | :--- |"
+          echo "| **Morphe** | [MorpheApp/morphe-patches](https://github.com/MorpheApp/morphe-patches/releases) | YouTube, YouTube Music, Reddit, Base Engine |"
+          echo "| **Adobo** | [jkennethcarino/adobo](https://github.com/jkennethcarino/adobo/releases) | Reddit |"
+          echo "| **Andrew** | [andrewliang25/morphe-patches](https://github.com/andrewliang25/morphe-patches/releases) | Facebook |"
+          echo "| **Binarymend** | [binarymend/morphe-patches](https://github.com/binarymend/morphe-patches/releases) | Moon+ Reader |"
+          echo "| **dh6k** | [dh6k/morphe-patches](https://github.com/dh6k/morphe-patches/releases) | Brave Browser |"
+          echo "| **hoo-dles** | [hoo-dles/morphe-patches](https://github.com/hoo-dles/morphe-patches/releases) | FotMob |"
+          echo "| **Hooman** | [arandomhooman/hoomans-morphe-patches](https://github.com/arandomhooman/hoomans-morphe-patches/releases) | Poweramp, Symfonium |"
+          echo "| **IcySymmetra** | [icysymmetra/tiktok-patches-for-morphe](https://github.com/icysymmetra/tiktok-patches-for-morphe/releases) | TikTok |"
+          echo "| **NexAlloy** | [gnadgnaoh/NexAlloy](https://github.com/gnadgnaoh/NexAlloy/releases) | Instagram (Xposed), Facebook (Xposed) |"
+          echo "| **Piko** | [crimera/piko](https://github.com/crimera/piko/releases) | Instagram |"
+          echo "| **Rushi** | [rushiranpise/morphe-patches](https://github.com/rushiranpise/morphe-patches/releases) | Messenger, Google Photos, AdGuard, Windy, Komoot, Strava, Home Workout |"
+          echo "| **LSPatch** | [JingMatrix/LSPatch](https://github.com/JingMatrix/LSPatch/releases) | Non-root Xposed Injection |"
+          echo "| **Morphe Desktop** | [MorpheApp/morphe-desktop](https://github.com/MorpheApp/morphe-desktop/releases) | CLI & Patcher Engine |"
+          echo ""
+          echo "</details>"
+        } > "${changelog_file}"
 
     - name: Release
       if: env.has_files == 'true'

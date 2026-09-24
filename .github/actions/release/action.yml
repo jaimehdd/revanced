@@ -77,6 +77,10 @@ runs:
               echo "* **IcySymmetra TikTok Patches**: [icysymmetra/tiktok-patches-for-morphe](https://github.com/icysymmetra/tiktok-patches-for-morphe/releases)"
               echo "* **Morphe Base Engine & Patches**: [MorpheApp/morphe-patches](https://github.com/MorpheApp/morphe-patches/releases)"
               ;;
+            prathxm)
+              echo "* **Prathxm Patches**: [PrathxmOp/Prathxm-Patches](https://github.com/PrathxmOp/Prathxm-Patches/releases)"
+              echo "* **Morphe Base Engine & Patches**: [MorpheApp/morphe-patches](https://github.com/MorpheApp/morphe-patches/releases)"
+              ;;
             *)
               echo "* **Morphe Patches**: [MorpheApp/morphe-patches](https://github.com/MorpheApp/morphe-patches/releases)"
               ;;
@@ -96,6 +100,7 @@ runs:
           echo "| **hoo-dles** | [hoo-dles/morphe-patches](https://github.com/hoo-dles/morphe-patches/releases) | FotMob |"
           echo "| **Hooman** | [arandomhooman/hoomans-morphe-patches](https://github.com/arandomhooman/hoomans-morphe-patches/releases) | Poweramp, Symfonium |"
           echo "| **IcySymmetra** | [icysymmetra/tiktok-patches-for-morphe](https://github.com/icysymmetra/tiktok-patches-for-morphe/releases) | TikTok |"
+          echo "| **Prathxm** | [PrathxmOp/Prathxm-Patches](https://github.com/PrathxmOp/Prathxm-Patches/releases) | Chess |"
           echo "| **NexAlloy** | [gnadgnaoh/NexAlloy](https://github.com/gnadgnaoh/NexAlloy/releases) | Instagram (Xposed), Facebook (Xposed) |"
           echo "| **Piko** | [crimera/piko](https://github.com/crimera/piko/releases) | Instagram |"
           echo "| **Rushi** | [rushiranpise/morphe-patches](https://github.com/rushiranpise/morphe-patches/releases) | Messenger, Google Photos, AdGuard, Windy, Komoot, Strava, Home Workout |"

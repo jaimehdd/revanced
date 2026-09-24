@@ -10,6 +10,9 @@ get_date() {
 		prerelease)
 			updated_at=$(echo "$json" | jq -r 'first(.[] | select(.prerelease == true) | .assets[] | select(.name | test("'$3'")) | .updated_at)')
 			;;
+		all)
+			updated_at=$(echo "$json" | jq -r 'first(.[] | .assets[] | select(.name | test("'$3'")) | .updated_at)')
+			;;
 		*)
 			updated_at=$(echo "$json" | jq -r 'first(.[] | select(.tag_name == "'$2'") | .assets[] | select(.name | test("'$3'")) | .updated_at)')
 			;;

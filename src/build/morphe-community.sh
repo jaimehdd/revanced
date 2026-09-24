@@ -94,6 +94,12 @@ andrew_dl(){
 	dl_gh "morphe-patches" "andrewliang25" "$tag"
 }
 
+prathxm_dl(){
+	dl_gh "morphe-desktop" "MorpheApp" "latest"
+	morphe_universal_dl
+	dl_gh "Prathxm-Patches" "PrathxmOp" "$tag"
+}
+
 ######################
 ####### andrew #######
 ######################
@@ -388,6 +394,24 @@ tiktok() {
 }
 
 ######################
+###### prathxm #######
+######################
+chess() {
+	APP_NAME="chess"
+	VARIANT="prathxm"
+	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
+
+	prathxm_dl
+	get_patches_key "chess"
+	get_apk "com.chess" "chess" "apk"
+
+	release_exists && return 0
+
+	community_patch "chess" "prathxm"
+}
+
+######################
 ####### adobo ########
 ######################
 reddit-adobo() {
@@ -464,5 +488,8 @@ case "$1" in
 		;;
 	facebook-andrew)
 		facebook-andrew
+		;;
+	chess)
+		chess
 		;;
 esac

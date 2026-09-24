@@ -42,6 +42,7 @@ export_app_version() {
 			print ver
 		}
 	}')
+	export APP_VERSION="$app_version"
 	echo "APP_VERSION=$app_version" >> $GITHUB_ENV
 	green_log "[+] APP_VERSION: ${app_version:-unknown}"
 }
@@ -247,7 +248,7 @@ get_patches_key() {
 			if [[ "$line1" =~ ^[[:space:]]*#[[:space:]]*\[?([Mm]orphe|[Uu]niversal) ]]; then
 				current_section="morphe"
 				continue
-			elif [[ "$line1" =~ ^[[:space:]]*#[[:space:]]*\[?([Aa]dobo|[Cc]ommunity|[Pp]iko|[Rr]ushi|[Bb]inarymend|[Hh]oo-dles|[Hh]ooman|[Dd]h6k|[Tt]ik[Tt]ok|[Aa]ndrew) ]]; then
+			elif [[ "$line1" =~ ^[[:space:]]*#[[:space:]]*\[?([Aa]dobo|[Cc]ommunity|[Pp]iko|[Rr]ushi|[Bb]inarymend|[Hh]oo-dles|[Hh]ooman|[Dd]h6k|[Tt]ik[Tt]ok|[Aa]ndrew|[Pp]rathxm) ]]; then
 				current_section="community"
 				continue
 			elif [[ "$line1" =~ ^[[:space:]]*# ]]; then
@@ -273,7 +274,7 @@ get_patches_key() {
 			if [[ "$line2" =~ ^[[:space:]]*#[[:space:]]*\[?([Mm]orphe|[Uu]niversal) ]]; then
 				current_section="morphe"
 				continue
-			elif [[ "$line2" =~ ^[[:space:]]*#[[:space:]]*\[?([Aa]dobo|[Cc]ommunity|[Pp]iko|[Rr]ushi|[Bb]inarymend|[Hh]oo-dles|[Hh]ooman|[Dd]h6k|[Tt]ik[Tt]ok|[Aa]ndrew) ]]; then
+			elif [[ "$line2" =~ ^[[:space:]]*#[[:space:]]*\[?([Aa]dobo|[Cc]ommunity|[Pp]iko|[Rr]ushi|[Bb]inarymend|[Hh]oo-dles|[Hh]ooman|[Dd]h6k|[Tt]ik[Tt]ok|[Aa]ndrew|[Pp]rathxm) ]]; then
 				current_section="community"
 				continue
 			elif [[ "$line2" =~ ^[[:space:]]*# ]]; then
@@ -1139,6 +1140,7 @@ patch() {
 		unset morpheIncludePatches
 		unset communityExcludePatches
 		unset communityIncludePatches
+		unset APP_VERSION
 	else
 		red_log "[-] Not found $1.apk"
 		exit 1

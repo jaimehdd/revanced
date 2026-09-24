@@ -1271,12 +1271,21 @@ apk_editor() {
 split_arch() {
 	green_log "[+] Splitting $1 to ${archs[i]}:"
 	if [ -f "./download/$1.apk" ]; then
+		get_patches_key "$1-$2"
 		eval java -jar morphe-desktop-*.jar patch \
-		-p *.mpp $excludePatches$includePatches --options-file ./src/options/$2.json \
+		$(morphe_patches_args "-p") --options-file ./src/options/$2.json \
 		--striplibs ${archs[i]} \
 		--keystore=./src/morphe.keystore --force \
-		--out=./release/$1-${archs[i]}-$2.apk \
+		--out=./release/$1-${archs[i]}-$2.apk$excludePatches$includePatches \
 		./download/$1.apk
+		unset version
+		unset lock_version
+		unset excludePatches
+		unset includePatches
+		unset morpheExcludePatches
+		unset morpheIncludePatches
+		unset communityExcludePatches
+		unset communityIncludePatches
 	else
 		red_log "[-] Not found $1.apk"
 		exit 1

@@ -51,10 +51,10 @@ jobs:
         id: check-dh6k
         if: steps.check-gh.outputs.internet_error == '0'
         run: bash src/etc/ci.sh dh6k/morphe-patches latest brave.*dh6k.*apk
-      - name: Check new patch TikTok
-        id: check-tiktok
+      - name: Check new patch Hushfeed
+        id: check-hushfeed
         if: steps.check-gh.outputs.internet_error == '0'
-        run: bash src/etc/ci.sh icysymmetra/tiktok-patches-for-morphe latest tiktok.*icysymmetra.*apk
+        run: bash src/etc/ci.sh SysAdminDoc/hushfeed latest tiktok.*hushfeed.*apk
       - name: Check new patch Adobo
         id: check-adobo
         if: steps.check-gh.outputs.internet_error == '0'
@@ -79,7 +79,7 @@ jobs:
              [ "${{ steps.check-hooman.outputs.new_patch }}" = "1" ] || \
              [ "${{ steps.check-logm1lo.outputs.new_patch }}" = "1" ] || \
              [ "${{ steps.check-dh6k.outputs.new_patch }}" = "1" ] || \
-             [ "${{ steps.check-tiktok.outputs.new_patch }}" = "1" ] || \
+             [ "${{ steps.check-hushfeed.outputs.new_patch }}" = "1" ] || \
              [ "${{ steps.check-adobo.outputs.new_patch }}" = "1" ] || \
              [ "${{ steps.check-andrew.outputs.new_patch }}" = "1" ] || \
              [ "${{ steps.check-prathxm.outputs.new_patch }}" = "1" ]; then

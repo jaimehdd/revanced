@@ -76,10 +76,10 @@ hooman_dl(){
 	dl_gh "hoomans-morphe-patches" "arandomhooman" "$tag"
 }
 
-tiktok_dl(){
+hushfeed_dl(){
 	dl_gh "morphe-desktop" "MorpheApp" "latest"
 	morphe_universal_dl
-	dl_gh "tiktok-patches-for-morphe" "icysymmetra" "$tag"
+	dl_gh "hushfeed" "SysAdminDoc" "$tag"
 }
 
 adobo_dl(){
@@ -375,22 +375,22 @@ symfonium() {
 }
 
 ######################
-#### icysymmetra #####
+###### hushfeed ######
 ######################
 tiktok() {
 	APP_NAME="tiktok"
-	VARIANT="icysymmetra"
+	VARIANT="hushfeed"
 	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
 	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
 
-	tiktok_dl
+	hushfeed_dl
 	get_patches_key "tiktok"
 	get_apk "com.zhiliaoapp.musically" "tiktok-arm64-v8a" "bundle" "arm64-v8a" || \
 	get_apk_uptodown "com.zhiliaoapp.musically" "tiktok-arm64-v8a" "apk"
 
 	release_exists && return 0
 
-	community_patch "tiktok-arm64-v8a" "icysymmetra"
+	community_patch "tiktok-arm64-v8a" "hushfeed"
 }
 
 ######################

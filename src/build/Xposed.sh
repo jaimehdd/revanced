@@ -80,8 +80,8 @@ facebook() {
 
 	xposed_dl
 	xposed_facebook_dl
-	version="578.0.0.40.75"
-	get_apk "com.facebook.katana" "facebook-arm64-v8a" "bundle" "arm64-v8a" "120-640dpi" "Android 11+"
+	version="580.0.0.51.74"
+	get_apk "com.facebook.katana" "facebook-arm64-v8a" "bundle" "arm64-v8a" "240-640dpi" "Android 11+"
 
 	release_exists && return 0
 

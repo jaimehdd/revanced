@@ -144,31 +144,6 @@ photos() {
 	community_patch "gg-photos-arm64-v8a" "akash-sriram"
 }
 
-messenger-clone() {
-	APP_NAME="messenger-clone"
-	VARIANT="rushi"
-	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
-	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
-
-	rushi_dl
-	get_patches_key "messenger-clone"
-
-	local clone_pkg="app.morphe.messenger.orca"
-	if [[ "$includePatches" =~ messengerPackageName=([^[:space:],]+) ]]; then
-		clone_pkg="${BASH_REMATCH[1]}"
-	fi
-
-	if [[ "$includePatches" != *"Spoof app signature"* && "$communityIncludePatches" != *"Spoof app signature"* ]]; then
-		includePatches+=" -e \"Spoof app signature\" -O packageName=$clone_pkg"
-	fi
-
-	get_apk "com.facebook.orca" "messenger-clone-arm64-v8a" "apk" "arm64-v8a" "nodpi" "Android 9.0+"
-
-	release_exists && return 0
-
-	community_patch "messenger-clone-arm64-v8a" "rushi"
-}
-
 messenger() {
 	APP_NAME="messenger"
 	VARIANT="rushi"
@@ -446,9 +421,6 @@ reddit-adobo() {
 case "$1" in
 	messenger)
 		messenger
-		;;
-	messenger-clone)
-		messenger-clone
 		;;
 	photos)
 		photos

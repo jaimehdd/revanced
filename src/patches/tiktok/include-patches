@@ -2,12 +2,9 @@
 Disable Play Store updates
 
 # Hushfeed
-Feed filter
-Downloads
-Show the progress bar
-Show the progress bar thumbnail
-Playback speed
-Playback quality
+Keep the screen's refresh rate
+Location access governor
+Stop on-device AI profiling
 Resource and battery governor
 Block P2P video relay
 Device privacy guard
@@ -15,23 +12,18 @@ In-app browser privacy guard
 Block contact list access
 Block installed app scanning
 Disable telemetry
-Disable screen capture detection
+Region spoof
+AMOLED dark theme
+Advanced downloads
+Playback quality
+Skip the splash ad
+Skip content warnings
+Hide the risk control CAPTCHA
+Comment sort controls
 Allow screenshots and Circle to Search
 Allow Duet and Stitch
-Copy comments without username
-Always show publish date
 Show author region
-Sanitize sharing links
-Open external links directly
-Fix Google login
-Disable login requirement
-Region spoof
-SIM spoof
-AMOLED dark theme
 Ghost mode
-Hide CAPTCHA popups
-Hide floating promotions
 Hide comment popup ads
-Hide feed LIVE button
 Hide search suggestions
 Hide suggested accounts

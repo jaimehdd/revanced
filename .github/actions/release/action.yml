@@ -37,16 +37,20 @@ runs:
               echo "* **Adobo Patches**: [jkennethcarino/adobo](https://github.com/jkennethcarino/adobo/releases)"
               echo "* **Morphe Base Engine & Patches**: [MorpheApp/morphe-patches](https://github.com/MorpheApp/morphe-patches/releases)"
               ;;
-            andrew)
-              echo "* **Andrew Patches**: [andrewliang25/morphe-patches](https://github.com/andrewliang25/morphe-patches/releases)"
+            hushfacebook)
+              echo "* **HushFacebook Patches**: [SysAdminDoc/HushFacebook](https://github.com/SysAdminDoc/HushFacebook/releases)"
               echo "* **Morphe Base Engine & Patches**: [MorpheApp/morphe-patches](https://github.com/MorpheApp/morphe-patches/releases)"
               ;;
             xposed)
               echo "* **NexAlloy Xposed Module**: [gnadgnaoh/NexAlloy](https://github.com/gnadgnaoh/NexAlloy/releases)"
               if [ "${APP_NAME}" = "facebook" ]; then
-                echo "* **Andrew Pre-patch Layer**: [andrewliang25/morphe-patches](https://github.com/andrewliang25/morphe-patches/releases)"
+                echo "* **HushFacebook Pre-patch Layer**: [SysAdminDoc/HushFacebook](https://github.com/SysAdminDoc/HushFacebook/releases)"
               fi
               echo "* **LSPatch Injector**: [JingMatrix/LSPatch](https://github.com/JingMatrix/LSPatch/releases)"
+              echo "* **Morphe Base Engine & Patches**: [MorpheApp/morphe-patches](https://github.com/MorpheApp/morphe-patches/releases)"
+              ;;
+            akash-sriram)
+              echo "* **Akash Sriram Google Photos Patches**: [Akash-Sriram/morphe-google-photos](https://github.com/Akash-Sriram/morphe-google-photos/releases)"
               echo "* **Morphe Base Engine & Patches**: [MorpheApp/morphe-patches](https://github.com/MorpheApp/morphe-patches/releases)"
               ;;
             rushi)
@@ -94,7 +98,8 @@ runs:
           echo "| :--- | :--- | :--- |"
           echo "| **Morphe** | [MorpheApp/morphe-patches](https://github.com/MorpheApp/morphe-patches/releases) | YouTube, YouTube Music, Reddit, Base Engine |"
           echo "| **Adobo** | [jkennethcarino/adobo](https://github.com/jkennethcarino/adobo/releases) | Reddit |"
-          echo "| **Andrew** | [andrewliang25/morphe-patches](https://github.com/andrewliang25/morphe-patches/releases) | Facebook |"
+          echo "| **HushFacebook** | [SysAdminDoc/HushFacebook](https://github.com/SysAdminDoc/HushFacebook/releases) | Facebook |"
+          echo "| **Akash Sriram** | [Akash-Sriram/morphe-google-photos](https://github.com/Akash-Sriram/morphe-google-photos/releases) | Google Photos |"
           echo "| **Binarymend** | [binarymend/morphe-patches](https://github.com/binarymend/morphe-patches/releases) | Moon+ Reader |"
           echo "| **dh6k** | [dh6k/morphe-patches](https://github.com/dh6k/morphe-patches/releases) | Brave Browser |"
           echo "| **hoo-dles** | [hoo-dles/morphe-patches](https://github.com/hoo-dles/morphe-patches/releases) | FotMob |"
@@ -103,7 +108,7 @@ runs:
           echo "| **Prathxm** | [PrathxmOp/Prathxm-Patches](https://github.com/PrathxmOp/Prathxm-Patches/releases) | Chess |"
           echo "| **NexAlloy** | [gnadgnaoh/NexAlloy](https://github.com/gnadgnaoh/NexAlloy/releases) | Instagram (Xposed), Facebook (Xposed) |"
           echo "| **Piko** | [crimera/piko](https://github.com/crimera/piko/releases) | Instagram |"
-          echo "| **Rushi** | [rushiranpise/morphe-patches](https://github.com/rushiranpise/morphe-patches/releases) | Messenger, Google Photos, AdGuard, Windy, Komoot, Strava, Home Workout |"
+          echo "| **Rushi** | [rushiranpise/morphe-patches](https://github.com/rushiranpise/morphe-patches/releases) | Messenger, AdGuard, Windy, Komoot, Strava, Home Workout |"
           echo "| **LSPatch** | [JingMatrix/LSPatch](https://github.com/JingMatrix/LSPatch/releases) | Non-root Xposed Injection |"
           echo "| **Morphe Desktop** | [MorpheApp/morphe-desktop](https://github.com/MorpheApp/morphe-desktop/releases) | CLI & Patcher Engine |"
           echo ""

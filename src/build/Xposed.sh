@@ -46,7 +46,7 @@ xposed_disable_play_store_updates() {
 }
 
 xposed_facebook_dl() {
-	dl_gh "morphe-patches" "andrewliang25" "$tag"
+	dl_gh "HushFacebook" "SysAdminDoc" "$tag"
 }
 
 xposed_facebook_prepatch() {
@@ -59,7 +59,7 @@ xposed_facebook_prepatch() {
 
 	if [ -n "$patches_args" ]; then
 		green_log "[+] Applying Morphe background patches to $1:"
-		if eval java -jar morphe-desktop-*.jar patch $patches_args --options-file ./src/options/andrew.json \
+		if eval java -jar morphe-desktop-*.jar patch $patches_args --options-file ./src/options/hushfacebook.json \
 			--out="$prepatch_apk"$communityExcludePatches$communityIncludePatches \
 			--keystore=./src/morphe.keystore --force --continue-on-error "$input_apk"; then
 			mv "$prepatch_apk" "$input_apk"

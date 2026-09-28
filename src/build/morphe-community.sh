@@ -88,10 +88,16 @@ adobo_dl(){
 	dl_gh "adobo" "jkennethcarino" "$tag"
 }
 
-andrew_dl(){
+hushfacebook_dl(){
 	dl_gh "morphe-desktop" "MorpheApp" "latest"
 	morphe_universal_dl
-	dl_gh "morphe-patches" "andrewliang25" "$tag"
+	dl_gh "HushFacebook" "SysAdminDoc" "$tag"
+}
+
+akash_sriram_dl(){
+	dl_gh "morphe-desktop" "MorpheApp" "latest"
+	morphe_universal_dl
+	dl_gh "morphe-google-photos" "Akash-Sriram" "$tag"
 }
 
 prathxm_dl(){
@@ -101,41 +107,41 @@ prathxm_dl(){
 }
 
 ######################
-####### andrew #######
+#### hushfacebook ####
 ######################
-facebook-andrew() {
+facebook-hushfacebook() {
 	APP_NAME="facebook"
-	VARIANT="andrew"
+	VARIANT="hushfacebook"
 	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
 	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
 
-	andrew_dl
-	get_patches_key "facebook-andrew"
-	version="577.0.0.50.72"
+	hushfacebook_dl
+	get_patches_key "facebook-hushfacebook"
+	version="580.0.0.51.74"
 	get_apk "com.facebook.katana" "facebook-arm64-v8a" "bundle" "arm64-v8a" "160-640dpi" "Android 11+"
 
 	release_exists && return 0
 
 	detachPlayStoreUpdates=true
-	community_patch "facebook-arm64-v8a" "andrew"
+	community_patch "facebook-arm64-v8a" "hushfacebook"
 }
 
 ######################
-####### rushi ########
+#### akash-sriram ####
 ######################
 photos() {
 	APP_NAME="google-photos"
-	VARIANT="rushi"
+	VARIANT="akash-sriram"
 	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
 	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
 
-	rushi_dl
+	akash_sriram_dl
 	get_patches_key "gg-photos"
 	get_apk "com.google.android.apps.photos" "gg-photos-arm64-v8a" "apk"
 
 	release_exists && return 0
 
-	community_patch "gg-photos-arm64-v8a" "rushi"
+	community_patch "gg-photos-arm64-v8a" "akash-sriram"
 }
 
 messenger-clone() {
@@ -486,8 +492,8 @@ case "$1" in
 	reddit-adobo)
 		reddit-adobo
 		;;
-	facebook-andrew)
-		facebook-andrew
+	facebook-hushfacebook)
+		facebook-hushfacebook
 		;;
 	chess)
 		chess

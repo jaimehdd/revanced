@@ -46,7 +46,11 @@ jobs:
       - name: Check new patch Rushi
         id: check-rushi
         if: steps.check-gh.outputs.internet_error == '0'
-        run: bash src/etc/ci.sh rushiranpise/morphe-patches latest "(adguard|strava|homeworkout|windy|messenger|messenger-clone|komoot|gg-photos).*rushi.*apk"
+        run: bash src/etc/ci.sh rushiranpise/morphe-patches latest "(adguard|strava|homeworkout|windy|messenger|messenger-clone|komoot).*rushi.*apk"
+      - name: Check new patch Akash-Sriram
+        id: check-akash-sriram
+        if: steps.check-gh.outputs.internet_error == '0'
+        run: bash src/etc/ci.sh Akash-Sriram/morphe-google-photos latest "google-photos.*akash-sriram.*apk"
       - name: Check new patch dh6k
         id: check-dh6k
         if: steps.check-gh.outputs.internet_error == '0'
@@ -59,10 +63,10 @@ jobs:
         id: check-adobo
         if: steps.check-gh.outputs.internet_error == '0'
         run: bash src/etc/ci.sh jkennethcarino/adobo latest reddit.*adobo.*apk
-      - name: Check new patch Andrew
-        id: check-andrew
+      - name: Check new patch HushFacebook
+        id: check-hushfacebook
         if: steps.check-gh.outputs.internet_error == '0'
-        run: bash src/etc/ci.sh andrewliang25/morphe-patches latest facebook.*andrew.*apk
+        run: bash src/etc/ci.sh SysAdminDoc/HushFacebook latest facebook.*hushfacebook.*apk
       - name: Check new patch Prathxm
         id: check-prathxm
         if: steps.check-gh.outputs.internet_error == '0'
@@ -76,12 +80,13 @@ jobs:
              [ "${{ steps.check-binarymend.outputs.new_patch }}" = "1" ] || \
              [ "${{ steps.check-hoo-dles.outputs.new_patch }}" = "1" ] || \
              [ "${{ steps.check-rushi.outputs.new_patch }}" = "1" ] || \
+             [ "${{ steps.check-akash-sriram.outputs.new_patch }}" = "1" ] || \
              [ "${{ steps.check-hooman.outputs.new_patch }}" = "1" ] || \
              [ "${{ steps.check-logm1lo.outputs.new_patch }}" = "1" ] || \
              [ "${{ steps.check-dh6k.outputs.new_patch }}" = "1" ] || \
              [ "${{ steps.check-hushfeed.outputs.new_patch }}" = "1" ] || \
              [ "${{ steps.check-adobo.outputs.new_patch }}" = "1" ] || \
-             [ "${{ steps.check-andrew.outputs.new_patch }}" = "1" ] || \
+             [ "${{ steps.check-hushfacebook.outputs.new_patch }}" = "1" ] || \
              [ "${{ steps.check-prathxm.outputs.new_patch }}" = "1" ]; then
              echo "new_patch=1" >> $GITHUB_OUTPUT
           else

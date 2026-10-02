@@ -45,6 +45,12 @@ runs:
               echo "* **HushGram Patches**: [SysAdminDoc/HushGram](https://github.com/SysAdminDoc/HushGram/releases)"
               echo "* **Morphe Base Engine & Patches**: [MorpheApp/morphe-patches](https://github.com/MorpheApp/morphe-patches/releases)"
               ;;
+            eclipse)
+              echo "* **InstaEclipse Xposed Module**: [ReSo7200/InstaEclipse](https://github.com/ReSo7200/InstaEclipse/releases)"
+              echo "* **HushGram Pre-patch Layer**: [SysAdminDoc/HushGram](https://github.com/SysAdminDoc/HushGram/releases)"
+              echo "* **LSPatch Injector**: [JingMatrix/LSPatch](https://github.com/JingMatrix/LSPatch/releases)"
+              echo "* **Morphe Base Engine & Patches**: [MorpheApp/morphe-patches](https://github.com/MorpheApp/morphe-patches/releases)"
+              ;;
             xposed)
               echo "* **NexAlloy Xposed Module**: [gnadgnaoh/NexAlloy](https://github.com/gnadgnaoh/NexAlloy/releases)"
               if [ "${APP_NAME}" = "facebook" ]; then
@@ -114,6 +120,7 @@ runs:
           echo "| **Hushfeed** | [SysAdminDoc/hushfeed](https://github.com/SysAdminDoc/hushfeed/releases) | TikTok |"
           echo "| **Prathxm** | [PrathxmOp/Prathxm-Patches](https://github.com/PrathxmOp/Prathxm-Patches/releases) | Chess |"
           echo "| **NexAlloy** | [gnadgnaoh/NexAlloy](https://github.com/gnadgnaoh/NexAlloy/releases) | Instagram (Xposed), Facebook (Xposed) |"
+          echo "| **InstaEclipse** | [ReSo7200/InstaEclipse](https://github.com/ReSo7200/InstaEclipse/releases) | Instagram (Eclipse) |"
           echo "| **Piko** | [crimera/piko](https://github.com/crimera/piko/releases) | Instagram |"
           echo "| **Rushi** | [rushiranpise/morphe-patches](https://github.com/rushiranpise/morphe-patches/releases) | Messenger, AdGuard, Windy, Komoot, Strava, Home Workout |"
           echo "| **LSPatch** | [JingMatrix/LSPatch](https://github.com/JingMatrix/LSPatch/releases) | Non-root Xposed Injection |"

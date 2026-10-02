@@ -120,7 +120,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        run: [facebook, instagram]
+        run: [facebook, instagram, instagram-eclipse]
     steps:
       - name: Checkout
         uses: actions/checkout@v7.0.1

@@ -41,10 +41,16 @@ runs:
               echo "* **HushFacebook Patches**: [SysAdminDoc/HushFacebook](https://github.com/SysAdminDoc/HushFacebook/releases)"
               echo "* **Morphe Base Engine & Patches**: [MorpheApp/morphe-patches](https://github.com/MorpheApp/morphe-patches/releases)"
               ;;
+            hushgram)
+              echo "* **HushGram Patches**: [SysAdminDoc/HushGram](https://github.com/SysAdminDoc/HushGram/releases)"
+              echo "* **Morphe Base Engine & Patches**: [MorpheApp/morphe-patches](https://github.com/MorpheApp/morphe-patches/releases)"
+              ;;
             xposed)
               echo "* **NexAlloy Xposed Module**: [gnadgnaoh/NexAlloy](https://github.com/gnadgnaoh/NexAlloy/releases)"
               if [ "${APP_NAME}" = "facebook" ]; then
                 echo "* **HushFacebook Pre-patch Layer**: [SysAdminDoc/HushFacebook](https://github.com/SysAdminDoc/HushFacebook/releases)"
+              elif [ "${APP_NAME}" = "instagram" ]; then
+                echo "* **HushGram Pre-patch Layer**: [SysAdminDoc/HushGram](https://github.com/SysAdminDoc/HushGram/releases)"
               fi
               echo "* **LSPatch Injector**: [JingMatrix/LSPatch](https://github.com/JingMatrix/LSPatch/releases)"
               echo "* **Morphe Base Engine & Patches**: [MorpheApp/morphe-patches](https://github.com/MorpheApp/morphe-patches/releases)"
@@ -99,6 +105,7 @@ runs:
           echo "| **Morphe** | [MorpheApp/morphe-patches](https://github.com/MorpheApp/morphe-patches/releases) | YouTube, YouTube Music, Reddit, Base Engine |"
           echo "| **Adobo** | [jkennethcarino/adobo](https://github.com/jkennethcarino/adobo/releases) | Reddit |"
           echo "| **HushFacebook** | [SysAdminDoc/HushFacebook](https://github.com/SysAdminDoc/HushFacebook/releases) | Facebook |"
+          echo "| **HushGram** | [SysAdminDoc/HushGram](https://github.com/SysAdminDoc/HushGram/releases) | Instagram |"
           echo "| **Akash Sriram** | [Akash-Sriram/morphe-google-photos](https://github.com/Akash-Sriram/morphe-google-photos/releases) | Google Photos |"
           echo "| **Binarymend** | [binarymend/morphe-patches](https://github.com/binarymend/morphe-patches/releases) | Moon+ Reader |"
           echo "| **dh6k** | [dh6k/morphe-patches](https://github.com/dh6k/morphe-patches/releases) | Brave Browser |"

@@ -27,10 +27,10 @@ jobs:
         id: check-morphe
         if: steps.check-gh.outputs.internet_error == '0'
         run: bash src/etc/ci.sh MorpheApp/morphe-patches latest youtube.*morphe.*apk
-      - name: Check new patch Piko
-        id: check-piko
+      - name: Check new patch HushGram
+        id: check-hushgram
         if: steps.check-gh.outputs.internet_error == '0'
-        run: bash src/etc/ci.sh crimera/piko latest instagram.*piko.*apk
+        run: bash src/etc/ci.sh SysAdminDoc/HushGram latest instagram.*hushgram.*apk
       - name: Check new patch Binarymend
         id: check-binarymend
         if: steps.check-gh.outputs.internet_error == '0'
@@ -75,7 +75,7 @@ jobs:
         id: combine-community
         if: steps.check-gh.outputs.internet_error == '0'
         run: |
-          if [ "${{ steps.check-piko.outputs.new_patch }}" = "1" ] || \
+          if [ "${{ steps.check-hushgram.outputs.new_patch }}" = "1" ] || \
              [ "${{ steps.check-brosssh.outputs.new_patch }}" = "1" ] || \
              [ "${{ steps.check-binarymend.outputs.new_patch }}" = "1" ] || \
              [ "${{ steps.check-hoo-dles.outputs.new_patch }}" = "1" ] || \

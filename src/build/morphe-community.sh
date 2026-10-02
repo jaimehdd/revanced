@@ -94,6 +94,12 @@ hushfacebook_dl(){
 	dl_gh "HushFacebook" "SysAdminDoc" "$tag"
 }
 
+hushgram_dl(){
+	dl_gh "morphe-desktop" "MorpheApp" "latest"
+	morphe_universal_dl
+	dl_gh "HushGram" "SysAdminDoc" "$tag"
+}
+
 akash_sriram_dl(){
 	dl_gh "morphe-desktop" "MorpheApp" "latest"
 	morphe_universal_dl
@@ -248,6 +254,26 @@ homeworkout() {
 	# release_exists && return 0
 
 	# community_patch "homeworkout" "rushi"
+}
+
+######################
+###### HushGram ######
+######################
+instagram-hushgram() {
+	APP_NAME="instagram"
+	VARIANT="hushgram"
+	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
+
+	hushgram_dl
+	get_patches_key "instagram-hushgram"
+	version="449.0.0.52.84"
+	get_apk "com.instagram.android" "instagram-arm64-v8a" "bundle" "arm64-v8a" "120-640dpi" "Android 9.0+"
+
+	release_exists && return 0
+
+	detachPlayStoreUpdates=true
+	community_patch "instagram-arm64-v8a" "hushgram"
 }
 
 ######################
@@ -424,6 +450,9 @@ case "$1" in
 		;;
 	photos)
 		photos
+		;;
+	instagram-hushgram)
+		instagram-hushgram
 		;;
 	instagram-piko)
 		instagram-piko

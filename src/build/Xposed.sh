@@ -89,6 +89,32 @@ facebook() {
 	lspatch "facebook-arm64-v8a" "NexAlloy-nonroot*.apk" "gnadgnaoh" "--injectdex --sigbypasslv 3"
 }
 
+xposed_instagram_dl() {
+	dl_gh "HushGram" "SysAdminDoc" "$tag"
+}
+
+xposed_instagram_prepatch() {
+	local input_apk="./download/$1.apk"
+	local prepatch_apk="./download/$1-prepatched.apk"
+	local patches_args
+
+	get_patches_key "instagram-xposed"
+	patches_args="$(morphe_patches_args "-p" "patches-*.mpp")"
+
+	if [ -n "$patches_args" ]; then
+		green_log "[+] Applying Morphe background patches to $1:"
+		if eval java -jar morphe-desktop-*.jar patch $patches_args \
+			--out="$prepatch_apk"$communityExcludePatches$communityIncludePatches \
+			--keystore=./src/morphe.keystore --force --continue-on-error "$input_apk"; then
+			mv "$prepatch_apk" "$input_apk"
+		else
+			red_log "[-] Warning: Failed to apply Morphe background patches for $1, continuing with original APK"
+		fi
+	fi
+
+	xposed_disable_play_store_updates "$1"
+}
+
 instagram() {
 	APP_NAME="instagram"
 	VARIANT="xposed"
@@ -97,11 +123,13 @@ instagram() {
 	echo "patch_version=1" >> $GITHUB_ENV
 
 	xposed_dl
+	xposed_instagram_dl
+	version="449.0.0.52.84"
 	get_apk "com.instagram.android" "instagram-arm64-v8a" "bundle" "arm64-v8a" "120-640dpi" "Android 9.0+"
 
 	release_exists && return 0
 
-	xposed_disable_play_store_updates "instagram-arm64-v8a"
+	xposed_instagram_prepatch "instagram-arm64-v8a"
 	lspatch "instagram-arm64-v8a" "NexAlloy-nonroot*.apk" "gnadgnaoh" "--injectdex --sigbypasslv 3"
 }
 

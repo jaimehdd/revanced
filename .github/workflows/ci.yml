@@ -92,24 +92,10 @@ jobs:
           else
              echo "new_patch=0" >> $GITHUB_OUTPUT
           fi
-      - name: Check new patch NexAlloy
-        id: check-nexalloy
+      - name: Check new patch Xposed
+        id: check-xposed
         if: steps.check-gh.outputs.internet_error == '0'
         run: bash src/etc/ci.sh gnadgnaoh/NexAlloy latest "(facebook|instagram).*xposed.*apk"
-      - name: Check new patch InstaEclipse
-        id: check-instaeclipse
-        if: steps.check-gh.outputs.internet_error == '0'
-        run: bash src/etc/ci.sh ReSo7200/InstaEclipse latest "instagram.*eclipse.*apk"
-      - name: Combine xposed outputs
-        id: combine-xposed
-        if: steps.check-gh.outputs.internet_error == '0'
-        run: |
-          if [ "${{ steps.check-nexalloy.outputs.new_patch }}" = "1" ] || \
-             [ "${{ steps.check-instaeclipse.outputs.new_patch }}" = "1" ]; then
-             echo "new_patch=1" >> $GITHUB_OUTPUT
-          else
-             echo "new_patch=0" >> $GITHUB_OUTPUT
-          fi
       - name: Re-run workflow if github connection not stable
         if: always() && steps.check-morphe.outcome == 'skipped' && env.retry_count < env.max_retries
         uses: actions/github-script@v9
@@ -136,7 +122,7 @@ jobs:
     outputs:
       check_morphe: ${{ steps.check-morphe.outputs.new_patch }}
       check_morphe_community: ${{ steps.combine-community.outputs.new_patch }}
-      check_xposed: ${{ steps.combine-xposed.outputs.new_patch }}
+      check_xposed: ${{ steps.check-xposed.outputs.new_patch }}
 
   Patch-Morphe:
     name: Patch Morphe

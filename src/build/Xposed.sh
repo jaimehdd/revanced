@@ -93,16 +93,12 @@ xposed_instagram_dl() {
 	dl_gh "HushGram" "SysAdminDoc" "$tag"
 }
 
-xposed_eclipse_dl() {
-	dl_gh "InstaEclipse" "ReSo7200" "latest"
-}
-
 xposed_instagram_prepatch() {
 	local input_apk="./download/$1.apk"
 	local prepatch_apk="./download/$1-prepatched.apk"
 	local patches_args
 
-	get_patches_key "${2:-instagram-xposed}"
+	get_patches_key "instagram-xposed"
 	patches_args="$(morphe_patches_args "-p" "patches-*.mpp")"
 
 	if [ -n "$patches_args" ]; then
@@ -133,27 +129,8 @@ instagram() {
 
 	release_exists && return 0
 
-	xposed_instagram_prepatch "instagram-arm64-v8a" "instagram-xposed"
+	xposed_instagram_prepatch "instagram-arm64-v8a"
 	lspatch "instagram-arm64-v8a" "NexAlloy-nonroot*.apk" "gnadgnaoh" "--injectdex --sigbypasslv 3"
-}
-
-instagram_eclipse() {
-	APP_NAME="instagram"
-	VARIANT="eclipse"
-	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
-	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
-	echo "patch_version=1" >> $GITHUB_ENV
-
-	xposed_dl
-	xposed_instagram_dl
-	xposed_eclipse_dl
-	version="449.0.0.52.84"
-	get_apk "com.instagram.android" "instagram-arm64-v8a" "bundle" "arm64-v8a" "120-640dpi" "Android 9.0+"
-
-	release_exists && return 0
-
-	xposed_instagram_prepatch "instagram-arm64-v8a" "instagram-eclipse"
-	lspatch "instagram-arm64-v8a" "InstaEclipse*.apk" "eclipse" "--injectdex --sigbypasslv 3"
 }
 
 case "$1" in
@@ -162,8 +139,5 @@ case "$1" in
         ;;
     instagram)
         instagram
-        ;;
-    instagram-eclipse)
-        instagram_eclipse
         ;;
 esac

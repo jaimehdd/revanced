@@ -100,6 +100,12 @@ hushgram_dl(){
 	dl_gh "HushGram" "SysAdminDoc" "$tag"
 }
 
+hushmessenger_dl(){
+	dl_gh "morphe-desktop" "MorpheApp" "latest"
+	morphe_universal_dl
+	dl_gh "HushMessenger" "SysAdminDoc" "$tag"
+}
+
 akash_sriram_dl(){
 	dl_gh "morphe-desktop" "MorpheApp" "latest"
 	morphe_universal_dl
@@ -123,8 +129,7 @@ facebook-hushfacebook() {
 
 	hushfacebook_dl
 	get_patches_key "facebook-hushfacebook"
-	version="580.0.0.51.74"
-	get_apk "com.facebook.katana" "facebook-arm64-v8a" "bundle" "arm64-v8a" "160-640dpi" "Android 11+"
+	get_apk "com.facebook.katana" "facebook-arm64-v8a" "bundle" "arm64-v8a" "320-640dpi" "Android 11+"
 
 	release_exists && return 0
 
@@ -179,6 +184,23 @@ messenger() {
 	release_exists && return 0
 
 	community_patch "messenger-arm64-v8a" "rushi"
+}
+
+messenger-hushmessenger() {
+	APP_NAME="messenger"
+	VARIANT="hushmessenger"
+	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
+
+	hushmessenger_dl
+	get_patches_key "messenger-hushmessenger"
+	version="580.0.0.49.91"
+	get_apk "com.facebook.orca" "messenger-arm64-v8a" "apk" "arm64-v8a" "nodpi" "Android 9.0+"
+
+	release_exists && return 0
+
+	detachPlayStoreUpdates=true
+	community_patch "messenger-arm64-v8a" "hushmessenger"
 }
 
 adguard() {
@@ -447,6 +469,9 @@ reddit-adobo() {
 case "$1" in
 	messenger)
 		messenger
+		;;
+	messenger-hushmessenger)
+		messenger-hushmessenger
 		;;
 	photos)
 		photos

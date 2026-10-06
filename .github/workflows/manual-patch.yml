@@ -59,6 +59,11 @@ jobs:
       - name: Check github connection
         id: check-gh-morphe
         run: bash src/etc/connection.sh
+      - name: Verify github connection
+        if: steps.check-gh-morphe.outputs.internet_error != '0'
+        run: |
+          echo "::error::GitHub connection is not stable or API rate limit exceeded."
+          exit 1
       - name: Check stable experimental support versions
         id: experimental-check
         if: steps.check-gh-morphe.outputs.internet_error == '0'
@@ -101,6 +106,11 @@ jobs:
       - name: Check github connection
         id: check-gh-derv
         run: bash src/etc/connection.sh
+      - name: Verify github connection
+        if: steps.check-gh-derv.outputs.internet_error != '0'
+        run: |
+          echo "::error::GitHub connection is not stable or API rate limit exceeded."
+          exit 1
       - name: Patch apk
         id: patch-derv
         if: steps.check-gh-derv.outputs.internet_error == '0'
@@ -131,6 +141,11 @@ jobs:
       - name: Check github connection
         id: check-gh-xposed
         run: bash src/etc/connection.sh
+      - name: Verify github connection
+        if: steps.check-gh-xposed.outputs.internet_error != '0'
+        run: |
+          echo "::error::GitHub connection is not stable or API rate limit exceeded."
+          exit 1
       - name: Patch apk
         id: patch-xposed
         if: steps.check-gh-xposed.outputs.internet_error == '0'

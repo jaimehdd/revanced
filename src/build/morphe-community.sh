@@ -85,7 +85,7 @@ hushfeed_dl(){
 adobo_dl(){
 	dl_gh "morphe-desktop" "MorpheApp" "latest"
 	morphe_universal_dl
-	dl_gh "adobo" "jkennethcarino" "$tag"
+	dl_gh "adobo" "jkennethcarino" "prerelease"
 }
 
 hushfacebook_dl(){

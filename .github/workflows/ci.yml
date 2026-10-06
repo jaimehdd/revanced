@@ -17,6 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       repository: ${{ github.repository }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v7.0.1
@@ -26,7 +27,7 @@ jobs:
       - name: Check new patch Morphe
         id: check-morphe
         if: steps.check-gh.outputs.internet_error == '0'
-        run: bash src/etc/ci.sh MorpheApp/morphe-patches latest youtube.*morphe.*apk
+        run: bash src/etc/ci.sh MorpheApp/morphe-patches latest "^youtube-arm64-v8a-morphe\.apk$" "^youtube-music-arm64-v8a-morphe\.apk$" "^reddit-arm64-v8a-morphe\.apk$"
       - name: Check new patch HushGram
         id: check-hushgram
         if: steps.check-gh.outputs.internet_error == '0'
@@ -42,7 +43,7 @@ jobs:
       - name: Check new patch hooman
         id: check-hooman
         if: steps.check-gh.outputs.internet_error == '0'
-        run: bash src/etc/ci.sh arandomhooman/hoomans-morphe-patches latest "(money-manager|poweramp|symfonium).*hooman.*apk"
+        run: bash src/etc/ci.sh arandomhooman/hoomans-morphe-patches latest "poweramp.*hooman.*apk" "symfonium.*hooman.*apk"
       - name: Check new patch Rushi
         id: check-rushi
         if: steps.check-gh.outputs.internet_error == '0'
@@ -50,7 +51,7 @@ jobs:
       - name: Check new patch Akash-Sriram
         id: check-akash-sriram
         if: steps.check-gh.outputs.internet_error == '0'
-        run: bash src/etc/ci.sh Akash-Sriram/morphe-google-photos latest "google-photos.*akash-sriram.*apk"
+        run: bash src/etc/ci.sh Akash-Sriram/morphe-google-photos latest "(google-photos|gg-photos).*akash-sriram.*apk"
       - name: Check new patch dh6k
         id: check-dh6k
         if: steps.check-gh.outputs.internet_error == '0'
@@ -62,7 +63,7 @@ jobs:
       - name: Check new patch Adobo
         id: check-adobo
         if: steps.check-gh.outputs.internet_error == '0'
-        run: bash src/etc/ci.sh jkennethcarino/adobo latest reddit.*adobo.*apk
+        run: bash src/etc/ci.sh jkennethcarino/adobo all "reddit.*adobo.*apk"
       - name: Check new patch HushFacebook
         id: check-hushfacebook
         if: steps.check-gh.outputs.internet_error == '0'
@@ -76,13 +77,11 @@ jobs:
         if: steps.check-gh.outputs.internet_error == '0'
         run: |
           if [ "${{ steps.check-hushgram.outputs.new_patch }}" = "1" ] || \
-             [ "${{ steps.check-brosssh.outputs.new_patch }}" = "1" ] || \
              [ "${{ steps.check-binarymend.outputs.new_patch }}" = "1" ] || \
              [ "${{ steps.check-hoo-dles.outputs.new_patch }}" = "1" ] || \
              [ "${{ steps.check-rushi.outputs.new_patch }}" = "1" ] || \
              [ "${{ steps.check-akash-sriram.outputs.new_patch }}" = "1" ] || \
              [ "${{ steps.check-hooman.outputs.new_patch }}" = "1" ] || \
-             [ "${{ steps.check-logm1lo.outputs.new_patch }}" = "1" ] || \
              [ "${{ steps.check-dh6k.outputs.new_patch }}" = "1" ] || \
              [ "${{ steps.check-hushfeed.outputs.new_patch }}" = "1" ] || \
              [ "${{ steps.check-adobo.outputs.new_patch }}" = "1" ] || \
@@ -95,7 +94,7 @@ jobs:
       - name: Check new patch Xposed
         id: check-xposed
         if: steps.check-gh.outputs.internet_error == '0'
-        run: bash src/etc/ci.sh gnadgnaoh/NexAlloy latest "(facebook|instagram).*xposed.*apk"
+        run: bash src/etc/ci.sh gnadgnaoh/NexAlloy latest "facebook.*gnadgnaoh.*apk" "instagram.*gnadgnaoh.*apk"
       - name: Re-run workflow if github connection not stable
         if: always() && steps.check-morphe.outcome == 'skipped' && env.retry_count < env.max_retries
         uses: actions/github-script@v9

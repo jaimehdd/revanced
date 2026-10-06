@@ -125,7 +125,7 @@ instagram() {
 	xposed_dl
 	xposed_instagram_dl
 	version="449.0.0.52.84"
-	get_apk "com.instagram.android" "instagram-arm64-v8a" "bundle" "arm64-v8a" "120-640dpi" "Android 9.0+"
+	get_apk "com.instagram.android" "instagram-arm64-v8a" "bundle" "arm64-v8a" "480-640dpi" "Android 9.0+" "385511871"
 
 	release_exists && return 0
 

@@ -513,6 +513,7 @@ get_apkmirror_version_code() {
 get_apk() {
 	local pkg_name=$1 apk_name=$2
 	local pkg_type=${3:-apk} arch=${4:-} dpi=${5:-} minver=${6:-}
+	local target_version_code="${7:-$target_version_code}"
 	local base_url="https://www.apkmirror.com"
 	local html=""
 
@@ -539,7 +540,9 @@ get_apk() {
 	export version
 
 	green_log "[+] Detected version: ${version:-latest} [$pkg_name]"
-	green_log "[+] Downloading $apk_name (type=$pkg_type arch=${arch:-any} dpi=$dpi)"
+	local vcode_log=""
+	[[ -n "$target_version_code" ]] && vcode_log=" vcode=$target_version_code"
+	green_log "[+] Downloading $apk_name (type=$pkg_type arch=${arch:-any} dpi=$dpi$vcode_log)"
 
 	local version_href=""
 
@@ -655,6 +658,15 @@ get_apk() {
 				candidate_rows=$(echo "$rows" | grep -iP "apkm-badge[^>]*>\s*$try_type\s*<")
 				[[ -n "$try_arch" ]] && candidate_rows=$(echo "$candidate_rows" | grep -i "$try_arch")
 				[[ -n "$try_minver" ]] && candidate_rows=$(echo "$candidate_rows" | grep -i "$try_minver")
+				if [[ -n "$target_version_code" ]]; then
+					local vcode_rows
+					vcode_rows=$(echo "$candidate_rows" | grep -F "$target_version_code")
+					if [[ -n "$vcode_rows" ]]; then
+						candidate_rows="$vcode_rows"
+					else
+						yellow_log "[!] Target version code $target_version_code not found in candidates, trying without version code filter"
+					fi
+				fi
 
 				if [[ -z "$candidate_rows" ]]; then
 					continue
@@ -752,6 +764,7 @@ get_apk() {
 			java -jar $APKEditor m -i "./download/$apk_name.apkm" -o "./download/$apk_name.apk" > /dev/null 2>&1
 		fi
 	fi
+	unset target_version_code
 }
 
 get_apkpure() {

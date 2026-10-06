@@ -119,66 +119,63 @@ release_exists() {
 
 # Download Github assets requirement:
 dl_gh() {
-  if [ $3 == "prerelease" ]; then
-    local repo=$1
-    for repo in $1 ; do
-      local owner=$2 tag=$3 found=0 assets=0
-      releases=$(wget -qO- "https://api.github.com/repos/$owner/$repo/releases")
-      while read -r line; do
-        if [[ $line == *"\"tag_name\":"* ]]; then
-          tag_name=$(echo $line | cut -d '"' -f 4)
-          if [ "$tag" == "latest" ] || [ "$tag" == "prerelease" ]; then
-            found=1
-          else
-            found=0
-          fi
-        fi
-        if [[ $line == *"\"prerelease\":"* ]]; then
-          prerelease=$(echo $line | cut -d ' ' -f 2 | tr -d ',')
-          if [ "$tag" == "prerelease" ] && [ "$prerelease" == "true" ] ; then
-            found=1
-          elif [ "$tag" == "prerelease" ] && [ "$prerelease" == "false" ]; then
-            found=1
-          fi
-        fi
-        if [[ $line == *"\"assets\":"* ]]; then
-          if [ $found -eq 1 ]; then
-            assets=1
-          fi
-        fi
-        if [[ $line == *"\"browser_download_url\":"* ]]; then
-          if [ $assets -eq 1 ]; then
-            url=$(echo $line | cut -d '"' -f 4)
-            if [[ $url != *.asc ]]; then
-              name=$(basename "$url")
-              wget -q -O "$name" "$url"
-              green_log "[+] Downloading $name from $owner"
-              set_patch_version_from_asset_name "$name"
-            fi
-          fi
-        fi
-        if [[ $line == *"],"* ]]; then
-          if [ $assets -eq 1 ]; then
-            assets=0
-            break
-          fi
-        fi
-      done <<< "$releases"
-    done
+  local repo=$1 owner=$2 tag_mode=$3
+  local -a auth=()
+  if [ -n "$GITHUB_TOKEN" ]; then
+    auth=(-H "Authorization: Bearer $GITHUB_TOKEN")
+  fi
+
+  local api_url
+  if [ "$tag_mode" == "prerelease" ]; then
+    api_url="https://api.github.com/repos/$owner/$repo/releases"
+  elif [ "$tag_mode" == "latest" ]; then
+    api_url="https://api.github.com/repos/$owner/$repo/releases/latest"
   else
-    for repo in $1 ; do
-      tags=$( [ "$3" == "latest" ] && echo "latest" || echo "tags/$3" )
-      while read -r url names; do
-        if [[ $url != *.asc ]]; then
-          if [[ "$3" == "latest" && "$names" == *dev* ]]; then
-            continue
-          fi
-          green_log "[+] Downloading $names from $2"
-          set_patch_version_from_asset_name "$names"
-          wget -q -O "$names" $url
-        fi
-      done < <(wget -qO- "https://api.github.com/repos/$2/$repo/releases/$tags" | jq -r '.assets[] | "\(.browser_download_url) \(.name)"')
-    done
+    api_url="https://api.github.com/repos/$owner/$repo/releases/tags/$tag_mode"
+  fi
+
+  local json
+  if command -v curl >/dev/null 2>&1; then
+    json=$(curl -sSL "${auth[@]}" "$api_url")
+  else
+    local -a auth_wget=()
+    [ -n "$GITHUB_TOKEN" ] && auth_wget=(--header="Authorization: Bearer $GITHUB_TOKEN")
+    json=$(wget -qO- "${auth_wget[@]}" "$api_url")
+  fi
+
+  if [[ -z "$json" ]] || [[ "$json" == *"API rate limit exceeded"* ]]; then
+    red_log "[-] GitHub API request failed or rate limited for $owner/$repo"
+    exit 1
+  fi
+
+  local jq_filter
+  if [ "$tag_mode" == "prerelease" ]; then
+    jq_filter='first(.[]) | .assets[] | "\(.browser_download_url) \(.name)"'
+  else
+    jq_filter='.assets[] | "\(.browser_download_url) \(.name)"'
+  fi
+
+  local downloaded=0
+  while read -r url names; do
+    [ -z "$url" ] && continue
+    if [[ $url != *.asc ]]; then
+      if [[ "$tag_mode" == "latest" && "$names" == *dev* ]]; then
+        continue
+      fi
+      green_log "[+] Downloading $names from $owner"
+      set_patch_version_from_asset_name "$names"
+      if command -v curl >/dev/null 2>&1; then
+        curl -sSL -o "$names" "$url"
+      else
+        wget -q -O "$names" "$url"
+      fi
+      downloaded=1
+    fi
+  done < <(echo "$json" | jq -r "$jq_filter" 2>/dev/null)
+
+  if [ $downloaded -eq 0 ]; then
+    red_log "[-] Failed to download any asset for $repo from $owner (mode: $tag_mode)"
+    exit 1
   fi
 }
 
@@ -1089,7 +1086,9 @@ telegram_dl() {
 	if [[ ! -f "./tdl" ]]; then
 		green_log "[+] Downloading tdl from iyear"
 		local tdl_url
-		tdl_url=$(wget -qO- "https://api.github.com/repos/iyear/tdl/releases/latest" \
+		local -a auth=()
+		[ -n "$GITHUB_TOKEN" ] && auth=(-H "Authorization: Bearer $GITHUB_TOKEN")
+		tdl_url=$(curl -sSL "${auth[@]}" "https://api.github.com/repos/iyear/tdl/releases/latest" \
 			| jq -r '.assets[] | select(.name | test("Linux_64bit\\.tar\\.gz$")) | .browser_download_url')
 		wget -q -O ./tdl.tar.gz "$tdl_url"
 		if [[ ! -f "./tdl.tar.gz" ]]; then
@@ -1143,8 +1142,19 @@ patch() {
 	green_log "[+] Patching $1:"
 	if [ -f "./download/$1.apk" ]; then
 		echo "Patching with Morphe"
+		if ! ls morphe-desktop-*.jar >/dev/null 2>&1; then
+			red_log "[-] morphe-desktop-*.jar not found"
+			exit 1
+		fi
 		unset CI GITHUB_ACTION GITHUB_ACTIONS GITHUB_ACTOR GITHUB_ENV GITHUB_EVENT_NAME GITHUB_EVENT_PATH GITHUB_HEAD_REF GITHUB_JOB GITHUB_REF GITHUB_REPOSITORY GITHUB_RUN_ID GITHUB_RUN_NUMBER GITHUB_SHA GITHUB_WORKFLOW GITHUB_WORKSPACE RUN_ID RUN_NUMBER
-		eval java -jar morphe-desktop-*.jar patch $(morphe_patches_args "-p") --options-file ./src/options/$2.json --out=./release/$1-$2.apk$excludePatches$includePatches --keystore=./src/morphe.keystore --force --continue-on-error ./download/$1.apk
+		if ! eval java -jar morphe-desktop-*.jar patch $(morphe_patches_args "-p") --options-file ./src/options/$2.json --out=./release/$1-$2.apk$excludePatches$includePatches --keystore=./src/morphe.keystore --force --continue-on-error ./download/$1.apk; then
+			red_log "[-] Morphe patching failed for $1"
+			exit 1
+		fi
+		if ! ls ./release/$1-$2*.apk >/dev/null 2>&1; then
+			red_log "[-] Output APK not found in ./release/ for $1"
+			exit 1
+		fi
 		unset version
 		unset lock_version
 		unset excludePatches

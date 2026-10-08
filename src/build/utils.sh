@@ -427,8 +427,11 @@ detect_version() {
 	  local jar_prefix="morphe-desktop-" patch_glob="*.mpp"
 
 	  if [[ $(ls "${jar_prefix}"*.jar 2>/dev/null) =~ ${jar_prefix}([0-9]+) ]]; then
-	    list_patches_flags="list-patches --with-packages --with-versions --with-options --patches"
-	    version=$(java -jar "${jar_prefix}"*.jar $list_patches_flags $patch_glob | awk -v pkg="$1" '
+	    local list_patches_flags="list-patches --with-packages --with-versions --with-options --patches"
+	    local patches_info
+	    patches_info=$(java -jar "${jar_prefix}"*.jar $list_patches_flags $patch_glob 2>/dev/null)
+
+	    version=$(echo "$patches_info" | awk -v pkg="$1" '
 		  BEGIN { found = 0; printing = 0 }
 		  /^Index:/ { if (printing) exit; found = 0 }
 		  /Package name: / { if ($3 == pkg) found = 1 }
@@ -448,6 +451,26 @@ detect_version() {
 		    }
 		  }
 		' | sort -V | tail -n1)
+
+	    if [[ -z "$target_version_code" ]]; then
+	      local auto_vcode
+	      auto_vcode=$(echo "$patches_info" | awk -v pkg="$1" '
+		    BEGIN { found = 0; printing = 0 }
+		    /^Index:/ { if (printing) exit; found = 0 }
+		    /Package name: / { if ($3 == pkg) found = 1 }
+		    /Version codes:/ { if (found) printing = 1; next }
+		    printing {
+		      if ($0 ~ /:/) exit
+		      code = $0
+		      gsub(/^[[:space:]-]*|[[:space:]]*$/, "", code)
+		      if (code ~ /^[0-9]+$/) print code
+		    }
+		  ' | sort -n | tail -n1)
+	      if [[ -n "$auto_vcode" ]]; then
+	        target_version_code="$auto_vcode"
+	        export target_version_code
+	      fi
+	    fi
 	  fi
 	fi
 }

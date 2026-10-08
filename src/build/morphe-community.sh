@@ -68,7 +68,6 @@ messenger() {
 
 	community_dl "HushMessenger" "SysAdminDoc"
 	get_patches_key "messenger"
-	version="580.0.0.49.91"
 	get_apk "com.facebook.orca" "messenger-arm64-v8a" "apk" "arm64-v8a" "nodpi" "Android 9.0+"
 
 	release_exists && return 0
@@ -87,8 +86,7 @@ instagram() {
 
 	community_dl "HushGram" "SysAdminDoc"
 	get_patches_key "instagram"
-	version="449.0.0.52.84"
-	get_apk "com.instagram.android" "instagram-arm64-v8a" "bundle" "arm64-v8a" "480-640dpi" "Android 9.0+" "385511871"
+	get_apk "com.instagram.android" "instagram-arm64-v8a" "bundle" "arm64-v8a" "480-640dpi" "Android 9.0+"
 
 	release_exists && return 0
 

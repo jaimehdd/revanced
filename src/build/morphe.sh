@@ -4,14 +4,11 @@ source ./src/build/utils.sh
 
 use_beta="${use_beta:-false}"
 
-morphe_dl(){
-	if [ "$use_beta" = true ]; then
-		dl_gh "morphe-patches" "MorpheApp" "prerelease"
-		dl_gh "morphe-desktop" "MorpheApp" "prerelease"
-	else
-		dl_gh "morphe-patches" "MorpheApp" "latest"
-		dl_gh "morphe-desktop" "MorpheApp" "prerelease"
-	fi
+morphe_dl() {
+	local patches_tag="latest"
+	[ "$use_beta" = true ] && patches_tag="prerelease"
+	dl_gh "morphe-patches" "MorpheApp" "$patches_tag"
+	dl_gh "morphe-desktop" "MorpheApp" "prerelease"
 }
 
 youtube() {
@@ -30,9 +27,7 @@ youtube() {
 	patch "youtube" "morphe" "morphe"
 
 	# Remove unused architectures
-	for i in {0..0}; do
-		split_arch "youtube" "morphe"
-	done
+	split_arch "youtube" "morphe"
 }
 
 reddit() {
@@ -71,13 +66,13 @@ youtube-music() {
 }
 
 case "$1" in
-    youtube)
-        youtube
-        ;;
-    reddit)
-        reddit
-        ;;
-    youtube-music)
-        youtube-music
-        ;;
+	youtube|youtube-morphe)
+		youtube
+		;;
+	reddit|reddit-morphe)
+		reddit
+		;;
+	youtube-music|youtube-music-morphe)
+		youtube-music
+		;;
 esac

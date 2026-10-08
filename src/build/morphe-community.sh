@@ -20,6 +20,16 @@ morphe_universal_dl() {
 	done
 }
 
+community_dl() {
+	local repo="$1"
+	local org="$2"
+	local custom_tag="${3:-$tag}"
+
+	dl_gh "morphe-desktop" "MorpheApp" "latest"
+	morphe_universal_dl
+	dl_gh "$repo" "$org" "$custom_tag"
+}
+
 community_patch() {
 	patch "$1" "$2" "morphe"
 	if [ "${detachPlayStoreUpdates:-false}" = true ]; then
@@ -28,125 +38,94 @@ community_patch() {
 	unset detachPlayStoreUpdates
 }
 
-derevanced_dl(){
-	dl_gh "morphe-desktop" "MorpheApp" "latest"
-	morphe_universal_dl
-	dl_gh "De-Vanced" "RookieEnough" "$tag"
-}
+# ==============================================================================
+# Group 1: SysAdminDoc Hush Suite
+# ==============================================================================
 
-rushi_dl(){
-	dl_gh "morphe-desktop" "MorpheApp" "latest"
-	morphe_universal_dl
-	dl_gh "morphe-patches" "rushiranpise" "$tag"
-}
-
-piko_dl(){
-	dl_gh "morphe-desktop" "MorpheApp" "latest"
-	morphe_universal_dl
-	dl_gh "piko" "crimera" "$tag"
-}
-
-binarymend_dl(){
-	dl_gh "morphe-desktop" "MorpheApp" "latest"
-	morphe_universal_dl
-	dl_gh "morphe-patches" "binarymend" "$tag"
-}
-
-hoo-dles_dl(){
-	dl_gh "morphe-desktop" "MorpheApp" "latest"
-	morphe_universal_dl
-	dl_gh "morphe-patches" "hoo-dles" "$tag"
-}
-
-entree_dl(){
-	dl_gh "morphe-desktop" "MorpheApp" "latest"
-	morphe_universal_dl
-	dl_gh "Morning-Entree-Patches" "Entree3k" "$tag"
-}
-
-dh6k_dl(){
-	dl_gh "morphe-desktop" "MorpheApp" "latest"
-	morphe_universal_dl
-	dl_gh "morphe-patches" "dh6k" "$tag"
-}
-
-hooman_dl(){
-	dl_gh "morphe-desktop" "MorpheApp" "latest"
-	morphe_universal_dl
-	dl_gh "hoomans-morphe-patches" "arandomhooman" "$tag"
-}
-
-hushfeed_dl(){
-	dl_gh "morphe-desktop" "MorpheApp" "latest"
-	morphe_universal_dl
-	dl_gh "hushfeed" "SysAdminDoc" "$tag"
-}
-
-adobo_dl(){
-	dl_gh "morphe-desktop" "MorpheApp" "latest"
-	morphe_universal_dl
-	dl_gh "adobo" "jkennethcarino" "prerelease"
-}
-
-hushfacebook_dl(){
-	dl_gh "morphe-desktop" "MorpheApp" "latest"
-	morphe_universal_dl
-	dl_gh "HushFacebook" "SysAdminDoc" "$tag"
-}
-
-hushgram_dl(){
-	dl_gh "morphe-desktop" "MorpheApp" "latest"
-	morphe_universal_dl
-	dl_gh "HushGram" "SysAdminDoc" "$tag"
-}
-
-hushmessenger_dl(){
-	dl_gh "morphe-desktop" "MorpheApp" "latest"
-	morphe_universal_dl
-	dl_gh "HushMessenger" "SysAdminDoc" "$tag"
-}
-
-akash_sriram_dl(){
-	dl_gh "morphe-desktop" "MorpheApp" "latest"
-	morphe_universal_dl
-	dl_gh "morphe-google-photos" "Akash-Sriram" "$tag"
-}
-
-prathxm_dl(){
-	dl_gh "morphe-desktop" "MorpheApp" "latest"
-	morphe_universal_dl
-	dl_gh "Prathxm-Patches" "PrathxmOp" "$tag"
-}
-
-######################
-#### hushfacebook ####
-######################
-facebook-hushfacebook() {
+facebook() {
 	APP_NAME="facebook"
 	VARIANT="hushfacebook"
 	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
 	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
 
-	hushfacebook_dl
-	get_patches_key "facebook-hushfacebook"
+	community_dl "HushFacebook" "SysAdminDoc"
+	get_patches_key "facebook"
 	get_apk "com.facebook.katana" "facebook-arm64-v8a" "bundle" "arm64-v8a" "320-640dpi" "Android 11+"
 
 	release_exists && return 0
 
+	auto_include_community_patches "com.facebook.katana" "facebook"
 	detachPlayStoreUpdates=true
 	community_patch "facebook-arm64-v8a" "hushfacebook"
 }
+facebook-hushfacebook() { facebook; }
 
-######################
-#### akash-sriram ####
-######################
+messenger() {
+	APP_NAME="messenger"
+	VARIANT="hushmessenger"
+	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
+
+	community_dl "HushMessenger" "SysAdminDoc"
+	get_patches_key "messenger"
+	version="580.0.0.49.91"
+	get_apk "com.facebook.orca" "messenger-arm64-v8a" "apk" "arm64-v8a" "nodpi" "Android 9.0+"
+
+	release_exists && return 0
+
+	auto_include_community_patches "com.facebook.orca" "messenger"
+	detachPlayStoreUpdates=true
+	community_patch "messenger-arm64-v8a" "hushmessenger"
+}
+messenger-hushmessenger() { messenger; }
+
+instagram() {
+	APP_NAME="instagram"
+	VARIANT="hushgram"
+	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
+
+	community_dl "HushGram" "SysAdminDoc"
+	get_patches_key "instagram"
+	version="449.0.0.52.84"
+	get_apk "com.instagram.android" "instagram-arm64-v8a" "bundle" "arm64-v8a" "480-640dpi" "Android 9.0+" "385511871"
+
+	release_exists && return 0
+
+	auto_include_community_patches "com.instagram.android" "instagram"
+	detachPlayStoreUpdates=true
+	community_patch "instagram-arm64-v8a" "hushgram"
+}
+instagram-hushgram() { instagram; }
+
+tiktok() {
+	APP_NAME="tiktok"
+	VARIANT="hushfeed"
+	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
+
+	community_dl "hushfeed" "SysAdminDoc"
+	get_patches_key "tiktok"
+	get_apk "com.zhiliaoapp.musically" "tiktok-arm64-v8a" "apk" "arm64-v8a" || \
+	get_apk_uptodown "com.zhiliaoapp.musically" "tiktok-arm64-v8a" "apk"
+
+	release_exists && return 0
+
+	auto_include_community_patches "com.zhiliaoapp.musically" "tiktok"
+	community_patch "tiktok-arm64-v8a" "hushfeed"
+}
+
+# ==============================================================================
+# Group 2: Media, Audio & Photos
+# ==============================================================================
+
 photos() {
 	APP_NAME="google-photos"
 	VARIANT="akash-sriram"
 	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
 	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
 
-	akash_sriram_dl
+	community_dl "morphe-google-photos" "Akash-Sriram"
 	get_patches_key "gg-photos"
 	get_apk "com.google.android.apps.photos" "gg-photos-arm64-v8a" "apk"
 
@@ -155,82 +134,53 @@ photos() {
 	community_patch "gg-photos-arm64-v8a" "akash-sriram"
 }
 
-messenger() {
-	APP_NAME="messenger"
-	VARIANT="rushi"
+poweramp() {
+	APP_NAME="poweramp"
+	VARIANT="hooman"
 	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
 	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
 
-	rushi_dl
-	get_patches_key "messenger"
-
-	local latest_vc
-	latest_vc=$(get_apkmirror_version_code "com.facebook.orca" "arm64-v8a" "nodpi")
-	if [[ -n "$latest_vc" ]]; then
-		green_log "[+] Using latest APKMirror versionCode ($latest_vc) for Spoof package version"
-		if [[ "$includePatches" == *"Spoof package version"* ]]; then
-			includePatches="${includePatches/-e \"Spoof package version\"/-e \"Spoof package version\" -O messengerVersionCode=$latest_vc}"
-		elif [[ "$communityIncludePatches" == *"Spoof package version"* ]]; then
-			communityIncludePatches="${communityIncludePatches/-e \"Spoof package version\"/-e \"Spoof package version\" -O messengerVersionCode=$latest_vc}"
-		else
-			includePatches+=" -e \"Spoof package version\" -O messengerVersionCode=$latest_vc"
-		fi
-	else
-		yellow_log "[!] Could not fetch latest versionCode from APKMirror, using patch default"
-	fi
-
-	get_apk "com.facebook.orca" "messenger-arm64-v8a" "apk" "arm64-v8a" "nodpi" "Android 9.0+"
+	community_dl "hoomans-morphe-patches" "arandomhooman"
+	get_patches_key "poweramp"
+	get_apk "com.maxmpz.audioplayer" "poweramp" "bundle"
 
 	release_exists && return 0
 
-	community_patch "messenger-arm64-v8a" "rushi"
+	community_patch "poweramp" "hooman"
 }
 
-messenger-hushmessenger() {
-	APP_NAME="messenger"
-	VARIANT="hushmessenger"
+moonreader() {
+	APP_NAME="moonreader"
+	VARIANT="binarymend"
 	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
 	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
 
-	hushmessenger_dl
-	get_patches_key "messenger-hushmessenger"
-	version="580.0.0.49.91"
-	get_apk "com.facebook.orca" "messenger-arm64-v8a" "apk" "arm64-v8a" "nodpi" "Android 9.0+"
+	community_dl "morphe-patches" "binarymend"
+	get_patches_key "moonreader"
+	get_apk "com.flyersoft.moonreader" "moonreader-arm64-v8a" "bundle"
 
 	release_exists && return 0
 
-	detachPlayStoreUpdates=true
-	community_patch "messenger-arm64-v8a" "hushmessenger"
+	community_patch "moonreader-arm64-v8a" "binarymend"
 }
 
-adguard() {
-	APP_NAME="adguard"
-	VARIANT="rushi"
+# ==============================================================================
+# Group 3: Sports, Fitness & Navigation
+# ==============================================================================
+
+fotmob() {
+	APP_NAME="fotmob"
+	VARIANT="hoo-dles"
 	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
 	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
 
-	rushi_dl
-	get_patches_key "adguard"
-	get_apk "com.adguard.android" "adguard" "apk"
+	community_dl "morphe-patches" "hoo-dles"
+	get_patches_key "fotmob"
+	get_apk "com.mobilefootie.wc2010" "fotmob-arm64-v8a" "bundle" "universal" "nodpi" "Android 12L+"
 
 	release_exists && return 0
 
-	community_patch "adguard" "rushi"
-}
-
-windy() {
-	APP_NAME="windy"
-	VARIANT="rushi"
-	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
-	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
-
-	rushi_dl
-	get_patches_key "windy"
-	get_apk "com.windyty.android" "windy-arm64-v8a" "bundle" "universal" "120-640dpi" "Android 12L+"
-
-	release_exists && return 0
-
-	community_patch "windy-arm64-v8a" "rushi"
+	community_patch "fotmob-arm64-v8a" "hoo-dles"
 }
 
 komoot() {
@@ -239,7 +189,7 @@ komoot() {
 	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
 	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
 
-	rushi_dl
+	community_dl "morphe-patches" "rushiranpise"
 	get_patches_key "komoot"
 	get_apk "de.komoot.android" "komoot-arm64-v8a" "bundle"
 
@@ -254,7 +204,7 @@ strava() {
 	# echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
 	# echo "VARIANT=$VARIANT" >> $GITHUB_ENV
 
-	# rushi_dl
+	# community_dl "morphe-patches" "rushiranpise"
 	# get_patches_key "strava"
 	# get_apk_uptodown "com.strava" "strava-arm64-v8a" "bundle"
 
@@ -263,105 +213,32 @@ strava() {
 	# community_patch "strava-arm64-v8a" "rushi"
 }
 
-homeworkout() {
-	APP_NAME="homeworkout"
+# ==============================================================================
+# Group 4: Browsing, Adblocking & Weather
+# ==============================================================================
+
+adguard() {
+	APP_NAME="adguard"
 	VARIANT="rushi"
-	# echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
-	# echo "VARIANT=$VARIANT" >> $GITHUB_ENV
-
-	# rushi_dl
-	# get_patches_key "homeworkout"
-	# get_apk_uptodown "homeworkout.homeworkouts.noequipment" "homeworkout" "apk"
-
-	# release_exists && return 0
-
-	# community_patch "homeworkout" "rushi"
-}
-
-######################
-###### HushGram ######
-######################
-instagram-hushgram() {
-	APP_NAME="instagram"
-	VARIANT="hushgram"
 	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
 	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
 
-	hushgram_dl
-	get_patches_key "instagram-hushgram"
-	version="449.0.0.52.84"
-	get_apk "com.instagram.android" "instagram-arm64-v8a" "bundle" "arm64-v8a" "480-640dpi" "Android 9.0+" "385511871"
+	community_dl "morphe-patches" "rushiranpise"
+	get_patches_key "adguard"
+	get_apk "com.adguard.android" "adguard" "apk"
 
 	release_exists && return 0
 
-	detachPlayStoreUpdates=true
-	community_patch "instagram-arm64-v8a" "hushgram"
+	community_patch "adguard" "rushi"
 }
 
-######################
-######## Piko ########
-######################
-instagram-piko() {
-	APP_NAME="instagram"
-	VARIANT="piko"
-	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
-	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
-
-	piko_dl
-	get_patches_key "instagram-piko"
-	get_apk "com.instagram.android" "instagram-arm64-v8a" "bundle" "arm64-v8a" "120-640dpi" "Android 9.0+"
-
-	release_exists && return 0
-
-	community_patch "instagram-arm64-v8a" "piko"
-}
-
-######################
-####### hoo-dles #####
-######################
-fotmob() {
-	APP_NAME="fotmob"
-	VARIANT="hoo-dles"
-	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
-	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
-
-	hoo-dles_dl
-	get_patches_key "fotmob"
-	get_apk "com.mobilefootie.wc2010" "fotmob-arm64-v8a" "bundle" "universal" "nodpi" "Android 12L+"
-
-	release_exists && return 0
-
-	community_patch "fotmob-arm64-v8a" "hoo-dles"
-}
-
-######################
-##### binarymend #####
-######################
-moonreader() {
-	APP_NAME="moonreader"
-	VARIANT="binarymend"
-	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
-	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
-
-	binarymend_dl
-	get_patches_key "moonreader"
-	get_apk "com.flyersoft.moonreader" "moonreader-arm64-v8a" "bundle"
-
-	release_exists && return 0
-
-	community_patch "moonreader-arm64-v8a" "binarymend"
-}
-
-######################
-####### dh6k #########
-######################
 brave() {
 	APP_NAME="brave"
 	VARIANT="dh6k"
 	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
 	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
 
-	dh6k_dl
+	community_dl "morphe-patches" "dh6k"
 	get_patches_key "brave"
 	get_apk "com.brave.browser" "brave-arm64-v8a" "bundle" "arm64-v8a"
 
@@ -370,86 +247,32 @@ brave() {
 	community_patch "brave-arm64-v8a" "dh6k"
 }
 
-######################
-###### hooman ########
-######################
-poweramp() {
-	APP_NAME="poweramp"
-	VARIANT="hooman"
+windy() {
+	APP_NAME="windy"
+	VARIANT="rushi"
 	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
 	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
 
-	hooman_dl
-	get_patches_key "poweramp"
-	get_apk "com.maxmpz.audioplayer" "poweramp" "bundle"
+	community_dl "morphe-patches" "rushiranpise"
+	get_patches_key "windy"
+	get_apk "com.windyty.android" "windy-arm64-v8a" "bundle" "universal" "120-640dpi" "Android 12L+"
 
 	release_exists && return 0
 
-	community_patch "poweramp" "hooman"
+	community_patch "windy-arm64-v8a" "rushi"
 }
 
-symfonium() {
-	APP_NAME="symfonium"
-	VARIANT="hooman"
-	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
-	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
+# ==============================================================================
+# Group 5: Community UI Mod Clients
+# ==============================================================================
 
-	hooman_dl
-	get_patches_key "symfonium"
-	get_apk "app.symfonik.music.player" "symfonium-arm64-v8a" "bundle" "arm64-v8a"
-
-	release_exists && return 0
-
-	community_patch "symfonium-arm64-v8a" "hooman"
-}
-
-######################
-###### hushfeed ######
-######################
-tiktok() {
-	APP_NAME="tiktok"
-	VARIANT="hushfeed"
-	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
-	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
-
-	hushfeed_dl
-	get_patches_key "tiktok"
-	get_apk "com.zhiliaoapp.musically" "tiktok-arm64-v8a" "apk" "arm64-v8a" || \
-	get_apk_uptodown "com.zhiliaoapp.musically" "tiktok-arm64-v8a" "apk"
-
-	release_exists && return 0
-
-	community_patch "tiktok-arm64-v8a" "hushfeed"
-}
-
-######################
-###### prathxm #######
-######################
-chess() {
-	APP_NAME="chess"
-	VARIANT="prathxm"
-	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
-	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
-
-	prathxm_dl
-	get_patches_key "chess"
-	get_apk "com.chess" "chess" "apk"
-
-	release_exists && return 0
-
-	community_patch "chess" "prathxm"
-}
-
-######################
-####### adobo ########
-######################
 reddit-adobo() {
 	APP_NAME="reddit"
 	VARIANT="adobo"
 	echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
 	echo "VARIANT=$VARIANT" >> $GITHUB_ENV
 
-	adobo_dl
+	community_dl "adobo" "jkennethcarino" "prerelease"
 	get_patches_key "reddit-adobo"
 	get_apk "com.reddit.frontpage" "reddit" "bundle_extract"
 
@@ -466,62 +289,51 @@ reddit-adobo() {
 	patch "reddit-arm64-v8a" "adobo" "morphe"
 }
 
+# ==============================================================================
+# Dispatcher
+# ==============================================================================
+
 case "$1" in
-	messenger)
+	facebook|facebook-hushfacebook)
+		facebook
+		;;
+	messenger|messenger-hushmessenger)
 		messenger
 		;;
-	messenger-hushmessenger)
-		messenger-hushmessenger
+	instagram|instagram-hushgram)
+		instagram
 		;;
-	photos)
+	tiktok|tiktok-hushfeed)
+		tiktok
+		;;
+	photos|google-photos)
 		photos
-		;;
-	instagram-hushgram)
-		instagram-hushgram
-		;;
-	instagram-piko)
-		instagram-piko
-		;;
-	strava)
-		strava
-		;;
-	fotmob)
-		fotmob
-		;;
-	windy)
-		windy
-		;;
-	moonreader)
-		moonreader
-		;;
-	adguard)
-		adguard
-		;;
-	komoot)
-		komoot
-		;;
-	homeworkout)
-		homeworkout
-		;;
-	brave)
-		brave
 		;;
 	poweramp)
 		poweramp
 		;;
-	symfonium)
-		symfonium
+	moonreader)
+		moonreader
 		;;
-	tiktok)
-		tiktok
+	fotmob)
+		fotmob
 		;;
-	reddit-adobo)
+	komoot)
+		komoot
+		;;
+	strava)
+		strava
+		;;
+	adguard)
+		adguard
+		;;
+	brave)
+		brave
+		;;
+	windy)
+		windy
+		;;
+	reddit-adobo|reddit)
 		reddit-adobo
-		;;
-	facebook-hushfacebook)
-		facebook-hushfacebook
-		;;
-	chess)
-		chess
 		;;
 esac

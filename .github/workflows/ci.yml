@@ -43,11 +43,11 @@ jobs:
       - name: Check new patch hooman
         id: check-hooman
         if: steps.check-gh.outputs.internet_error == '0'
-        run: bash src/etc/ci.sh arandomhooman/hoomans-morphe-patches latest "poweramp.*hooman.*apk" "symfonium.*hooman.*apk"
+        run: bash src/etc/ci.sh arandomhooman/hoomans-morphe-patches latest "poweramp.*hooman.*apk"
       - name: Check new patch Rushi
         id: check-rushi
         if: steps.check-gh.outputs.internet_error == '0'
-        run: bash src/etc/ci.sh rushiranpise/morphe-patches latest "(adguard|strava|homeworkout|windy|messenger|komoot).*rushi.*apk"
+        run: bash src/etc/ci.sh rushiranpise/morphe-patches latest "(adguard|strava|windy|komoot).*rushi.*apk"
       - name: Check new patch Akash-Sriram
         id: check-akash-sriram
         if: steps.check-gh.outputs.internet_error == '0'
@@ -68,33 +68,39 @@ jobs:
         id: check-hushfacebook
         if: steps.check-gh.outputs.internet_error == '0'
         run: bash src/etc/ci.sh SysAdminDoc/HushFacebook latest facebook.*hushfacebook.*apk
-      - name: Check new patch Prathxm
-        id: check-prathxm
+      - name: Check new patch HushMessenger
+        id: check-hushmessenger
         if: steps.check-gh.outputs.internet_error == '0'
-        run: bash src/etc/ci.sh PrathxmOp/Prathxm-Patches latest chess.*prathxm.*apk
+        run: bash src/etc/ci.sh SysAdminDoc/HushMessenger latest messenger.*hushmessenger.*apk
       - name: Combine check outputs
         id: combine-community
         if: steps.check-gh.outputs.internet_error == '0'
         run: |
-          if [ "${{ steps.check-hushgram.outputs.new_patch }}" = "1" ] || \
-             [ "${{ steps.check-binarymend.outputs.new_patch }}" = "1" ] || \
-             [ "${{ steps.check-hoo-dles.outputs.new_patch }}" = "1" ] || \
-             [ "${{ steps.check-rushi.outputs.new_patch }}" = "1" ] || \
-             [ "${{ steps.check-akash-sriram.outputs.new_patch }}" = "1" ] || \
-             [ "${{ steps.check-hooman.outputs.new_patch }}" = "1" ] || \
-             [ "${{ steps.check-dh6k.outputs.new_patch }}" = "1" ] || \
-             [ "${{ steps.check-hushfeed.outputs.new_patch }}" = "1" ] || \
-             [ "${{ steps.check-adobo.outputs.new_patch }}" = "1" ] || \
-             [ "${{ steps.check-hushfacebook.outputs.new_patch }}" = "1" ] || \
-             [ "${{ steps.check-prathxm.outputs.new_patch }}" = "1" ]; then
-             echo "new_patch=1" >> $GITHUB_OUTPUT
-          else
-             echo "new_patch=0" >> $GITHUB_OUTPUT
+          targets=()
+          [ "${{ steps.check-hushgram.outputs.new_patch }}" = "1" ] && targets+=("instagram")
+          [ "${{ steps.check-hushfacebook.outputs.new_patch }}" = "1" ] && targets+=("facebook")
+          [ "${{ steps.check-hushmessenger.outputs.new_patch }}" = "1" ] && targets+=("messenger")
+          [ "${{ steps.check-hushfeed.outputs.new_patch }}" = "1" ] && targets+=("tiktok")
+          [ "${{ steps.check-akash-sriram.outputs.new_patch }}" = "1" ] && targets+=("photos")
+          [ "${{ steps.check-binarymend.outputs.new_patch }}" = "1" ] && targets+=("moonreader")
+          [ "${{ steps.check-hoo-dles.outputs.new_patch }}" = "1" ] && targets+=("fotmob")
+          [ "${{ steps.check-hooman.outputs.new_patch }}" = "1" ] && targets+=("poweramp")
+          [ "${{ steps.check-dh6k.outputs.new_patch }}" = "1" ] && targets+=("brave")
+          [ "${{ steps.check-adobo.outputs.new_patch }}" = "1" ] && targets+=("reddit-adobo")
+          if [ "${{ steps.check-rushi.outputs.new_patch }}" = "1" ]; then
+            targets+=("adguard" "komoot" "strava" "windy")
           fi
-      - name: Check new patch Xposed
-        id: check-xposed
-        if: steps.check-gh.outputs.internet_error == '0'
-        run: bash src/etc/ci.sh gnadgnaoh/NexAlloy latest "facebook.*gnadgnaoh.*apk" "instagram.*gnadgnaoh.*apk"
+
+          if [ ${#targets[@]} -gt 0 ]; then
+            json=$(jq -c -n '$ARGS.positional' --args "${targets[@]}")
+            echo "targets=$json" >> $GITHUB_OUTPUT
+            echo "new_patch=1" >> $GITHUB_OUTPUT
+            echo "Target apps to build: $json"
+          else
+            echo "targets=[]" >> $GITHUB_OUTPUT
+            echo "new_patch=0" >> $GITHUB_OUTPUT
+            echo "No new patches detected."
+          fi
       - name: Re-run workflow if github connection not stable
         if: always() && steps.check-morphe.outcome == 'skipped' && env.retry_count < env.max_retries
         uses: actions/github-script@v9
@@ -121,7 +127,7 @@ jobs:
     outputs:
       check_morphe: ${{ steps.check-morphe.outputs.new_patch }}
       check_morphe_community: ${{ steps.combine-community.outputs.new_patch }}
-      check_xposed: ${{ steps.check-xposed.outputs.new_patch }}
+      community_targets: ${{ steps.combine-community.outputs.targets }}
 
   Patch-Morphe:
     name: Patch Morphe
@@ -139,11 +145,4 @@ jobs:
     secrets: inherit
     with:
       org: "Morphe-Community"
-  Patch-Xposed:
-    name: Patch Xposed
-    needs: check
-    if: ${{ needs.check.outputs.check_xposed == 1 }}
-    uses: ./.github/workflows/manual-patch.yml
-    secrets: inherit
-    with:
-      org: "Xposed"
+      targets: ${{ needs.check.outputs.community_targets }}

@@ -4,10 +4,6 @@
       "list_url": "https://www.apkmirror.com/uploads/?appcategory=tik-tok-including-musical-ly",
       "example_url": "https://www.apkmirror.com/apk/tiktok-pte-ltd/tik-tok-including-musical-ly/tiktok-47-0-3-release/"
     },
-    "com.chess": {
-      "list_url": "https://www.apkmirror.com/uploads/?appcategory=chess-play-learn",
-      "example_url": "https://www.apkmirror.com/apk/chess-com/chess-play-learn/chess-com-do-you-miss-us-4-10-0-googleplay-release/"
-    },
     "com.brave.browser": {
       "list_url": "https://www.apkmirror.com/uploads/?appcategory=brave-browser",
       "example_url": "https://www.apkmirror.com/apk/brave-software/brave-browser/brave-private-web-browser-vpn-1-95-104-release/"
@@ -160,26 +156,9 @@
       "list_url": "https://www.apkmirror.com/uploads/?appcategory=moon-reader",
       "example_url": "https://www.apkmirror.com/apk/moon/moon-reader/moon-reader-9-3-release/"
     },
-    "com.budget.tracker_app": {
-      "list_url": "https://www.apkmirror.com/uploads/?appcategory=cashew-expense-budget-tracker",
-      "example_url": "https://www.apkmirror.com/apk/dapper-app-developer/cashew-expense-budget-tracker/cashew-expense-budget-tracker-6-6-11-release/"
-    },
-    "com.realbyteapps.moneymanagerfree": {
-      "list_url": "https://www.apkmirror.com/uploads/?appcategory=money-manager-expense-budget",
-      "example_url": "https://www.apkmirror.com/apk/realbyte-inc/money-manager-expense-budget/money-manager-expense-budget-4-12-1-gf-release/"
-    },
     "com.maxmpz.audioplayer": {
       "list_url": "https://www.apkmirror.com/uploads/?appcategory=poweramp",
       "example_url": "https://www.apkmirror.com/apk/max-mp/poweramp/poweramp-music-player-build-1024-bundle-play-release/"
-    },
-    "app.symfonik.music.player": {
-      "list_url": "https://www.apkmirror.com/uploads/?appcategory=symfonium-music-player-cast",
-      "example_url": "https://www.apkmirror.com/apk/tolriq/symfonium-music-player-cast/symfonium-music-player-cast-14-1-0-release/"
-    }
-  },
-  "apkpure": {
-    "com.calistree.calistree": {
-      "download_url": "https://apkpure.com/calistree-calisthenics-workout/com.calistree.calistree/download"
     }
   },
   "uptodown": {
@@ -218,9 +197,6 @@
     },
     "com.strava": {
       "url": "https://strava.en.uptodown.com/android"
-    },
-    "homeworkout.homeworkouts.noequipment": {
-      "url": "https://leap-fitness-group-home-workout.en.uptodown.com/android"
     },
     "com.zhiliaoapp.musically": {
       "url": "https://tiktok.en.uptodown.com/android"

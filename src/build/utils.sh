@@ -356,6 +356,72 @@ morphe_patches_args() {
 	printf '%s' "$args"
 }
 
+auto_include_community_patches() {
+	local pkg_name="$1"
+	local patch_target="$2"
+	local patch_pattern="${3:-patches-*.mpp}"
+	local jar_file
+	jar_file=$(ls morphe-desktop-*.jar 2>/dev/null | head -n1)
+
+	if [[ -z "$jar_file" ]] || ! ls $patch_pattern >/dev/null 2>&1; then
+		yellow_log "[!] Morphe desktop or bundle $patch_pattern not found, skipping patch auto-discovery"
+		return 0
+	fi
+
+	local mpp_file
+	for f in $patch_pattern; do
+		[ -f "$f" ] && mpp_file="$f" && break
+	done
+	[ -z "$mpp_file" ] && return 0
+
+	green_log "[+] Auto-discovering patches for $pkg_name from $mpp_file"
+
+	local raw_patches
+	raw_patches=$(java -jar "$jar_file" list-patches --patches "$mpp_file" --filter-package-name="$pkg_name" 2>/dev/null)
+
+	local patch_name
+	local included_count=0
+	local excluded_count=0
+	local exclude_file="src/patches/$patch_target/exclude-patches"
+
+	while IFS= read -r line || [[ -n "$line" ]]; do
+		line="${line%$'\r'}"
+		[[ "$line" =~ ^[[:space:]]*Name:[[:space:]]*(.*)$ ]] || continue
+		patch_name="${BASH_REMATCH[1]}"
+		patch_name="$(echo "$patch_name" | xargs)"
+		[[ -z "$patch_name" ]] && continue
+
+		# Exclusive exclusions: x86 architecture or Clone / package rename
+		if [[ "$patch_name" =~ [xX]86 ]] || [[ "$patch_name" =~ [Cc]lone ]] || [[ "$patch_name" =~ [Cc]hange[[:space:]]+package[[:space:]]+name ]]; then
+			yellow_log "[-] Auto-excluding (exclusive rule): $patch_name"
+			((excluded_count++))
+			continue
+		fi
+
+		# Check if already excluded via get_patches_key or exclude-patches file
+		if [[ "$communityExcludePatches" == *"-d \"$patch_name\""* ]] || \
+		   [[ "$morpheExcludePatches" == *"-d \"$patch_name\""* ]] || \
+		   [[ "$excludePatches" == *"-d \"$patch_name\""* ]] || \
+		   { [ -f "$exclude_file" ] && grep -Fxq "$patch_name" "$exclude_file"; }; then
+			yellow_log "[-] Auto-excluding (in exclude-patches): $patch_name"
+			((excluded_count++))
+			continue
+		fi
+
+		# Check if already included in includePatches or communityIncludePatches
+		if [[ "$communityIncludePatches" == *"-e \"$patch_name\""* ]] || \
+		   [[ "$includePatches" == *"-e \"$patch_name\""* ]]; then
+			continue
+		fi
+
+		communityIncludePatches+=" -e \"$patch_name\""
+		((included_count++))
+	done <<< "$raw_patches"
+
+	export communityIncludePatches
+	green_log "[+] Patch auto-discovery complete: $included_count included, $excluded_count excluded"
+}
+
 detect_version() {
 	if [ -z "$version" ] && [ "$lock_version" != "1" ]; then
 	  local jar_prefix="morphe-desktop-" patch_glob="*.mpp"

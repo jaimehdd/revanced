@@ -49,26 +49,12 @@ runs:
               echo "* **HushMessenger Patches**: [SysAdminDoc/HushMessenger](https://github.com/SysAdminDoc/HushMessenger/releases)"
               echo "* **Morphe Base Engine & Patches**: [MorpheApp/morphe-patches](https://github.com/MorpheApp/morphe-patches/releases)"
               ;;
-            xposed)
-              echo "* **NexAlloy Xposed Module**: [gnadgnaoh/NexAlloy](https://github.com/gnadgnaoh/NexAlloy/releases)"
-              if [ "${APP_NAME}" = "facebook" ]; then
-                echo "* **HushFacebook Pre-patch Layer**: [SysAdminDoc/HushFacebook](https://github.com/SysAdminDoc/HushFacebook/releases)"
-              elif [ "${APP_NAME}" = "instagram" ]; then
-                echo "* **HushGram Pre-patch Layer**: [SysAdminDoc/HushGram](https://github.com/SysAdminDoc/HushGram/releases)"
-              fi
-              echo "* **LSPatch Injector**: [JingMatrix/LSPatch](https://github.com/JingMatrix/LSPatch/releases)"
-              echo "* **Morphe Base Engine & Patches**: [MorpheApp/morphe-patches](https://github.com/MorpheApp/morphe-patches/releases)"
-              ;;
             akash-sriram)
               echo "* **Akash Sriram Google Photos Patches**: [Akash-Sriram/morphe-google-photos](https://github.com/Akash-Sriram/morphe-google-photos/releases)"
               echo "* **Morphe Base Engine & Patches**: [MorpheApp/morphe-patches](https://github.com/MorpheApp/morphe-patches/releases)"
               ;;
             rushi)
               echo "* **Rushi Patches**: [rushiranpise/morphe-patches](https://github.com/rushiranpise/morphe-patches/releases)"
-              echo "* **Morphe Base Engine & Patches**: [MorpheApp/morphe-patches](https://github.com/MorpheApp/morphe-patches/releases)"
-              ;;
-            piko)
-              echo "* **Piko Patches**: [crimera/piko](https://github.com/crimera/piko/releases)"
               echo "* **Morphe Base Engine & Patches**: [MorpheApp/morphe-patches](https://github.com/MorpheApp/morphe-patches/releases)"
               ;;
             hoo-dles)
@@ -91,10 +77,6 @@ runs:
               echo "* **Hushfeed TikTok Patches**: [SysAdminDoc/hushfeed](https://github.com/SysAdminDoc/hushfeed/releases)"
               echo "* **Morphe Base Engine & Patches**: [MorpheApp/morphe-patches](https://github.com/MorpheApp/morphe-patches/releases)"
               ;;
-            prathxm)
-              echo "* **Prathxm Patches**: [PrathxmOp/Prathxm-Patches](https://github.com/PrathxmOp/Prathxm-Patches/releases)"
-              echo "* **Morphe Base Engine & Patches**: [MorpheApp/morphe-patches](https://github.com/MorpheApp/morphe-patches/releases)"
-              ;;
             *)
               echo "* **Morphe Patches**: [MorpheApp/morphe-patches](https://github.com/MorpheApp/morphe-patches/releases)"
               ;;
@@ -115,13 +97,9 @@ runs:
           echo "| **Binarymend** | [binarymend/morphe-patches](https://github.com/binarymend/morphe-patches/releases) | Moon+ Reader |"
           echo "| **dh6k** | [dh6k/morphe-patches](https://github.com/dh6k/morphe-patches/releases) | Brave Browser |"
           echo "| **hoo-dles** | [hoo-dles/morphe-patches](https://github.com/hoo-dles/morphe-patches/releases) | FotMob |"
-          echo "| **Hooman** | [arandomhooman/hoomans-morphe-patches](https://github.com/arandomhooman/hoomans-morphe-patches/releases) | Poweramp, Symfonium |"
+          echo "| **Hooman** | [arandomhooman/hoomans-morphe-patches](https://github.com/arandomhooman/hoomans-morphe-patches/releases) | Poweramp |"
           echo "| **Hushfeed** | [SysAdminDoc/hushfeed](https://github.com/SysAdminDoc/hushfeed/releases) | TikTok |"
-          echo "| **Prathxm** | [PrathxmOp/Prathxm-Patches](https://github.com/PrathxmOp/Prathxm-Patches/releases) | Chess |"
-          echo "| **NexAlloy** | [gnadgnaoh/NexAlloy](https://github.com/gnadgnaoh/NexAlloy/releases) | Instagram (Xposed), Facebook (Xposed) |"
-          echo "| **Piko** | [crimera/piko](https://github.com/crimera/piko/releases) | Instagram |"
-          echo "| **Rushi** | [rushiranpise/morphe-patches](https://github.com/rushiranpise/morphe-patches/releases) | Messenger, AdGuard, Windy, Komoot, Strava, Home Workout |"
-          echo "| **LSPatch** | [JingMatrix/LSPatch](https://github.com/JingMatrix/LSPatch/releases) | Non-root Xposed Injection |"
+          echo "| **Rushi** | [rushiranpise/morphe-patches](https://github.com/rushiranpise/morphe-patches/releases) | AdGuard, Windy, Komoot, Strava |"
           echo "| **Morphe Desktop** | [MorpheApp/morphe-desktop](https://github.com/MorpheApp/morphe-desktop/releases) | CLI & Patcher Engine |"
           echo ""
           echo "</details>"

@@ -6,14 +6,14 @@ check_connection() {
 	if [ -n "$GITHUB_TOKEN" ]; then
 		auth_header=(-H "Authorization: Bearer $GITHUB_TOKEN")
 	fi
-	wget -q $(curl -s "${auth_header[@]}" "https://api.github.com/repos/MorpheApp/morphe-patches/releases/tags/v1.21.1" | jq -r '.assets[] | select(.name == "patches-1.21.1.mpp") | .browser_download_url') || rm -f "patches-1.21.1.mpp"
-	if [ -f patches-1.21.1.mpp ]; then
+	local http_code
+	http_code=$(curl -s -o /dev/null -w "%{http_code}" --connect-timeout 5 --max-time 10 "${auth_header[@]}" "https://api.github.com/zen")
+	if [ "$http_code" = "200" ]; then
 		echo "internet_error=0" >> $GITHUB_OUTPUT
-		echo -e "\e[32mGithub connection OK\e[0m"
-		rm -f "patches-1.21.1.mpp"
+		echo -e "\e[32mGitHub connection OK (HTTP 200)\e[0m"
 	else
 		echo "internet_error=1" >> $GITHUB_OUTPUT
-		echo -e "\e[31mGithub connection not stable!\e[0m"
+		echo -e "\e[31mGitHub connection failed or rate limited (HTTP $http_code)!\e[0m"
 	fi
 }
 check_connection
